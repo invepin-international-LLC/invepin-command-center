@@ -24,19 +24,35 @@ export class FaceRecognitionService {
     try {
       console.log('Initializing face recognition models...');
       
-      // Initialize face detection model
-      faceDetector = await pipeline(
-        'object-detection',
-        'Xenova/yolov8n-face',
-        { device: 'webgpu' }
-      );
+      // Initialize face detection model with fallback to CPU
+      try {
+        faceDetector = await pipeline(
+          'object-detection',
+          'Xenova/yolov8n-face',
+          { device: 'webgpu' }
+        );
+      } catch (webgpuError) {
+        console.warn('WebGPU not available for face detection, falling back to CPU:', webgpuError);
+        faceDetector = await pipeline(
+          'object-detection',
+          'Xenova/yolov8n-face'
+        );
+      }
 
-      // Initialize face embedding model for recognition
-      faceEmbedder = await pipeline(
-        'feature-extraction',
-        'Xenova/mobilefacenet',
-        { device: 'webgpu' }
-      );
+      // Initialize face embedding model for recognition with fallback
+      try {
+        faceEmbedder = await pipeline(
+          'feature-extraction',
+          'Xenova/mobilefacenet',
+          { device: 'webgpu' }
+        );
+      } catch (webgpuError) {
+        console.warn('WebGPU not available for face embeddings, falling back to CPU:', webgpuError);
+        faceEmbedder = await pipeline(
+          'feature-extraction',
+          'Xenova/mobilefacenet'
+        );
+      }
 
       this.isInitialized = true;
       console.log('Face recognition models initialized successfully');
