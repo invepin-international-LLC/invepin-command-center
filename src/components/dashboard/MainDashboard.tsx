@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { BLEScanner } from "@/components/devices/BLEScanner";
 import { 
   Shield, 
   Smartphone, 
@@ -31,6 +32,7 @@ interface MainDashboardProps {
 
 export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
   const [selectedIndustry, setSelectedIndustry] = useState<'retail' | 'hospitality' | 'casino' | 'pharma'>('retail');
+  const [activeView, setActiveView] = useState<'overview' | 'devices'>('overview');
 
   // Mock real-time data
   const stats = {
@@ -93,6 +95,25 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
         </div>
         
         <div className="flex items-center gap-3">
+          <div className="flex gap-1">
+            <Button 
+              variant={activeView === 'overview' ? 'default' : 'outline'} 
+              size="sm"
+              onClick={() => setActiveView('overview')}
+              className={activeView === 'overview' ? 'bg-gradient-primary' : ''}
+            >
+              Overview
+            </Button>
+            <Button 
+              variant={activeView === 'devices' ? 'default' : 'outline'} 
+              size="sm"
+              onClick={() => setActiveView('devices')}
+              className={activeView === 'devices' ? 'bg-gradient-primary' : ''}
+            >
+              <Smartphone className="h-4 w-4 mr-1" />
+              Devices
+            </Button>
+          </div>
           <Badge className={`${getRoleColor(user.role)} text-white`}>
             <Users className="h-3 w-3 mr-1" />
             {user.role.toUpperCase()}
@@ -146,138 +167,145 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
         </Card>
       </div>
 
-      {/* Industry Selector */}
-      <Card className="mb-6 bg-gradient-card border-border">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Package className="h-5 w-5" />
-            Industry Mode
-          </CardTitle>
-          <CardDescription>
-            Configure dashboard for your industry type
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-            {(['retail', 'hospitality', 'casino', 'pharma'] as const).map((industry) => (
-              <Button
-                key={industry}
-                variant={selectedIndustry === industry ? "default" : "outline"}
-                size="sm"
-                onClick={() => setSelectedIndustry(industry)}
-                className={selectedIndustry === industry ? "bg-gradient-primary shadow-glow" : ""}
-              >
-                {industry.charAt(0).toUpperCase() + industry.slice(1)}
-              </Button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* KPI Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <Card className="bg-gradient-card border-border">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">{industryLabels[selectedIndustry].primary}</p>
-                <p className="text-2xl font-bold">{stats.inventoryAccuracy}%</p>
+      {/* Content based on active view */}
+      {activeView === 'overview' ? (
+        <>
+          {/* Industry Selector */}
+          <Card className="mb-6 bg-gradient-card border-border">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Package className="h-5 w-5" />
+                Industry Mode
+              </CardTitle>
+              <CardDescription>
+                Configure dashboard for your industry type
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                {(['retail', 'hospitality', 'casino', 'pharma'] as const).map((industry) => (
+                  <Button
+                    key={industry}
+                    variant={selectedIndustry === industry ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setSelectedIndustry(industry)}
+                    className={selectedIndustry === industry ? "bg-gradient-primary shadow-glow" : ""}
+                  >
+                    {industry.charAt(0).toUpperCase() + industry.slice(1)}
+                  </Button>
+                ))}
               </div>
-              <CheckCircle className="h-8 w-8 text-success" />
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        <Card className="bg-gradient-card border-border">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Active Alerts</p>
-                <p className="text-2xl font-bold text-danger">{stats.activeAlerts}</p>
-              </div>
-              <AlertTriangle className="h-8 w-8 text-danger animate-status-pulse" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-card border-border">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Connected Devices</p>
-                <p className="text-2xl font-bold">{stats.connectedDevices}</p>
-              </div>
-              <Smartphone className="h-8 w-8 text-primary" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-card border-border">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Battery Health</p>
-                <p className="text-2xl font-bold text-success">{stats.batteryHealth}%</p>
-              </div>
-              <Battery className="h-8 w-8 text-success" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Quick Actions */}
-      <Card className="mb-6 bg-gradient-card border-border">
-        <CardHeader>
-          <CardTitle>Quick Actions</CardTitle>
-          <CardDescription>Frequently used operations</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {quickActions.map((action, index) => (
-              <Button
-                key={index}
-                variant="outline"
-                className="h-20 flex flex-col gap-2 hover:shadow-card transition-all duration-300"
-              >
-                <action.icon className="h-6 w-6" />
-                <span className="text-xs">{action.label}</span>
-              </Button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Recent Alerts */}
-      <Card className="bg-gradient-card border-border">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5 text-danger" />
-            Recent Alerts
-          </CardTitle>
-          <CardDescription>Live security and system notifications</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {recentAlerts.map((alert) => (
-              <div
-                key={alert.id}
-                className="flex items-center justify-between p-3 bg-background/30 rounded-lg border border-border/50"
-              >
-                <div className="flex-1">
-                  <p className="font-medium">{alert.item}</p>
-                  <p className="text-sm text-muted-foreground">{alert.location}</p>
+          {/* KPI Cards */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <Card className="bg-gradient-card border-border">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">{industryLabels[selectedIndustry].primary}</p>
+                    <p className="text-2xl font-bold">{stats.inventoryAccuracy}%</p>
+                  </div>
+                  <CheckCircle className="h-8 w-8 text-success" />
                 </div>
-                <div className="text-right">
-                  <p className={`text-sm font-medium ${getSeverityColor(alert.severity)}`}>
-                    {alert.type.replace('_', ' ').toUpperCase()}
-                  </p>
-                  <p className="text-xs text-muted-foreground">{alert.time}</p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-card border-border">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Active Alerts</p>
+                    <p className="text-2xl font-bold text-danger">{stats.activeAlerts}</p>
+                  </div>
+                  <AlertTriangle className="h-8 w-8 text-danger animate-status-pulse" />
                 </div>
-              </div>
-            ))}
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-card border-border">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Connected Devices</p>
+                    <p className="text-2xl font-bold">{stats.connectedDevices}</p>
+                  </div>
+                  <Smartphone className="h-8 w-8 text-primary" />
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-card border-border">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Battery Health</p>
+                    <p className="text-2xl font-bold text-success">{stats.batteryHealth}%</p>
+                  </div>
+                  <Battery className="h-8 w-8 text-success" />
+                </div>
+              </CardContent>
+            </Card>
           </div>
-        </CardContent>
-      </Card>
+
+          {/* Quick Actions */}
+          <Card className="mb-6 bg-gradient-card border-border">
+            <CardHeader>
+              <CardTitle>Quick Actions</CardTitle>
+              <CardDescription>Frequently used operations</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {quickActions.map((action, index) => (
+                  <Button
+                    key={index}
+                    variant="outline"
+                    className="h-20 flex flex-col gap-2 hover:shadow-card transition-all duration-300"
+                  >
+                    <action.icon className="h-6 w-6" />
+                    <span className="text-xs">{action.label}</span>
+                  </Button>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Recent Alerts */}
+          <Card className="bg-gradient-card border-border">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5 text-danger" />
+                Recent Alerts
+              </CardTitle>
+              <CardDescription>Live security and system notifications</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {recentAlerts.map((alert) => (
+                  <div
+                    key={alert.id}
+                    className="flex items-center justify-between p-3 bg-background/30 rounded-lg border border-border/50"
+                  >
+                    <div className="flex-1">
+                      <p className="font-medium">{alert.item}</p>
+                      <p className="text-sm text-muted-foreground">{alert.location}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className={`text-sm font-medium ${getSeverityColor(alert.severity)}`}>
+                        {alert.type.replace('_', ' ').toUpperCase()}
+                      </p>
+                      <p className="text-xs text-muted-foreground">{alert.time}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </>
+      ) : (
+        <BLEScanner />
+      )}
     </div>
   );
 };
