@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -19,6 +20,7 @@ import {
   Users,
   ShieldCheck
 } from "lucide-react";
+import { PourDetectionEngine } from "./PourDetectionEngine";
 
 interface Bartender {
   id: string;
@@ -184,218 +186,247 @@ export const BarManagement = () => {
   const lowStockBottles = bottles.filter(b => b.level < 30).length;
 
   return (
-    <div className="space-y-6">
-      {/* Header Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card className="bg-gradient-card border-border">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Active Bartenders</p>
-                <p className="text-2xl font-bold">{activeBartenders.length}</p>
-              </div>
-              <Users className="h-8 w-8 text-primary" />
-            </div>
-          </CardContent>
-        </Card>
+    <Tabs defaultValue="overview" className="space-y-6">
+      <TabsList className="grid w-full grid-cols-3">
+        <TabsTrigger value="overview">Overview</TabsTrigger>
+        <TabsTrigger value="pour-detection">Live Pours</TabsTrigger>
+        <TabsTrigger value="analytics">Analytics</TabsTrigger>
+      </TabsList>
 
-        <Card className="bg-gradient-card border-border">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Today's Pours</p>
-                <p className="text-2xl font-bold">{totalPours}</p>
-              </div>
-              <DropletIcon className="h-8 w-8 text-primary" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-card border-border">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Avg Accuracy</p>
-                <p className={`text-2xl font-bold ${getAccuracyColor(avgAccuracy)}`}>{avgAccuracy}%</p>
-              </div>
-              <Target className="h-8 w-8 text-success" />
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gradient-card border-border">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Low Stock</p>
-                <p className={`text-2xl font-bold ${lowStockBottles > 0 ? 'text-danger' : 'text-success'}`}>
-                  {lowStockBottles}
-                </p>
-              </div>
-              <AlertTriangle className={`h-8 w-8 ${lowStockBottles > 0 ? 'text-danger' : 'text-success'}`} />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Bartender Management */}
-        <Card className="bg-gradient-card border-border">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <UserCheck className="h-5 w-5" />
-              Bartender Dashboard
-            </CardTitle>
-            <CardDescription>Manage shifts and track performance</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {bartenders.map((bartender) => (
-              <div key={bartender.id} className="flex items-center justify-between p-3 bg-background/30 rounded-lg border border-border/50">
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-10 w-10">
-                    <AvatarImage src={bartender.avatar} />
-                    <AvatarFallback>{bartender.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-medium">{bartender.name}</p>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      {bartender.isOnShift ? (
-                        <>
-                          <Clock className="h-3 w-3" />
-                          Since {bartender.shiftStart}
-                        </>
-                      ) : (
-                        <span>Off shift</span>
-                      )}
-                    </div>
-                  </div>
+      <TabsContent value="overview" className="space-y-6">
+        {/* Header Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <Card className="bg-gradient-card border-border">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Active Bartenders</p>
+                  <p className="text-2xl font-bold">{activeBartenders.length}</p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <div className="text-right mr-2">
-                    <div className="flex items-center gap-1">
-                      <Trophy className="h-3 w-3 text-warning" />
-                      <span className={`text-sm font-medium ${getAccuracyColor(bartender.pourAccuracy)}`}>
-                        {bartender.pourAccuracy}%
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground">{bartender.todayPours} pours</p>
-                  </div>
-                  {bartender.isOnShift ? (
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => handleClockOut(bartender.id)}
-                    >
-                      Clock Out
-                    </Button>
-                  ) : (
-                    <Button 
-                      variant="default" 
-                      size="sm"
-                      onClick={() => handleClockIn(bartender.id)}
-                      className="bg-gradient-primary"
-                    >
-                      Clock In
-                    </Button>
-                  )}
-                </div>
+                <Users className="h-8 w-8 text-primary" />
               </div>
-            ))}
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        {/* Bottle Inventory */}
-        <Card className="bg-gradient-card border-border">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Wine className="h-5 w-5" />
-              Active Bottles
-            </CardTitle>
-            <CardDescription>Real-time inventory tracking</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {bottles.map((bottle) => {
-              const assignedBartender = bartenders.find(b => b.id === bottle.assignedBartender);
-              return (
-                <div key={bottle.id} className="p-3 bg-background/30 rounded-lg border border-border/50">
-                  <div className="flex items-center justify-between mb-2">
+          <Card className="bg-gradient-card border-border">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Today's Pours</p>
+                  <p className="text-2xl font-bold">{totalPours}</p>
+                </div>
+                <DropletIcon className="h-8 w-8 text-primary" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-card border-border">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Avg Accuracy</p>
+                  <p className={`text-2xl font-bold ${getAccuracyColor(avgAccuracy)}`}>{avgAccuracy}%</p>
+                </div>
+                <Target className="h-8 w-8 text-success" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-card border-border">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Low Stock</p>
+                  <p className={`text-2xl font-bold ${lowStockBottles > 0 ? 'text-danger' : 'text-success'}`}>
+                    {lowStockBottles}
+                  </p>
+                </div>
+                <AlertTriangle className={`h-8 w-8 ${lowStockBottles > 0 ? 'text-danger' : 'text-success'}`} />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Bartender Management */}
+          <Card className="bg-gradient-card border-border">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <UserCheck className="h-5 w-5" />
+                Bartender Dashboard
+              </CardTitle>
+              <CardDescription>Manage shifts and track performance</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {bartenders.map((bartender) => (
+                <div key={bartender.id} className="flex items-center justify-between p-3 bg-background/30 rounded-lg border border-border/50">
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-10 w-10">
+                      <AvatarImage src={bartender.avatar} />
+                      <AvatarFallback>{bartender.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                    </Avatar>
                     <div>
-                      <p className="font-medium">{bottle.name}</p>
-                      <p className="text-sm text-muted-foreground">{bottle.brand}</p>
+                      <p className="font-medium">{bartender.name}</p>
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        {bartender.isOnShift ? (
+                          <>
+                            <Clock className="h-3 w-3" />
+                            Since {bartender.shiftStart}
+                          </>
+                        ) : (
+                          <span>Off shift</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="text-right mr-2">
+                      <div className="flex items-center gap-1">
+                        <Trophy className="h-3 w-3 text-warning" />
+                        <span className={`text-sm font-medium ${getAccuracyColor(bartender.pourAccuracy)}`}>
+                          {bartender.pourAccuracy}%
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">{bartender.todayPours} pours</p>
+                    </div>
+                    {bartender.isOnShift ? (
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => handleClockOut(bartender.id)}
+                      >
+                        Clock Out
+                      </Button>
+                    ) : (
+                      <Button 
+                        variant="default" 
+                        size="sm"
+                        onClick={() => handleClockIn(bartender.id)}
+                        className="bg-gradient-primary"
+                      >
+                        Clock In
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
+          {/* Bottle Inventory */}
+          <Card className="bg-gradient-card border-border">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Wine className="h-5 w-5" />
+                Active Bottles
+              </CardTitle>
+              <CardDescription>Real-time inventory tracking</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {bottles.map((bottle) => {
+                const assignedBartender = bartenders.find(b => b.id === bottle.assignedBartender);
+                return (
+                  <div key={bottle.id} className="p-3 bg-background/30 rounded-lg border border-border/50">
+                    <div className="flex items-center justify-between mb-2">
+                      <div>
+                        <p className="font-medium">{bottle.name}</p>
+                        <p className="text-sm text-muted-foreground">{bottle.brand}</p>
+                      </div>
+                      <div className="text-right">
+                        <Badge variant={bottle.isActive ? "default" : "secondary"} className="mb-1">
+                          {bottle.isActive ? "Active" : "Idle"}
+                        </Badge>
+                        <p className="text-xs text-muted-foreground">{bottle.pourCount} pours today</p>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-sm">
+                        <span>Level</span>
+                        <span className={`font-medium ${getBottleLevelColor(bottle.level)}`}>
+                          {bottle.level}%
+                        </span>
+                      </div>
+                      <Progress value={bottle.level} className="h-2" />
+                      
+                      <div className="flex items-center justify-between text-xs text-muted-foreground">
+                        <span>Last pour: {bottle.lastPour}</span>
+                        {assignedBartender && (
+                          <span>Assigned: {assignedBartender.name}</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Recent Activity */}
+        <Card className="bg-gradient-card border-border">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BarChart3 className="h-5 w-5" />
+              Recent Pour Activity
+            </CardTitle>
+            <CardDescription>Live pour tracking and accuracy monitoring</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {recentPours.map((pour) => {
+                const bottle = bottles.find(b => b.id === pour.bottleId);
+                const bartender = bartenders.find(b => b.id === pour.bartenderId);
+                
+                return (
+                  <div key={pour.id} className="flex items-center justify-between p-3 bg-background/30 rounded-lg border border-border/50">
+                    <div className="flex items-center gap-3">
+                      <DropletIcon className="h-4 w-4 text-primary" />
+                      <div>
+                        <p className="font-medium">{bottle?.name}</p>
+                        <p className="text-sm text-muted-foreground">by {bartender?.name}</p>
+                      </div>
                     </div>
                     <div className="text-right">
-                      <Badge variant={bottle.isActive ? "default" : "secondary"} className="mb-1">
-                        {bottle.isActive ? "Active" : "Idle"}
-                      </Badge>
-                      <p className="text-xs text-muted-foreground">{bottle.pourCount} pours today</p>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium">{pour.amount}oz</span>
+                        <Badge 
+                          variant={pour.accuracy >= 95 ? "default" : pour.accuracy >= 85 ? "secondary" : "destructive"}
+                          className="text-xs"
+                        >
+                          {pour.accuracy}% accuracy
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-muted-foreground">{pour.timestamp}</p>
                     </div>
                   </div>
-                  
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-sm">
-                      <span>Level</span>
-                      <span className={`font-medium ${getBottleLevelColor(bottle.level)}`}>
-                        {bottle.level}%
-                      </span>
-                    </div>
-                    <Progress value={bottle.level} className="h-2" />
-                    
-                    <div className="flex items-center justify-between text-xs text-muted-foreground">
-                      <span>Last pour: {bottle.lastPour}</span>
-                      {assignedBartender && (
-                        <span>Assigned: {assignedBartender.name}</span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </CardContent>
         </Card>
-      </div>
+      </TabsContent>
 
-      {/* Recent Activity */}
-      <Card className="bg-gradient-card border-border">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <BarChart3 className="h-5 w-5" />
-            Recent Pour Activity
-          </CardTitle>
-          <CardDescription>Live pour tracking and accuracy monitoring</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {recentPours.map((pour) => {
-              const bottle = bottles.find(b => b.id === pour.bottleId);
-              const bartender = bartenders.find(b => b.id === pour.bartenderId);
-              
-              return (
-                <div key={pour.id} className="flex items-center justify-between p-3 bg-background/30 rounded-lg border border-border/50">
-                  <div className="flex items-center gap-3">
-                    <DropletIcon className="h-4 w-4 text-primary" />
-                    <div>
-                      <p className="font-medium">{bottle?.name}</p>
-                      <p className="text-sm text-muted-foreground">by {bartender?.name}</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-medium">{pour.amount}oz</span>
-                      <Badge 
-                        variant={pour.accuracy >= 95 ? "default" : pour.accuracy >= 85 ? "secondary" : "destructive"}
-                        className="text-xs"
-                      >
-                        {pour.accuracy}% accuracy
-                      </Badge>
-                    </div>
-                    <p className="text-xs text-muted-foreground">{pour.timestamp}</p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+      <TabsContent value="pour-detection">
+        <PourDetectionEngine />
+      </TabsContent>
+
+      <TabsContent value="analytics">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card className="bg-gradient-card border-border">
+            <CardHeader>
+              <CardTitle>Coming Soon</CardTitle>
+              <CardDescription>Advanced analytics and reporting features</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">
+                This section will include detailed analytics, loss prevention reports, 
+                reorder predictions, and performance insights.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </TabsContent>
+    </Tabs>
   );
 };
