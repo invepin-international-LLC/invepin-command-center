@@ -8,6 +8,7 @@ import { BarcodeScanner } from "@/components/scanner/BarcodeScanner";
 import { Analytics } from "@/components/analytics/Analytics";
 import { Notifications } from "@/components/notifications/Notifications";
 import { BarManagement } from "@/components/bar/BarManagement";
+import TutorialSystem from "@/components/tutorial/TutorialSystem";
 import { 
   Shield, 
   Smartphone, 
@@ -22,7 +23,8 @@ import {
   Users,
   Package,
   Bell,
-  Wine
+  Wine,
+  BookOpen
 } from "lucide-react";
 
 interface User {
@@ -39,7 +41,7 @@ interface MainDashboardProps {
 
 export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
   const [selectedIndustry, setSelectedIndustry] = useState<'retail' | 'hospitality' | 'casino' | 'pharma'>('retail');
-  const [activeView, setActiveView] = useState<'overview' | 'devices' | 'floorplan' | 'scanner' | 'analytics' | 'notifications' | 'bar'>('overview');
+  const [activeView, setActiveView] = useState<'overview' | 'devices' | 'floorplan' | 'scanner' | 'analytics' | 'notifications' | 'bar' | 'tutorial'>('overview');
 
   // Mock real-time data
   const stats = {
@@ -213,6 +215,19 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
               >
                 <Wine className="h-4 w-4 mr-1" />
                 <span className="hidden sm:inline">Bar</span>
+              </Button>
+              <Button 
+                variant={activeView === 'tutorial' ? 'default' : 'outline'} 
+                size="sm"
+                onClick={() => setActiveView('tutorial')}
+                className={`transition-all duration-300 ${
+                  activeView === 'tutorial' 
+                    ? 'bg-gradient-primary shadow-glow scale-105' 
+                    : 'hover:shadow-card hover:scale-105'
+                }`}
+              >
+                <BookOpen className="h-4 w-4 mr-1" />
+                <span className="hidden sm:inline">Tutorial</span>
               </Button>
             </div>
           </div>
@@ -463,6 +478,8 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
         <Analytics />
       ) : activeView === 'bar' ? (
         <BarManagement />
+      ) : activeView === 'tutorial' ? (
+        <TutorialSystem />
       ) : (
         <Notifications />
       )}
