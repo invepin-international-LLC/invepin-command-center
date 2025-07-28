@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -23,6 +23,10 @@ interface DeviceData {
   status: 'connected' | 'disconnected' | 'connecting';
   rssi: number;
   attachedItem?: string;
+  itemValue?: number;
+  riskLevel?: 'low' | 'medium' | 'high' | 'critical';
+  lastMovement?: Date;
+  movementPattern?: 'normal' | 'suspicious' | 'critical';
 }
 
 const mockDevices: DeviceData[] = [
@@ -33,6 +37,10 @@ const mockDevices: DeviceData[] = [
     status: 'connected',
     rssi: -45,
     attachedItem: 'iPad Pro 12.9"',
+    itemValue: 1299,
+    riskLevel: 'high',
+    lastMovement: new Date(Date.now() - 2 * 60 * 1000),
+    movementPattern: 'normal',
   },
   {
     id: 'inv-002',
@@ -41,6 +49,10 @@ const mockDevices: DeviceData[] = [
     status: 'connected',
     rssi: -62,
     attachedItem: 'Rolex Submariner',
+    itemValue: 15000,
+    riskLevel: 'critical',
+    lastMovement: new Date(Date.now() - 5 * 60 * 1000),
+    movementPattern: 'suspicious',
   },
   {
     id: 'inv-003',
@@ -49,6 +61,10 @@ const mockDevices: DeviceData[] = [
     status: 'disconnected',
     rssi: -78,
     attachedItem: 'Designer Handbag',
+    itemValue: 2500,
+    riskLevel: 'medium',
+    lastMovement: new Date(Date.now() - 15 * 60 * 1000),
+    movementPattern: 'critical',
   },
   {
     id: 'inv-004',
@@ -57,6 +73,10 @@ const mockDevices: DeviceData[] = [
     status: 'connected',
     rssi: -55,
     attachedItem: 'Premium Whiskey',
+    itemValue: 500,
+    riskLevel: 'medium',
+    lastMovement: new Date(Date.now() - 1 * 60 * 1000),
+    movementPattern: 'normal',
   },
 ];
 
@@ -64,15 +84,93 @@ export const FloorPlan = () => {
   const [trackedDevice, setTrackedDevice] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'devices' | 'items' | 'zones'>('all');
+  const [autoTrackingEnabled, setAutoTrackingEnabled] = useState(true);
+  const [trackingReason, setTrackingReason] = useState<string>('');
   const { toast } = useToast();
+
+  // Get priority device based on risk and value
+  const getPriorityDevice = () => {
+    const connectedDevices = mockDevices.filter(d => d.status === 'connected');
+    
+    // First priority: critical movement patterns
+    const criticalMovement = connectedDevices.find(d => d.movementPattern === 'critical');
+    if (criticalMovement) return { device: criticalMovement, reason: 'Critical movement detected' };
+    
+    // Second priority: suspicious movements
+    const suspiciousMovement = connectedDevices.find(d => d.movementPattern === 'suspicious');
+    if (suspiciousMovement) return { device: suspiciousMovement, reason: 'Suspicious movement pattern' };
+    
+    // Third priority: high-value items (>$10k)
+    const highValueItems = connectedDevices
+      .filter(d => (d.itemValue || 0) > 10000)
+      .sort((a, b) => (b.itemValue || 0) - (a.itemValue || 0));
+    if (highValueItems.length > 0) return { device: highValueItems[0], reason: 'High-value item monitoring' };
+    
+    // Fourth priority: critical risk level
+    const criticalRisk = connectedDevices.find(d => d.riskLevel === 'critical');
+    if (criticalRisk) return { device: criticalRisk, reason: 'Critical risk level' };
+    
+    // Default: highest value item
+    const sortedByValue = connectedDevices.sort((a, b) => (b.itemValue || 0) - (a.itemValue || 0));
+    if (sortedByValue.length > 0) return { device: sortedByValue[0], reason: 'Highest value item' };
+    
+    return null;
+  };
+
+  // Auto-tracking effect
+  useEffect(() => {
+    if (autoTrackingEnabled && !trackedDevice) {
+      const priority = getPriorityDevice();
+      if (priority) {
+        setTrackedDevice(priority.device.id);
+        setTrackingReason(priority.reason);
+        toast({
+          title: "Auto-Tracking Active",
+          description: `${priority.reason}: ${priority.device.attachedItem}`,
+        });
+      }
+    }
+  }, [autoTrackingEnabled, trackedDevice, toast]);
+
+  // Simulate movement pattern updates
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // Randomly update movement patterns to simulate real-time monitoring
+      const randomDevice = mockDevices[Math.floor(Math.random() * mockDevices.length)];
+      const patterns = ['normal', 'suspicious', 'critical'] as const;
+      const newPattern = patterns[Math.floor(Math.random() * patterns.length)];
+      
+      if (randomDevice.movementPattern !== newPattern && Math.random() > 0.8) {
+        randomDevice.movementPattern = newPattern;
+        randomDevice.lastMovement = new Date();
+        
+        // Auto-switch tracking if higher priority emerges
+        if (autoTrackingEnabled && (newPattern === 'critical' || newPattern === 'suspicious')) {
+          const priority = getPriorityDevice();
+          if (priority && priority.device.id !== trackedDevice) {
+            setTrackedDevice(priority.device.id);
+            setTrackingReason(priority.reason);
+            toast({
+              title: "Priority Alert",
+              description: `Switched to tracking: ${priority.device.attachedItem}`,
+            });
+          }
+        }
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [autoTrackingEnabled, trackedDevice, toast]);
 
   const trackDevice = (deviceId: string) => {
     const device = mockDevices.find(d => d.id === deviceId);
     if (device) {
       setTrackedDevice(deviceId);
+      setAutoTrackingEnabled(false); // Disable auto-tracking when manually selecting
+      setTrackingReason('Manual selection');
       toast({
         title: "Device Located",
-        description: `Tracking ${device.name}`,
+        description: `Manually tracking ${device.name}`,
       });
     }
   };
@@ -80,9 +178,11 @@ export const FloorPlan = () => {
   const resetView = () => {
     setTrackedDevice(null);
     setSearchQuery('');
+    setAutoTrackingEnabled(true); // Re-enable auto-tracking
+    setTrackingReason('');
     toast({
       title: "View Reset",
-      description: "Floor plan restored to default view",
+      description: "Auto-tracking re-enabled",
     });
   };
 
@@ -187,10 +287,27 @@ export const FloorPlan = () => {
               <div className="space-y-2">
                 {getDeviceList().map((device) => (
                   <div key={device.id} className="flex items-center justify-between p-2 bg-background/30 rounded-lg border border-border/50">
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-foreground">{device.name}</p>
-                      <p className="text-xs text-muted-foreground">{device.id}</p>
-                    </div>
+                     <div className="flex-1">
+                       <p className="text-sm font-medium text-foreground">{device.name}</p>
+                       <p className="text-xs text-muted-foreground">{device.id}</p>
+                       <div className="flex items-center gap-2 mt-1">
+                         <span className="text-xs text-muted-foreground">${device.itemValue?.toLocaleString()}</span>
+                         <Badge 
+                           variant={device.riskLevel === 'critical' ? 'destructive' : device.riskLevel === 'high' ? 'default' : 'secondary'}
+                           className="text-xs px-1 py-0"
+                         >
+                           {device.riskLevel}
+                         </Badge>
+                         {device.movementPattern !== 'normal' && (
+                           <Badge 
+                             variant={device.movementPattern === 'critical' ? 'destructive' : 'default'}
+                             className="text-xs px-1 py-0 animate-pulse"
+                           >
+                             {device.movementPattern}
+                           </Badge>
+                         )}
+                       </div>
+                     </div>
                     <div className="flex items-center gap-2">
                       <Badge 
                         variant={device.status === 'connected' ? 'default' : 'destructive'}
@@ -227,18 +344,33 @@ export const FloorPlan = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Target className="h-4 w-4 text-primary" />
-                <span className="text-sm font-medium text-primary">
-                  Currently tracking: {mockDevices.find(d => d.id === trackedDevice)?.name}
-                </span>
+                <div className="flex flex-col">
+                  <span className="text-sm font-medium text-primary">
+                    Currently tracking: {mockDevices.find(d => d.id === trackedDevice)?.name}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    Reason: {trackingReason}
+                  </span>
+                </div>
               </div>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => setTrackedDevice(null)}
-                className="bg-card/50 border-border hover:bg-card"
-              >
-                Stop Tracking
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  variant={autoTrackingEnabled ? 'default' : 'outline'}
+                  onClick={() => setAutoTrackingEnabled(!autoTrackingEnabled)}
+                  className={autoTrackingEnabled ? 'bg-gradient-primary text-primary-foreground' : 'bg-card/50 border-border hover:bg-card'}
+                >
+                  Auto
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setTrackedDevice(null)}
+                  className="bg-card/50 border-border hover:bg-card"
+                >
+                  Stop
+                </Button>
+              </div>
             </div>
           </div>
         )}
@@ -250,12 +382,21 @@ export const FloorPlan = () => {
           <div className="bg-background/20 rounded-lg border-2 border-dashed border-border/50 h-96 flex items-center justify-center">
             <div className="text-center">
               <MapPin className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-foreground mb-2">Floor Plan View</h3>
-              <p className="text-sm text-muted-foreground mb-4">Interactive floor plan will be displayed here</p>
+              <h3 className="text-lg font-semibold text-foreground mb-2">Smart Tracking Active</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                {autoTrackingEnabled ? 'Auto-tracking high-value & suspicious items' : 'Manual tracking mode'}
+              </p>
               {trackedDevice && (
-                <Badge className="bg-gradient-primary text-primary-foreground">
-                  🎯 Tracking: {mockDevices.find(d => d.id === trackedDevice)?.name}
-                </Badge>
+                <div className="space-y-2">
+                  <Badge className="bg-gradient-primary text-primary-foreground">
+                    🎯 {mockDevices.find(d => d.id === trackedDevice)?.attachedItem}
+                  </Badge>
+                  <p className="text-xs text-muted-foreground">
+                    Value: ${mockDevices.find(d => d.id === trackedDevice)?.itemValue?.toLocaleString()} | 
+                    Risk: {mockDevices.find(d => d.id === trackedDevice)?.riskLevel} | 
+                    Pattern: {mockDevices.find(d => d.id === trackedDevice)?.movementPattern}
+                  </p>
+                </div>
               )}
             </div>
           </div>
