@@ -12,6 +12,7 @@ import { LossPreventionDashboard } from "@/components/alerts/LossPreventionDashb
 import { ManagerDashboard } from "@/components/manager/ManagerDashboard";
 import { MobileBartenderInterface } from "@/components/mobile/MobileBartenderInterface";
 import { InventoryManagementDashboard } from "@/components/inventory/InventoryManagementDashboard";
+import { ShiftManagementDashboard } from "@/components/shifts/ShiftManagementDashboard";
 import { Bartender, Bottle, PourEvent } from "@/types/bar";
 import { useLossPrevention } from "@/hooks/useLossPrevention";
 import { useInventoryManagement } from "@/hooks/useInventoryManagement";
@@ -176,12 +177,13 @@ export const BarManagement = () => {
 
   return (
     <Tabs defaultValue="overview" className="space-y-6">
-      <TabsList className="grid w-full grid-cols-8">
+      <TabsList className="grid w-full grid-cols-9">
         <TabsTrigger value="overview">Overview</TabsTrigger>
         <TabsTrigger value="pour-detection">Live Pours</TabsTrigger>
         <TabsTrigger value="ble-devices">BLE Devices</TabsTrigger>
         <TabsTrigger value="loss-prevention">Loss Prevention</TabsTrigger>
         <TabsTrigger value="inventory">Inventory</TabsTrigger>
+        <TabsTrigger value="shifts">Shift Reports</TabsTrigger>
         <TabsTrigger value="mobile">Mobile Staff</TabsTrigger>
         <TabsTrigger value="manager">Manager</TabsTrigger>
         <TabsTrigger value="analytics">Analytics</TabsTrigger>
@@ -220,6 +222,10 @@ export const BarManagement = () => {
 
       <TabsContent value="inventory">
         <InventoryManagementDashboard />
+      </TabsContent>
+
+      <TabsContent value="shifts">
+        <ShiftManagementDashboard />
       </TabsContent>
 
       <TabsContent value="mobile">
