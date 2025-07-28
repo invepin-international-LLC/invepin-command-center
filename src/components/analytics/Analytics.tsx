@@ -492,6 +492,94 @@ export const Analytics = () => {
 
         {/* Insights Tab */}
         <TabsContent value="insights" className="space-y-6">
+          {/* Interactive Heatmap */}
+          <Card className="bg-gradient-card border-border">
+            <CardHeader>
+              <CardTitle className="text-lg">Interactive Activity Heatmap</CardTitle>
+              <CardDescription>Real-time visualization of security events and device activity</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {/* Heatmap Grid */}
+                <div className="grid grid-cols-12 gap-1 p-4 bg-background/20 rounded-lg">
+                  {Array.from({ length: 144 }, (_, i) => {
+                    const intensity = Math.random();
+                    const getHeatColor = (intensity: number) => {
+                      if (intensity > 0.8) return 'bg-red-500/80';
+                      if (intensity > 0.6) return 'bg-orange-500/70';
+                      if (intensity > 0.4) return 'bg-yellow-500/60';
+                      if (intensity > 0.2) return 'bg-green-500/50';
+                      return 'bg-blue-500/30';
+                    };
+                    
+                    return (
+                      <div
+                        key={i}
+                        className={`aspect-square rounded-sm cursor-pointer transition-all duration-200 hover:scale-125 hover:shadow-lg ${getHeatColor(intensity)}`}
+                        title={`Zone ${Math.floor(i / 12) + 1}-${(i % 12) + 1}: ${(intensity * 100).toFixed(0)}% activity`}
+                      />
+                    );
+                  })}
+                </div>
+                
+                {/* Heatmap Legend */}
+                <div className="flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="text-muted-foreground">Activity Level:</span>
+                    <div className="flex items-center gap-1">
+                      <div className="w-3 h-3 bg-blue-500/30 rounded-sm"></div>
+                      <span>Low</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-3 h-3 bg-green-500/50 rounded-sm"></div>
+                      <span>Moderate</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-3 h-3 bg-yellow-500/60 rounded-sm"></div>
+                      <span>High</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-3 h-3 bg-orange-500/70 rounded-sm"></div>
+                      <span>Very High</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-3 h-3 bg-red-500/80 rounded-sm"></div>
+                      <span>Critical</span>
+                    </div>
+                  </div>
+                  <div className="text-muted-foreground">
+                    Last updated: {new Date().toLocaleTimeString()}
+                  </div>
+                </div>
+                
+                {/* Heatmap Controls */}
+                <div className="flex items-center gap-4 pt-2 border-t border-border">
+                  <Select defaultValue="activity">
+                    <SelectTrigger className="w-40">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="activity">Activity Level</SelectItem>
+                      <SelectItem value="alerts">Security Alerts</SelectItem>
+                      <SelectItem value="battery">Battery Health</SelectItem>
+                      <SelectItem value="temperature">Temperature</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  
+                  <Button variant="outline" size="sm">
+                    <Filter className="h-4 w-4 mr-1" />
+                    Filter Zones
+                  </Button>
+                  
+                  <Button variant="outline" size="sm">
+                    <Download className="h-4 w-4 mr-1" />
+                    Export Heatmap
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
           <div className="grid md:grid-cols-2 gap-6">
             <Card className="bg-gradient-card border-border">
               <CardHeader>

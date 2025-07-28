@@ -13,6 +13,7 @@ import { ManagerDashboard } from "@/components/manager/ManagerDashboard";
 import { MobileBartenderInterface } from "@/components/mobile/MobileBartenderInterface";
 import { InventoryManagementDashboard } from "@/components/inventory/InventoryManagementDashboard";
 import { ShiftManagementDashboard } from "@/components/shifts/ShiftManagementDashboard";
+import { Analytics } from "@/components/analytics/Analytics";
 import { Bartender, Bottle, PourEvent } from "@/types/bar";
 import { useLossPrevention } from "@/hooks/useLossPrevention";
 import { useInventoryManagement } from "@/hooks/useInventoryManagement";
@@ -177,16 +178,16 @@ export const BarManagement = () => {
 
   return (
     <Tabs defaultValue="overview" className="space-y-6">
-      <TabsList className="grid w-full grid-cols-9">
-        <TabsTrigger value="overview">Overview</TabsTrigger>
-        <TabsTrigger value="pour-detection">Live Pours</TabsTrigger>
-        <TabsTrigger value="ble-devices">BLE Devices</TabsTrigger>
-        <TabsTrigger value="loss-prevention">Loss Prevention</TabsTrigger>
-        <TabsTrigger value="inventory">Inventory</TabsTrigger>
-        <TabsTrigger value="shifts">Shift Reports</TabsTrigger>
-        <TabsTrigger value="mobile">Mobile Staff</TabsTrigger>
-        <TabsTrigger value="manager">Manager</TabsTrigger>
-        <TabsTrigger value="analytics">Analytics</TabsTrigger>
+      <TabsList className="flex w-full flex-wrap gap-1 h-auto p-1">
+        <TabsTrigger value="overview" className="flex-1 min-w-0 text-xs sm:text-sm px-2 py-2">Overview</TabsTrigger>
+        <TabsTrigger value="pour-detection" className="flex-1 min-w-0 text-xs sm:text-sm px-2 py-2">Live Pours</TabsTrigger>
+        <TabsTrigger value="ble-devices" className="flex-1 min-w-0 text-xs sm:text-sm px-2 py-2">BLE Devices</TabsTrigger>
+        <TabsTrigger value="loss-prevention" className="flex-1 min-w-0 text-xs sm:text-sm px-2 py-2">Loss Prevention</TabsTrigger>
+        <TabsTrigger value="inventory" className="flex-1 min-w-0 text-xs sm:text-sm px-2 py-2">Inventory</TabsTrigger>
+        <TabsTrigger value="shifts" className="flex-1 min-w-0 text-xs sm:text-sm px-2 py-2">Shift Reports</TabsTrigger>
+        <TabsTrigger value="mobile" className="flex-1 min-w-0 text-xs sm:text-sm px-2 py-2">Mobile Staff</TabsTrigger>
+        <TabsTrigger value="manager" className="flex-1 min-w-0 text-xs sm:text-sm px-2 py-2">Manager</TabsTrigger>
+        <TabsTrigger value="analytics" className="flex-1 min-w-0 text-xs sm:text-sm px-2 py-2">Analytics</TabsTrigger>
       </TabsList>
 
       <TabsContent value="overview" className="space-y-6">
@@ -243,20 +244,7 @@ export const BarManagement = () => {
       </TabsContent>
 
       <TabsContent value="analytics">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card className="bg-gradient-card border-border">
-            <CardHeader>
-              <CardTitle>Coming Soon</CardTitle>
-              <CardDescription>Advanced analytics and reporting features</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">
-                This section will include detailed analytics, loss prevention reports, 
-                reorder predictions, and performance insights.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
+        <Analytics />
       </TabsContent>
     </Tabs>
   );
