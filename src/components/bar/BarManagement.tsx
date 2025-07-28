@@ -11,12 +11,15 @@ import { BLEDeviceManager } from "@/components/devices/BLEDeviceManager";
 import { LossPreventionDashboard } from "@/components/alerts/LossPreventionDashboard";
 import { ManagerDashboard } from "@/components/manager/ManagerDashboard";
 import { MobileBartenderInterface } from "@/components/mobile/MobileBartenderInterface";
+import { InventoryManagementDashboard } from "@/components/inventory/InventoryManagementDashboard";
 import { Bartender, Bottle, PourEvent } from "@/types/bar";
 import { useLossPrevention } from "@/hooks/useLossPrevention";
+import { useInventoryManagement } from "@/hooks/useInventoryManagement";
 
 export const BarManagement = () => {
   const { toast } = useToast();
   const { monitorPourEvent, monitorBottleLevel } = useLossPrevention();
+  const { processPouredItem } = useInventoryManagement();
   
   // Mock data - in real app this would come from your API
   const [bartenders, setBartenders] = useState<Bartender[]>([
@@ -147,7 +150,7 @@ export const BarManagement = () => {
     });
   };
 
-  // Simulate monitoring integration
+  // Simulate monitoring integration with inventory updates
   const simulatePourEvent = () => {
     const mockPour: PourEvent = {
       id: `pour-${Date.now()}`,
@@ -165,15 +168,20 @@ export const BarManagement = () => {
     
     setRecentPours(prev => [mockPour, ...prev.slice(0, 9)]);
     monitorPourEvent(mockPour, 1.5); // Monitor for violations
+    
+    // Update inventory automatically
+    const amountML = mockPour.amount * 29.5735; // Convert oz to ML
+    processPouredItem('inv1', amountML); // Update Grey Goose inventory
   };
 
   return (
     <Tabs defaultValue="overview" className="space-y-6">
-      <TabsList className="grid w-full grid-cols-7">
+      <TabsList className="grid w-full grid-cols-8">
         <TabsTrigger value="overview">Overview</TabsTrigger>
         <TabsTrigger value="pour-detection">Live Pours</TabsTrigger>
         <TabsTrigger value="ble-devices">BLE Devices</TabsTrigger>
         <TabsTrigger value="loss-prevention">Loss Prevention</TabsTrigger>
+        <TabsTrigger value="inventory">Inventory</TabsTrigger>
         <TabsTrigger value="mobile">Mobile Staff</TabsTrigger>
         <TabsTrigger value="manager">Manager</TabsTrigger>
         <TabsTrigger value="analytics">Analytics</TabsTrigger>
@@ -208,6 +216,10 @@ export const BarManagement = () => {
 
       <TabsContent value="loss-prevention">
         <LossPreventionDashboard />
+      </TabsContent>
+
+      <TabsContent value="inventory">
+        <InventoryManagementDashboard />
       </TabsContent>
 
       <TabsContent value="mobile">
