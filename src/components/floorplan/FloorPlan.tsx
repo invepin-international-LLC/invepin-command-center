@@ -28,6 +28,7 @@ import {
   Node,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
+import './ReactFlowOverrides.css';
 import { DeviceNode } from './nodes/DeviceNode';
 import { ItemNode } from './nodes/ItemNode';
 import { ZoneNode } from './nodes/ZoneNode';
@@ -521,7 +522,7 @@ export const FloorPlan = () => {
             )}
           </div>
           
-          <div className="bg-background/20 rounded-lg border border-border h-96 overflow-hidden">
+          <div className="bg-background/20 rounded-lg border border-border h-96 overflow-hidden relative">
             <ReactFlow
               nodes={nodes}
               edges={edges}
@@ -530,7 +531,7 @@ export const FloorPlan = () => {
               onConnect={onConnect}
               nodeTypes={nodeTypes}
               fitView
-              className="reactflow-wrapper"
+              className="reactflow-wrapper w-full h-full"
               style={{ 
                 backgroundColor: 'transparent',
                 width: '100%',

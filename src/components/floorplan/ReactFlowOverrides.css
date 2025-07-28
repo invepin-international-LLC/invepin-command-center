@@ -1,0 +1,39 @@
+/* ReactFlow Override Styles to Remove White Bar */
+.reactflow-wrapper .react-flow__renderer {
+  background: transparent !important;
+}
+
+.reactflow-wrapper .react-flow__attribution {
+  display: none !important;
+}
+
+.reactflow-wrapper .react-flow__pane {
+  background: transparent !important;
+}
+
+.reactflow-wrapper .react-flow__viewport {
+  background: transparent !important;
+}
+
+.reactflow-wrapper .react-flow__container {
+  background: transparent !important;
+}
+
+.reactflow-wrapper .react-flow__edge-path {
+  stroke: hsl(var(--border));
+}
+
+.reactflow-wrapper .react-flow__node {
+  background: transparent;
+}
+
+/* Remove any white backgrounds from ReactFlow */
+.reactflow-wrapper * {
+  background-color: transparent !important;
+}
+
+.reactflow-wrapper .react-flow__controls,
+.reactflow-wrapper .react-flow__minimap {
+  background: hsl(var(--card) / 0.9) !important;
+  border: 1px solid hsl(var(--border)) !important;
+}
