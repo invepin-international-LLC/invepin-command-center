@@ -8,10 +8,13 @@ import { BartenderDashboard } from "./BartenderDashboard";
 import { BottleInventory } from "./BottleInventory";
 import { RecentActivity } from "./RecentActivity";
 import { BLEDeviceManager } from "@/components/devices/BLEDeviceManager";
+import { LossPreventionDashboard } from "@/components/alerts/LossPreventionDashboard";
 import { Bartender, Bottle, PourEvent } from "@/types/bar";
+import { useLossPrevention } from "@/hooks/useLossPrevention";
 
 export const BarManagement = () => {
   const { toast } = useToast();
+  const { monitorPourEvent, monitorBottleLevel } = useLossPrevention();
   
   // Mock data - in real app this would come from your API
   const [bartenders, setBartenders] = useState<Bartender[]>([
@@ -136,12 +139,33 @@ export const BarManagement = () => {
     });
   };
 
+  // Simulate monitoring integration
+  const simulatePourEvent = () => {
+    const mockPour: PourEvent = {
+      id: `pour-${Date.now()}`,
+      bottleId: 'b1',
+      bartenderId: '1',
+      amount: 2.1, // Overpour example
+      timestamp: 'Just now',
+      accuracy: 85,
+      sensorData: {
+        weight: 650.3,
+        temperature: 18,
+        tiltAngle: 48
+      }
+    };
+    
+    setRecentPours(prev => [mockPour, ...prev.slice(0, 9)]);
+    monitorPourEvent(mockPour, 1.5); // Monitor for violations
+  };
+
   return (
     <Tabs defaultValue="overview" className="space-y-6">
-      <TabsList className="grid w-full grid-cols-4">
+      <TabsList className="grid w-full grid-cols-5">
         <TabsTrigger value="overview">Overview</TabsTrigger>
         <TabsTrigger value="pour-detection">Live Pours</TabsTrigger>
         <TabsTrigger value="ble-devices">BLE Devices</TabsTrigger>
+        <TabsTrigger value="loss-prevention">Loss Prevention</TabsTrigger>
         <TabsTrigger value="analytics">Analytics</TabsTrigger>
       </TabsList>
 
@@ -170,6 +194,10 @@ export const BarManagement = () => {
 
       <TabsContent value="ble-devices">
         <BLEDeviceManager bottles={bottles} />
+      </TabsContent>
+
+      <TabsContent value="loss-prevention">
+        <LossPreventionDashboard />
       </TabsContent>
 
       <TabsContent value="analytics">
