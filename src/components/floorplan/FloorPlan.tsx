@@ -530,16 +530,32 @@ export const FloorPlan = () => {
               onConnect={onConnect}
               nodeTypes={nodeTypes}
               fitView
-              className="bg-background/10"
-              style={{ backgroundColor: 'hsl(var(--background) / 0.1)' }}
+              className="reactflow-wrapper"
+              style={{ 
+                backgroundColor: 'transparent',
+                width: '100%',
+                height: '100%'
+              }}
+              proOptions={{ hideAttribution: true }}
             >
-              <Controls className="bg-card border-border" />
-              <Background color="hsl(var(--muted-foreground) / 0.2)" gap={20} />
+              <Controls 
+                className="bg-card/90 border-border shadow-lg" 
+                style={{ background: 'hsl(var(--card) / 0.9)' }}
+              />
+              <Background 
+                color="hsl(var(--muted-foreground) / 0.1)" 
+                gap={20} 
+                style={{ backgroundColor: 'transparent' }}
+              />
               {showMinimap && (
                 <MiniMap 
-                  className="bg-card border border-border rounded-lg"
+                  className="bg-card/90 border border-border rounded-lg shadow-lg"
                   nodeColor="hsl(var(--primary))"
-                  maskColor="hsl(var(--background) / 0.9)"
+                  maskColor="hsl(var(--background) / 0.8)"
+                  style={{ 
+                    backgroundColor: 'hsl(var(--card) / 0.9)',
+                    border: '1px solid hsl(var(--border))'
+                  }}
                 />
               )}
             </ReactFlow>
