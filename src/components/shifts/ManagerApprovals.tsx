@@ -148,15 +148,15 @@ export const ManagerApprovals = ({
               <div key={approval.id} className={`p-4 rounded-lg border ${getUrgencyColor(approval.urgency)}`}>
                 <div className="space-y-4">
                   {/* Header */}
-                  <div className="flex items-start justify-between">
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                     <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
+                      <div className="flex flex-wrap items-center gap-2 mb-2">
                         <h3 className="font-medium">{approval.bottleName}</h3>
                         <Badge className={getUrgencyColor(approval.urgency)}>
                           {approval.urgency.toUpperCase()} PRIORITY
                         </Badge>
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                      <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
                         <span className="flex items-center gap-1">
                           <User className="h-3 w-3" />
                           {approval.bartenderId}
@@ -170,7 +170,7 @@ export const ManagerApprovals = ({
                   </div>
 
                   {/* Pour Details */}
-                  <div className="grid grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4">
                     <div className="text-center p-2 bg-background/30 rounded">
                       <p className="text-xs text-muted-foreground">Standard Pour</p>
                       <p className="font-bold">{approval.standardAmount}oz</p>
@@ -213,10 +213,10 @@ export const ManagerApprovals = ({
                         value={denyReason}
                         onChange={(e) => setDenyReason(e.target.value)}
                       />
-                      <div className="flex gap-2">
+                      <div className="flex flex-col sm:flex-row gap-2">
                         <Button
                           onClick={() => handleApprove(approval.id)}
-                          className="bg-gradient-primary flex-1"
+                          className="bg-gradient-primary flex-1 text-sm"
                         >
                           <CheckCircle className="h-4 w-4 mr-2" />
                           Approve Pour
@@ -225,7 +225,7 @@ export const ManagerApprovals = ({
                           variant="destructive"
                           onClick={() => handleDeny(approval.id)}
                           disabled={!denyReason.trim()}
-                          className="flex-1"
+                          className="flex-1 text-sm"
                         >
                           <X className="h-4 w-4 mr-2" />
                           Deny Request
@@ -237,6 +237,7 @@ export const ManagerApprovals = ({
                             setDenyReason("");
                             setApprovalNotes("");
                           }}
+                          className="text-sm"
                         >
                           Cancel
                         </Button>
@@ -274,11 +275,11 @@ export const ManagerApprovals = ({
               .filter(alert => alert.type !== 'pour_approval')
               .map((alert) => (
                 <div key={alert.id} className={`p-3 rounded-lg border ${getSeverityColor(alert.severity)}`}>
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex-1">
                       <h4 className="font-medium">{alert.title}</h4>
                       <p className="text-sm text-muted-foreground">{alert.description}</p>
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
+                      <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground mt-1">
                         <Clock className="h-3 w-3" />
                         <span>{alert.timestamp}</span>
                         {alert.bartenderName && (
@@ -289,11 +290,12 @@ export const ManagerApprovals = ({
                         )}
                       </div>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 mt-2 sm:mt-0">
                       <Button
                         size="sm"
                         variant="outline"
                         onClick={() => onAcknowledgeAlert(alert.id)}
+                        className="text-xs"
                       >
                         Acknowledge
                       </Button>
