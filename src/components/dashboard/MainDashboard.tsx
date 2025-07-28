@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BLEScanner } from "@/components/devices/BLEScanner";
+import { FloorPlan } from "@/components/floorplan/FloorPlan";
 import { 
   Shield, 
   Smartphone, 
@@ -32,7 +33,7 @@ interface MainDashboardProps {
 
 export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
   const [selectedIndustry, setSelectedIndustry] = useState<'retail' | 'hospitality' | 'casino' | 'pharma'>('retail');
-  const [activeView, setActiveView] = useState<'overview' | 'devices'>('overview');
+  const [activeView, setActiveView] = useState<'overview' | 'devices' | 'floorplan'>('overview');
 
   // Mock real-time data
   const stats = {
@@ -112,6 +113,15 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
             >
               <Smartphone className="h-4 w-4 mr-1" />
               Devices
+            </Button>
+            <Button 
+              variant={activeView === 'floorplan' ? 'default' : 'outline'} 
+              size="sm"
+              onClick={() => setActiveView('floorplan')}
+              className={activeView === 'floorplan' ? 'bg-gradient-primary' : ''}
+            >
+              <MapPin className="h-4 w-4 mr-1" />
+              Floor Plan
             </Button>
           </div>
           <Badge className={`${getRoleColor(user.role)} text-white`}>
@@ -303,8 +313,10 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
             </CardContent>
           </Card>
         </>
-      ) : (
+      ) : activeView === 'devices' ? (
         <BLEScanner />
+      ) : (
+        <FloorPlan />
       )}
     </div>
   );
