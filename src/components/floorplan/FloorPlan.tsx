@@ -564,96 +564,199 @@ export const FloorPlan = () => {
         </div>
       </div>
 
-      {/* Legend */}
+      {/* Interactive Legend & Guide */}
       <div className="bg-gradient-card border border-border rounded-xl p-6 hover-card">
         <h3 className="text-lg font-bold mb-4 flex items-center gap-3 text-foreground">
           <div className="bg-gradient-primary p-2 rounded-lg">
             <MapPin className="h-4 w-4 text-primary-foreground" />
           </div>
-          Legend & Guide
+          Interactive Legend & Guide
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-sm">
           <div className="space-y-3">
             <p className="font-semibold text-foreground flex items-center gap-2">
               <div className="w-2 h-2 bg-gradient-primary rounded-full"></div>
-              Device Status
+              Device Status Filters
             </p>
             <div className="space-y-2 text-xs">
-              <div className="flex items-center gap-3">
+              <button 
+                className="flex items-center gap-3 w-full text-left p-2 rounded-lg hover:bg-background/50 transition-smooth group"
+                onClick={() => setSearchQuery('connected')}
+              >
                 <div className="w-3 h-3 bg-gradient-success rounded-full"></div>
-                <span className="text-muted-foreground">Connected</span>
-              </div>
-              <div className="flex items-center gap-3">
+                <span className="text-muted-foreground group-hover:text-foreground">Connected Devices</span>
+              </button>
+              <button 
+                className="flex items-center gap-3 w-full text-left p-2 rounded-lg hover:bg-background/50 transition-smooth group"
+                onClick={() => setSearchQuery('connecting')}
+              >
                 <div className="w-3 h-3 bg-gradient-warning rounded-full animate-pulse-glow"></div>
-                <span className="text-muted-foreground">Connecting</span>
-              </div>
-              <div className="flex items-center gap-3">
+                <span className="text-muted-foreground group-hover:text-foreground">Connecting Devices</span>
+              </button>
+              <button 
+                className="flex items-center gap-3 w-full text-left p-2 rounded-lg hover:bg-background/50 transition-smooth group"
+                onClick={() => setSearchQuery('disconnected')}
+              >
                 <div className="w-3 h-3 bg-gradient-danger rounded-full"></div>
-                <span className="text-muted-foreground">Disconnected</span>
-              </div>
+                <span className="text-muted-foreground group-hover:text-foreground">Disconnected Devices</span>
+              </button>
             </div>
           </div>
           
           <div className="space-y-3">
             <p className="font-semibold text-foreground flex items-center gap-2">
               <div className="w-2 h-2 bg-gradient-success rounded-full"></div>
-              Tracking Features
+              Quick Tracking Actions
             </p>
-            <div className="space-y-2 text-xs text-muted-foreground">
-              <p className="flex items-center gap-2">
-                <span className="text-primary">•</span> Search devices by name/ID
-              </p>
-              <p className="flex items-center gap-2">
-                <span className="text-primary">•</span> Real-time status updates
-              </p>
-              <p className="flex items-center gap-2">
-                <span className="text-primary">•</span> Visual device highlighting
-              </p>
-              <p className="flex items-center gap-2">
-                <span className="text-primary">•</span> Location guidance system
-              </p>
+            <div className="space-y-2 text-xs">
+              <button 
+                className="flex items-center gap-2 w-full text-left p-2 rounded-lg hover:bg-background/50 transition-smooth text-muted-foreground hover:text-foreground"
+                onClick={() => {
+                  const highValueDevice = mockDevices.find(d => (d.itemValue || 0) > 10000);
+                  if (highValueDevice) trackDevice(highValueDevice.id);
+                }}
+              >
+                <span className="text-primary">🎯</span> Track High-Value Items
+              </button>
+              <button 
+                className="flex items-center gap-2 w-full text-left p-2 rounded-lg hover:bg-background/50 transition-smooth text-muted-foreground hover:text-foreground"
+                onClick={() => setAutoTrackingEnabled(!autoTrackingEnabled)}
+              >
+                <span className="text-primary">🤖</span> {autoTrackingEnabled ? 'Disable' : 'Enable'} Auto-Tracking
+              </button>
+              <button 
+                className="flex items-center gap-2 w-full text-left p-2 rounded-lg hover:bg-background/50 transition-smooth text-muted-foreground hover:text-foreground"
+                onClick={() => setShowMinimap(!showMinimap)}
+              >
+                <span className="text-primary">🗺️</span> {showMinimap ? 'Hide' : 'Show'} Mini Map
+              </button>
+              <button 
+                className="flex items-center gap-2 w-full text-left p-2 rounded-lg hover:bg-background/50 transition-smooth text-muted-foreground hover:text-foreground"
+                onClick={resetView}
+              >
+                <span className="text-primary">🔄</span> Reset View & Search
+              </button>
             </div>
           </div>
 
           <div className="space-y-3">
             <p className="font-semibold text-foreground flex items-center gap-2">
               <div className="w-2 h-2 bg-accent rounded-full"></div>
-              Device Info
+              Risk Level Filters
             </p>
-            <div className="space-y-2 text-xs text-muted-foreground">
-              <p className="flex items-center gap-2">
-                <span className="text-primary">•</span> Battery levels
-              </p>
-              <p className="flex items-center gap-2">
-                <span className="text-primary">•</span> Signal strength
-              </p>
-              <p className="flex items-center gap-2">
-                <span className="text-primary">•</span> Attached items
-              </p>
-              <p className="flex items-center gap-2">
-                <span className="text-primary">•</span> Connection status
-              </p>
+            <div className="space-y-2 text-xs">
+              <button 
+                className="flex items-center gap-2 w-full text-left p-2 rounded-lg hover:bg-background/50 transition-smooth text-muted-foreground hover:text-foreground"
+                onClick={() => {
+                  const criticalDevice = mockDevices.find(d => d.riskLevel === 'critical');
+                  if (criticalDevice) trackDevice(criticalDevice.id);
+                }}
+              >
+                <span className="text-destructive">🚨</span> Track Critical Risk Items
+              </button>
+              <button 
+                className="flex items-center gap-2 w-full text-left p-2 rounded-lg hover:bg-background/50 transition-smooth text-muted-foreground hover:text-foreground"
+                onClick={() => {
+                  const suspiciousDevice = mockDevices.find(d => d.movementPattern === 'suspicious');
+                  if (suspiciousDevice) trackDevice(suspiciousDevice.id);
+                }}
+              >
+                <span className="text-warning">⚠️</span> Track Suspicious Movement
+              </button>
+              <button 
+                className="flex items-center gap-2 w-full text-left p-2 rounded-lg hover:bg-background/50 transition-smooth text-muted-foreground hover:text-foreground"
+                onClick={() => {
+                  const lowBatteryDevice = mockDevices.find(d => d.battery < 30);
+                  if (lowBatteryDevice) trackDevice(lowBatteryDevice.id);
+                }}
+              >
+                <span className="text-warning">🔋</span> Find Low Battery Devices
+              </button>
+              <button 
+                className="flex items-center gap-2 w-full text-left p-2 rounded-lg hover:bg-background/50 transition-smooth text-muted-foreground hover:text-foreground"
+                onClick={() => setSearchQuery('')}
+              >
+                <span className="text-primary">👁️</span> Show All Devices
+              </button>
             </div>
           </div>
 
           <div className="space-y-3">
             <p className="font-semibold text-foreground flex items-center gap-2">
               <div className="w-2 h-2 bg-secondary rounded-full"></div>
-              Quick Actions
+              View Controls
             </p>
-            <div className="space-y-2 text-xs text-muted-foreground">
-              <p className="flex items-center gap-2">
-                <span className="text-primary">•</span> Track specific devices
-              </p>
-              <p className="flex items-center gap-2">
-                <span className="text-primary">•</span> Filter by type
-              </p>
-              <p className="flex items-center gap-2">
-                <span className="text-primary">•</span> Reset view
-              </p>
-              <p className="flex items-center gap-2">
-                <span className="text-primary">•</span> Search and locate
-              </p>
+            <div className="space-y-2 text-xs">
+              <button 
+                className="flex items-center gap-2 w-full text-left p-2 rounded-lg hover:bg-background/50 transition-smooth text-muted-foreground hover:text-foreground"
+                onClick={() => setFilterType('devices')}
+              >
+                <span className="text-primary">📱</span> Show Only Devices
+              </button>
+              <button 
+                className="flex items-center gap-2 w-full text-left p-2 rounded-lg hover:bg-background/50 transition-smooth text-muted-foreground hover:text-foreground"
+                onClick={() => setFilterType('zones')}
+              >
+                <span className="text-primary">🏢</span> Show Only Zones
+              </button>
+              <button 
+                className="flex items-center gap-2 w-full text-left p-2 rounded-lg hover:bg-background/50 transition-smooth text-muted-foreground hover:text-foreground"
+                onClick={() => setFilterType('all')}
+              >
+                <span className="text-primary">🌐</span> Show Everything
+              </button>
+              <button 
+                className="flex items-center gap-2 w-full text-left p-2 rounded-lg hover:bg-background/50 transition-smooth text-muted-foreground hover:text-foreground"
+                onClick={() => {
+                  const recentDevice = mockDevices
+                    .filter(d => d.lastMovement)
+                    .sort((a, b) => (b.lastMovement?.getTime() || 0) - (a.lastMovement?.getTime() || 0))[0];
+                  if (recentDevice) trackDevice(recentDevice.id);
+                }}
+              >
+                <span className="text-primary">⏰</span> Track Latest Movement
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        {/* Interactive Help Section */}
+        <div className="mt-6 pt-4 border-t border-border">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="text-sm text-muted-foreground">
+              💡 <strong>Pro Tip:</strong> Click any button above to quickly filter, track, or control the floor plan view.
+            </div>
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  toast({
+                    title: "Floor Plan Guide",
+                    description: "Use the interactive legend to quickly filter devices, track specific items, and control the view settings.",
+                  });
+                }}
+                className="text-xs"
+              >
+                📚 Show Help
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  const priority = getPriorityDevice();
+                  if (priority) {
+                    trackDevice(priority.device.id);
+                    toast({
+                      title: "Smart Tracking",
+                      description: `Auto-selected highest priority device: ${priority.device.attachedItem}`,
+                    });
+                  }
+                }}
+                className="text-xs bg-gradient-primary text-primary-foreground"
+              >
+                🎯 Smart Track
+              </Button>
             </div>
           </div>
         </div>
