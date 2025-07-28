@@ -32,30 +32,30 @@ export const ShiftManagementDashboard = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h1 className="text-3xl font-bold flex items-center gap-2">
-            <Clock className="h-8 w-8 text-primary" />
+          <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2">
+            <Clock className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
             Shift Management
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground text-sm sm:text-base">
             Comprehensive shift reports and real-time management approvals
           </p>
         </div>
         
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-4">
           {urgentAlerts > 0 && (
-            <Badge variant="destructive" className="animate-pulse">
+            <Badge variant="destructive" className="animate-pulse text-xs">
               {urgentAlerts} Alert{urgentAlerts > 1 ? 's' : ''}
             </Badge>
           )}
           {pendingCount > 0 && (
-            <Badge variant="secondary">
+            <Badge variant="secondary" className="text-xs">
               {pendingCount} Pending Approval{pendingCount > 1 ? 's' : ''}
             </Badge>
           )}
-          <Button className="bg-gradient-primary">
-            <Download className="h-4 w-4 mr-2" />
+          <Button className="bg-gradient-primary text-xs sm:text-sm px-3 py-2">
+            <Download className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
             Export Reports
           </Button>
         </div>
