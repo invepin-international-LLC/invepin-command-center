@@ -509,9 +509,9 @@ export const FloorPlan = () => {
               </div>
               <div>
                 <h3 className="text-lg font-semibold text-foreground">Interactive Floor Plan</h3>
-                <p className="text-sm text-muted-foreground">
+                <span className="text-sm text-muted-foreground">
                   {trackedDevice ? `Tracking: ${mockDevices.find(d => d.id === trackedDevice)?.attachedItem}` : 'Real-time device monitoring'}
-                </p>
+                </span>
               </div>
             </div>
             {trackedDevice && (
