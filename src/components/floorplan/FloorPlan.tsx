@@ -51,56 +51,213 @@ interface DeviceData {
   [key: string]: unknown; // Index signature for ReactFlow compatibility
 }
 
-const mockDevices: DeviceData[] = [
-  {
-    id: 'inv-001',
-    name: 'Invepin Pro #001',
-    battery: 87,
-    status: 'connected',
-    rssi: -45,
-    attachedItem: 'iPad Pro 12.9"',
-    itemValue: 1299,
-    riskLevel: 'high',
-    lastMovement: new Date(Date.now() - 2 * 60 * 1000),
-    movementPattern: 'normal',
-  },
-  {
-    id: 'inv-002',
-    name: 'Invepin Pro #002',
-    battery: 45,
-    status: 'connected',
-    rssi: -62,
-    attachedItem: 'Rolex Submariner',
-    itemValue: 15000,
-    riskLevel: 'critical',
-    lastMovement: new Date(Date.now() - 5 * 60 * 1000),
-    movementPattern: 'suspicious',
-  },
-  {
-    id: 'inv-003',
-    name: 'Invepin Lite #003',
-    battery: 23,
-    status: 'disconnected',
-    rssi: -78,
-    attachedItem: 'Designer Handbag',
-    itemValue: 2500,
-    riskLevel: 'medium',
-    lastMovement: new Date(Date.now() - 15 * 60 * 1000),
-    movementPattern: 'critical',
-  },
-  {
-    id: 'inv-004',
-    name: 'Invepin Pro #004',
-    battery: 91,
-    status: 'connected',
-    rssi: -55,
-    attachedItem: 'Premium Whiskey',
-    itemValue: 500,
-    riskLevel: 'medium',
-    lastMovement: new Date(Date.now() - 1 * 60 * 1000),
-    movementPattern: 'normal',
-  },
-];
+// Industry-specific mock data
+const getIndustryDevices = (industry: string): DeviceData[] => {
+  const deviceTemplates = {
+    retail: [
+      {
+        id: 'inv-001',
+        name: 'Invepin Pro #001',
+        battery: 87,
+        status: 'connected' as const,
+        rssi: -45,
+        attachedItem: 'iPad Pro 12.9"',
+        itemValue: 1299,
+        riskLevel: 'high' as const,
+        lastMovement: new Date(Date.now() - 2 * 60 * 1000),
+        movementPattern: 'normal' as const,
+      },
+      {
+        id: 'inv-002',
+        name: 'Invepin Pro #002',
+        battery: 45,
+        status: 'connected' as const,
+        rssi: -62,
+        attachedItem: 'Rolex Submariner',
+        itemValue: 15000,
+        riskLevel: 'critical' as const,
+        lastMovement: new Date(Date.now() - 5 * 60 * 1000),
+        movementPattern: 'suspicious' as const,
+      },
+      {
+        id: 'inv-003',
+        name: 'Invepin Lite #003',
+        battery: 23,
+        status: 'disconnected' as const,
+        rssi: -78,
+        attachedItem: 'Designer Handbag',
+        itemValue: 2500,
+        riskLevel: 'medium' as const,
+        lastMovement: new Date(Date.now() - 15 * 60 * 1000),
+        movementPattern: 'critical' as const,
+      },
+      {
+        id: 'inv-004',
+        name: 'Invepin Pro #004',
+        battery: 91,
+        status: 'connected' as const,
+        rssi: -55,
+        attachedItem: 'Premium Electronics',
+        itemValue: 800,
+        riskLevel: 'medium' as const,
+        lastMovement: new Date(Date.now() - 1 * 60 * 1000),
+        movementPattern: 'normal' as const,
+      },
+    ],
+    hospitality: [
+      {
+        id: 'inv-001',
+        name: 'Invepin Pro #001',
+        battery: 87,
+        status: 'connected' as const,
+        rssi: -45,
+        attachedItem: 'Premium Whiskey Bottle',
+        itemValue: 450,
+        riskLevel: 'high' as const,
+        lastMovement: new Date(Date.now() - 2 * 60 * 1000),
+        movementPattern: 'normal' as const,
+      },
+      {
+        id: 'inv-002',
+        name: 'Invepin Pro #002',
+        battery: 45,
+        status: 'connected' as const,
+        rssi: -62,
+        attachedItem: 'Champagne Dom Pérignon',
+        itemValue: 300,
+        riskLevel: 'critical' as const,
+        lastMovement: new Date(Date.now() - 5 * 60 * 1000),
+        movementPattern: 'suspicious' as const,
+      },
+      {
+        id: 'inv-003',
+        name: 'Invepin Lite #003',
+        battery: 23,
+        status: 'disconnected' as const,
+        rssi: -78,
+        attachedItem: 'Cognac Hennessy XO',
+        itemValue: 250,
+        riskLevel: 'medium' as const,
+        lastMovement: new Date(Date.now() - 15 * 60 * 1000),
+        movementPattern: 'critical' as const,
+      },
+      {
+        id: 'inv-004',
+        name: 'Invepin Pro #004',
+        battery: 91,
+        status: 'connected' as const,
+        rssi: -55,
+        attachedItem: 'Vodka Grey Goose',
+        itemValue: 120,
+        riskLevel: 'medium' as const,
+        lastMovement: new Date(Date.now() - 1 * 60 * 1000),
+        movementPattern: 'normal' as const,
+      },
+    ],
+    casino: [
+      {
+        id: 'inv-001',
+        name: 'Invepin Pro #001',
+        battery: 87,
+        status: 'connected' as const,
+        rssi: -45,
+        attachedItem: 'High-Value Chip Stack',
+        itemValue: 25000,
+        riskLevel: 'high' as const,
+        lastMovement: new Date(Date.now() - 2 * 60 * 1000),
+        movementPattern: 'normal' as const,
+      },
+      {
+        id: 'inv-002',
+        name: 'Invepin Pro #002',
+        battery: 45,
+        status: 'connected' as const,
+        rssi: -62,
+        attachedItem: 'VIP Tournament Chips',
+        itemValue: 50000,
+        riskLevel: 'critical' as const,
+        lastMovement: new Date(Date.now() - 5 * 60 * 1000),
+        movementPattern: 'suspicious' as const,
+      },
+      {
+        id: 'inv-003',
+        name: 'Invepin Lite #003',
+        battery: 23,
+        status: 'disconnected' as const,
+        rssi: -78,
+        attachedItem: 'Poker Cash Chips',
+        itemValue: 10000,
+        riskLevel: 'medium' as const,
+        lastMovement: new Date(Date.now() - 15 * 60 * 1000),
+        movementPattern: 'critical' as const,
+      },
+      {
+        id: 'inv-004',
+        name: 'Invepin Pro #004',
+        battery: 91,
+        status: 'connected' as const,
+        rssi: -55,
+        attachedItem: 'Blackjack Chips',
+        itemValue: 5000,
+        riskLevel: 'medium' as const,
+        lastMovement: new Date(Date.now() - 1 * 60 * 1000),
+        movementPattern: 'normal' as const,
+      },
+    ],
+    pharma: [
+      {
+        id: 'inv-001',
+        name: 'Invepin Pro #001',
+        battery: 87,
+        status: 'connected' as const,
+        rssi: -45,
+        attachedItem: 'Controlled Substance Vial',
+        itemValue: 1200,
+        riskLevel: 'high' as const,
+        lastMovement: new Date(Date.now() - 2 * 60 * 1000),
+        movementPattern: 'normal' as const,
+      },
+      {
+        id: 'inv-002',
+        name: 'Invepin Pro #002',
+        battery: 45,
+        status: 'connected' as const,
+        rssi: -62,
+        attachedItem: 'Rare Medication',
+        itemValue: 5000,
+        riskLevel: 'critical' as const,
+        lastMovement: new Date(Date.now() - 5 * 60 * 1000),
+        movementPattern: 'suspicious' as const,
+      },
+      {
+        id: 'inv-003',
+        name: 'Invepin Lite #003',
+        battery: 23,
+        status: 'disconnected' as const,
+        rssi: -78,
+        attachedItem: 'Insulin Batch',
+        itemValue: 800,
+        riskLevel: 'medium' as const,
+        lastMovement: new Date(Date.now() - 15 * 60 * 1000),
+        movementPattern: 'critical' as const,
+      },
+      {
+        id: 'inv-004',
+        name: 'Invepin Pro #004',
+        battery: 91,
+        status: 'connected' as const,
+        rssi: -55,
+        attachedItem: 'Vaccine Doses',
+        itemValue: 600,
+        riskLevel: 'medium' as const,
+        lastMovement: new Date(Date.now() - 1 * 60 * 1000),
+        movementPattern: 'normal' as const,
+      },
+    ],
+  };
+  
+  return deviceTemplates[industry as keyof typeof deviceTemplates] || deviceTemplates.retail;
+};
 
 // Node types for ReactFlow
 const nodeTypes = {
@@ -109,60 +266,64 @@ const nodeTypes = {
   zone: ZoneNode,
 };
 
-// Initial nodes for the floor plan
-const initialNodes: Node[] = [
-  {
-    id: 'zone-1',
-    type: 'zone',
-    position: { x: 50, y: 50 },
-    data: { name: 'Entrance Hall', type: 'entrance', deviceCount: 2, itemCount: 3 },
-    style: { width: 200, height: 150 },
-  },
-  {
-    id: 'zone-2',
-    type: 'zone',
-    position: { x: 300, y: 50 },
-    data: { name: 'High Security', type: 'security', deviceCount: 3, itemCount: 5, alertCount: 1 },
-    style: { width: 250, height: 200 },
-  },
-  {
-    id: 'zone-3',
-    type: 'zone',
-    position: { x: 600, y: 100 },
-    data: { name: 'Storage Area', type: 'storage', deviceCount: 1, itemCount: 2 },
-    style: { width: 180, height: 120 },
-  },
-  {
-    id: 'inv-001',
-    type: 'device',
-    position: { x: 120, y: 120 },
-    data: mockDevices[0],
-  },
-  {
-    id: 'inv-002',
-    type: 'device',
-    position: { x: 400, y: 150 },
-    data: mockDevices[1],
-  },
-  {
-    id: 'inv-003',
-    type: 'device',
-    position: { x: 350, y: 200 },
-    data: mockDevices[2],
-  },
-  {
-    id: 'inv-004',
-    type: 'device',
-    position: { x: 650, y: 150 },
-    data: mockDevices[3],
-  },
-];
-
-const initialEdges: Edge[] = [];
 
 export const FloorPlan = ({ industry = 'retail' }: FloorPlanProps = {}) => {
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  // Get industry-specific devices
+  const mockDevices = getIndustryDevices(industry);
+  
+  // Industry-specific initial nodes
+  const getInitialNodes = (industry: string): Node[] => {
+    const devices = getIndustryDevices(industry);
+    const baseZones = [
+      {
+        id: 'zone-1',
+        type: 'zone',
+        position: { x: 50, y: 50 },
+        data: { name: 'Entrance Hall', type: 'entrance', deviceCount: 2, itemCount: 3 },
+        style: { width: 200, height: 150 },
+      },
+      {
+        id: 'zone-2',
+        type: 'zone',
+        position: { x: 300, y: 50 },
+        data: { 
+          name: industry === 'hospitality' ? 'Bar Area' : industry === 'casino' ? 'Gaming Floor' : industry === 'pharma' ? 'Secure Storage' : 'High Security', 
+          type: 'security', 
+          deviceCount: 3, 
+          itemCount: 5, 
+          alertCount: 1 
+        },
+        style: { width: 250, height: 200 },
+      },
+      {
+        id: 'zone-3',
+        type: 'zone',
+        position: { x: 600, y: 100 },
+        data: { 
+          name: industry === 'hospitality' ? 'Wine Cellar' : industry === 'casino' ? 'VIP Area' : industry === 'pharma' ? 'Cold Storage' : 'Storage Area', 
+          type: 'storage', 
+          deviceCount: 1, 
+          itemCount: 2 
+        },
+        style: { width: 180, height: 120 },
+      },
+    ];
+
+    const deviceNodes = devices.map((device, index) => ({
+      id: device.id,
+      type: 'device',
+      position: { 
+        x: [120, 400, 350, 650][index] || 120, 
+        y: [120, 150, 200, 150][index] || 120 
+      },
+      data: device,
+    }));
+
+    return [...baseZones, ...deviceNodes];
+  };
+
+  const [nodes, setNodes, onNodesChange] = useNodesState(getInitialNodes(industry));
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [showMinimap, setShowMinimap] = useState(false);
   const [trackedDevice, setTrackedDevice] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -171,6 +332,11 @@ export const FloorPlan = ({ industry = 'retail' }: FloorPlanProps = {}) => {
   const [autoTrackingEnabled, setAutoTrackingEnabled] = useState(true);
   const [trackingReason, setTrackingReason] = useState<string>('');
   const { toast } = useToast();
+
+  // Update nodes when industry changes
+  useEffect(() => {
+    setNodes(getInitialNodes(industry));
+  }, [industry, setNodes]);
 
   // Get priority device based on risk and value
   const getPriorityDevice = () => {

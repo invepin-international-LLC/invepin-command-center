@@ -38,57 +38,215 @@ export const BLEScanner = ({ industry = 'retail' }: BLEScannerProps = {}) => {
   const [devices, setDevices] = useState<BLEDevice[]>([]);
   const { toast } = useToast();
 
-  // Mock BLE devices
-  const mockDevices: BLEDevice[] = [
-    {
-      id: "inv-001",
-      name: "Invepin Pro #001",
-      address: "AA:BB:CC:DD:EE:01",
-      rssi: -45,
-      battery: 87,
-      status: "connected",
-      location: "Electronics Aisle A",
-      lastSeen: "Just now",
-      firmwareVersion: "v2.1.3",
-      attachedItem: "iPad Pro 12.9\""
-    },
-    {
-      id: "inv-002", 
-      name: "Invepin Pro #002",
-      address: "AA:BB:CC:DD:EE:02",
-      rssi: -62,
-      battery: 45,
-      status: "connected",
-      location: "Jewelry Counter",
-      lastSeen: "2 min ago",
-      firmwareVersion: "v2.1.3",
-      attachedItem: "Rolex Submariner"
-    },
-    {
-      id: "inv-003",
-      name: "Invepin Lite #003", 
-      address: "AA:BB:CC:DD:EE:03",
-      rssi: -78,
-      battery: 23,
-      status: "disconnected",
-      location: "Storage Room B",
-      lastSeen: "1 hour ago",
-      firmwareVersion: "v2.0.1",
-      attachedItem: "Designer Handbag"
-    },
-    {
-      id: "inv-004",
-      name: "Invepin Pro #004",
-      address: "AA:BB:CC:DD:EE:04", 
-      rssi: -55,
-      battery: 91,
-      status: "connected",
-      location: "Liquor Section",
-      lastSeen: "Just now",
-      firmwareVersion: "v2.1.3",
-      attachedItem: "Premium Whiskey"
-    }
-  ];
+  // Industry-specific mock BLE devices
+  const getIndustryDevices = (industry: string): BLEDevice[] => {
+    const deviceTemplates = {
+      retail: [
+        {
+          id: "inv-001",
+          name: "Invepin Pro #001",
+          address: "AA:BB:CC:DD:EE:01",
+          rssi: -45,
+          battery: 87,
+          status: "connected" as const,
+          location: "Electronics Aisle A",
+          lastSeen: "Just now",
+          firmwareVersion: "v2.1.3",
+          attachedItem: "iPad Pro 12.9\""
+        },
+        {
+          id: "inv-002", 
+          name: "Invepin Pro #002",
+          address: "AA:BB:CC:DD:EE:02",
+          rssi: -62,
+          battery: 45,
+          status: "connected" as const,
+          location: "Jewelry Counter",
+          lastSeen: "2 min ago",
+          firmwareVersion: "v2.1.3",
+          attachedItem: "Rolex Submariner"
+        },
+        {
+          id: "inv-003",
+          name: "Invepin Lite #003", 
+          address: "AA:BB:CC:DD:EE:03",
+          rssi: -78,
+          battery: 23,
+          status: "disconnected" as const,
+          location: "Storage Room B",
+          lastSeen: "1 hour ago",
+          firmwareVersion: "v2.0.1",
+          attachedItem: "Designer Handbag"
+        },
+        {
+          id: "inv-004",
+          name: "Invepin Pro #004",
+          address: "AA:BB:CC:DD:EE:04", 
+          rssi: -55,
+          battery: 91,
+          status: "connected" as const,
+          location: "Premium Section",
+          lastSeen: "Just now",
+          firmwareVersion: "v2.1.3",
+          attachedItem: "Premium Electronics"
+        }
+      ],
+      hospitality: [
+        {
+          id: "inv-001",
+          name: "Invepin Pro #001",
+          address: "AA:BB:CC:DD:EE:01",
+          rssi: -45,
+          battery: 87,
+          status: "connected" as const,
+          location: "Main Bar",
+          lastSeen: "Just now",
+          firmwareVersion: "v2.1.3",
+          attachedItem: "Premium Whiskey Bottle"
+        },
+        {
+          id: "inv-002", 
+          name: "Invepin Pro #002",
+          address: "AA:BB:CC:DD:EE:02",
+          rssi: -62,
+          battery: 45,
+          status: "connected" as const,
+          location: "VIP Lounge",
+          lastSeen: "2 min ago",
+          firmwareVersion: "v2.1.3",
+          attachedItem: "Champagne Dom Pérignon"
+        },
+        {
+          id: "inv-003",
+          name: "Invepin Lite #003", 
+          address: "AA:BB:CC:DD:EE:03",
+          rssi: -78,
+          battery: 23,
+          status: "disconnected" as const,
+          location: "Wine Cellar",
+          lastSeen: "1 hour ago",
+          firmwareVersion: "v2.0.1",
+          attachedItem: "Cognac Hennessy XO"
+        },
+        {
+          id: "inv-004",
+          name: "Invepin Pro #004",
+          address: "AA:BB:CC:DD:EE:04", 
+          rssi: -55,
+          battery: 91,
+          status: "connected" as const,
+          location: "Minibar Station",
+          lastSeen: "Just now",
+          firmwareVersion: "v2.1.3",
+          attachedItem: "Vodka Grey Goose"
+        }
+      ],
+      casino: [
+        {
+          id: "inv-001",
+          name: "Invepin Pro #001",
+          address: "AA:BB:CC:DD:EE:01",
+          rssi: -45,
+          battery: 87,
+          status: "connected" as const,
+          location: "Blackjack Table 7",
+          lastSeen: "Just now",
+          firmwareVersion: "v2.1.3",
+          attachedItem: "High-Value Chip Stack"
+        },
+        {
+          id: "inv-002", 
+          name: "Invepin Pro #002",
+          address: "AA:BB:CC:DD:EE:02",
+          rssi: -62,
+          battery: 45,
+          status: "connected" as const,
+          location: "VIP Poker Room",
+          lastSeen: "2 min ago",
+          firmwareVersion: "v2.1.3",
+          attachedItem: "VIP Tournament Chips"
+        },
+        {
+          id: "inv-003",
+          name: "Invepin Lite #003", 
+          address: "AA:BB:CC:DD:EE:03",
+          rssi: -78,
+          battery: 23,
+          status: "disconnected" as const,
+          location: "Cashier Cage",
+          lastSeen: "1 hour ago",
+          firmwareVersion: "v2.0.1",
+          attachedItem: "Poker Cash Chips"
+        },
+        {
+          id: "inv-004",
+          name: "Invepin Pro #004",
+          address: "AA:BB:CC:DD:EE:04", 
+          rssi: -55,
+          battery: 91,
+          status: "connected" as const,
+          location: "Roulette Section",
+          lastSeen: "Just now",
+          firmwareVersion: "v2.1.3",
+          attachedItem: "Blackjack Chips"
+        }
+      ],
+      pharma: [
+        {
+          id: "inv-001",
+          name: "Invepin Pro #001",
+          address: "AA:BB:CC:DD:EE:01",
+          rssi: -45,
+          battery: 87,
+          status: "connected" as const,
+          location: "Secure Vault A",
+          lastSeen: "Just now",
+          firmwareVersion: "v2.1.3",
+          attachedItem: "Controlled Substance Vial"
+        },
+        {
+          id: "inv-002", 
+          name: "Invepin Pro #002",
+          address: "AA:BB:CC:DD:EE:02",
+          rssi: -62,
+          battery: 45,
+          status: "connected" as const,
+          location: "Cold Storage Unit",
+          lastSeen: "2 min ago",
+          firmwareVersion: "v2.1.3",
+          attachedItem: "Rare Medication"
+        },
+        {
+          id: "inv-003",
+          name: "Invepin Lite #003", 
+          address: "AA:BB:CC:DD:EE:03",
+          rssi: -78,
+          battery: 23,
+          status: "disconnected" as const,
+          location: "Pharmacy Wing",
+          lastSeen: "1 hour ago",
+          firmwareVersion: "v2.0.1",
+          attachedItem: "Insulin Batch"
+        },
+        {
+          id: "inv-004",
+          name: "Invepin Pro #004",
+          address: "AA:BB:CC:DD:EE:04", 
+          rssi: -55,
+          battery: 91,
+          status: "connected" as const,
+          location: "Vaccine Storage",
+          lastSeen: "Just now",
+          firmwareVersion: "v2.1.3",
+          attachedItem: "Vaccine Doses"
+        }
+      ]
+    };
+    
+    return deviceTemplates[industry as keyof typeof deviceTemplates] || deviceTemplates.retail;
+  };
+
+  const mockDevices = getIndustryDevices(industry);
 
   const startScan = async () => {
     setIsScanning(true);
