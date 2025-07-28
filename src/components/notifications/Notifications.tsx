@@ -348,7 +348,7 @@ export const Notifications = () => {
       {/* Notifications Header */}
       <Card className="bg-gradient-card border-border">
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="bg-gradient-primary p-2 rounded-lg relative">
                 <Bell className="h-5 w-5 text-primary-foreground" />
@@ -364,17 +364,19 @@ export const Notifications = () => {
               </div>
             </div>
             
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               {permissionStatus !== 'granted' && (
                 <Button onClick={requestNotificationPermission} className="bg-gradient-primary">
                   <Bell className="h-4 w-4 mr-2" />
-                  Enable Notifications
+                  <span className="hidden sm:inline">Enable Notifications</span>
+                  <span className="sm:hidden">Enable</span>
                 </Button>
               )}
               {unreadCount > 0 && (
                 <Button variant="outline" size="sm" onClick={markAllAsRead}>
                   <CheckCircle2 className="h-4 w-4 mr-1" />
-                  Mark All Read
+                  <span className="hidden sm:inline">Mark All Read</span>
+                  <span className="sm:hidden">Read All</span>
                 </Button>
               )}
             </div>
