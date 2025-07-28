@@ -7,6 +7,7 @@ import { FloorPlan } from "@/components/floorplan/FloorPlan";
 import { BarcodeScanner } from "@/components/scanner/BarcodeScanner";
 import { Analytics } from "@/components/analytics/Analytics";
 import { Notifications } from "@/components/notifications/Notifications";
+import { BarManagement } from "@/components/bar/BarManagement";
 import { 
   Shield, 
   Smartphone, 
@@ -20,7 +21,8 @@ import {
   Activity,
   Users,
   Package,
-  Bell
+  Bell,
+  Wine
 } from "lucide-react";
 
 interface User {
@@ -37,7 +39,7 @@ interface MainDashboardProps {
 
 export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
   const [selectedIndustry, setSelectedIndustry] = useState<'retail' | 'hospitality' | 'casino' | 'pharma'>('retail');
-  const [activeView, setActiveView] = useState<'overview' | 'devices' | 'floorplan' | 'scanner' | 'analytics' | 'notifications'>('overview');
+  const [activeView, setActiveView] = useState<'overview' | 'devices' | 'floorplan' | 'scanner' | 'analytics' | 'notifications' | 'bar'>('overview');
 
   // Mock real-time data
   const stats = {
@@ -153,6 +155,15 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
             >
               <Bell className="h-4 w-4 mr-1" />
               Alerts
+            </Button>
+            <Button 
+              variant={activeView === 'bar' ? 'default' : 'outline'} 
+              size="sm"
+              onClick={() => setActiveView('bar')}
+              className={activeView === 'bar' ? 'bg-gradient-primary' : ''}
+            >
+              <Wine className="h-4 w-4 mr-1" />
+              Bar
             </Button>
           </div>
           <Badge className={`${getRoleColor(user.role)} text-white`}>
@@ -352,6 +363,8 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
         <BarcodeScanner />
       ) : activeView === 'analytics' ? (
         <Analytics />
+      ) : activeView === 'bar' ? (
+        <BarManagement />
       ) : (
         <Notifications />
       )}
