@@ -9,6 +9,7 @@ import { BottleInventory } from "./BottleInventory";
 import { RecentActivity } from "./RecentActivity";
 import { BLEDeviceManager } from "@/components/devices/BLEDeviceManager";
 import { LossPreventionDashboard } from "@/components/alerts/LossPreventionDashboard";
+import { ManagerDashboard } from "@/components/manager/ManagerDashboard";
 import { Bartender, Bottle, PourEvent } from "@/types/bar";
 import { useLossPrevention } from "@/hooks/useLossPrevention";
 
@@ -161,11 +162,12 @@ export const BarManagement = () => {
 
   return (
     <Tabs defaultValue="overview" className="space-y-6">
-      <TabsList className="grid w-full grid-cols-5">
+      <TabsList className="grid w-full grid-cols-6">
         <TabsTrigger value="overview">Overview</TabsTrigger>
         <TabsTrigger value="pour-detection">Live Pours</TabsTrigger>
         <TabsTrigger value="ble-devices">BLE Devices</TabsTrigger>
         <TabsTrigger value="loss-prevention">Loss Prevention</TabsTrigger>
+        <TabsTrigger value="manager">Manager</TabsTrigger>
         <TabsTrigger value="analytics">Analytics</TabsTrigger>
       </TabsList>
 
@@ -198,6 +200,10 @@ export const BarManagement = () => {
 
       <TabsContent value="loss-prevention">
         <LossPreventionDashboard />
+      </TabsContent>
+
+      <TabsContent value="manager">
+        <ManagerDashboard />
       </TabsContent>
 
       <TabsContent value="analytics">
