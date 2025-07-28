@@ -107,14 +107,14 @@ export const BLEDeviceManager = ({ bottles }: BLEDeviceManagerProps) => {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Select 
-                    value={device.assignedBottle || ""} 
-                    onValueChange={(value) => assignBottle(device.id, value || undefined)}
+                    value={device.assignedBottle || "unassigned"} 
+                    onValueChange={(value) => assignBottle(device.id, value === "unassigned" ? undefined : value)}
                   >
                     <SelectTrigger className="w-48">
                       <SelectValue placeholder="Assign to bottle" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Unassigned</SelectItem>
+                      <SelectItem value="unassigned">Unassigned</SelectItem>
                       {bottles.map((bottle) => (
                         <SelectItem key={bottle.id} value={bottle.id}>
                           {bottle.name}
