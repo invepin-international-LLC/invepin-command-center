@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -15,6 +15,22 @@ import {
   Eye
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import {
+  ReactFlow,
+  MiniMap,
+  Controls,
+  Background,
+  useNodesState,
+  useEdgesState,
+  addEdge,
+  Connection,
+  Edge,
+  Node,
+} from '@xyflow/react';
+import '@xyflow/react/dist/style.css';
+import { DeviceNode } from './nodes/DeviceNode';
+import { ItemNode } from './nodes/ItemNode';
+import { ZoneNode } from './nodes/ZoneNode';
 
 interface DeviceData {
   id: string;
@@ -27,6 +43,7 @@ interface DeviceData {
   riskLevel?: 'low' | 'medium' | 'high' | 'critical';
   lastMovement?: Date;
   movementPattern?: 'normal' | 'suspicious' | 'critical';
+  [key: string]: unknown; // Index signature for ReactFlow compatibility
 }
 
 const mockDevices: DeviceData[] = [
@@ -80,7 +97,68 @@ const mockDevices: DeviceData[] = [
   },
 ];
 
+// Node types for ReactFlow
+const nodeTypes = {
+  device: DeviceNode,
+  item: ItemNode,
+  zone: ZoneNode,
+};
+
+// Initial nodes for the floor plan
+const initialNodes: Node[] = [
+  {
+    id: 'zone-1',
+    type: 'zone',
+    position: { x: 50, y: 50 },
+    data: { name: 'Entrance Hall', type: 'entrance', deviceCount: 2, itemCount: 3 },
+    style: { width: 200, height: 150 },
+  },
+  {
+    id: 'zone-2',
+    type: 'zone',
+    position: { x: 300, y: 50 },
+    data: { name: 'High Security', type: 'security', deviceCount: 3, itemCount: 5, alertCount: 1 },
+    style: { width: 250, height: 200 },
+  },
+  {
+    id: 'zone-3',
+    type: 'zone',
+    position: { x: 600, y: 100 },
+    data: { name: 'Storage Area', type: 'storage', deviceCount: 1, itemCount: 2 },
+    style: { width: 180, height: 120 },
+  },
+  {
+    id: 'inv-001',
+    type: 'device',
+    position: { x: 120, y: 120 },
+    data: mockDevices[0],
+  },
+  {
+    id: 'inv-002',
+    type: 'device',
+    position: { x: 400, y: 150 },
+    data: mockDevices[1],
+  },
+  {
+    id: 'inv-003',
+    type: 'device',
+    position: { x: 350, y: 200 },
+    data: mockDevices[2],
+  },
+  {
+    id: 'inv-004',
+    type: 'device',
+    position: { x: 650, y: 150 },
+    data: mockDevices[3],
+  },
+];
+
+const initialEdges: Edge[] = [];
+
 export const FloorPlan = () => {
+  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [showMinimap, setShowMinimap] = useState(false);
   const [trackedDevice, setTrackedDevice] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'devices' | 'items' | 'zones'>('all');
@@ -116,6 +194,46 @@ export const FloorPlan = () => {
     
     return null;
   };
+
+  const onConnect = useCallback(
+    (params: Connection) => setEdges((eds) => addEdge(params, eds)),
+    [setEdges]
+  );
+
+  // Update node data when devices change
+  useEffect(() => {
+    setNodes((nds) =>
+      nds.map((node) => {
+        if (node.type === 'device') {
+          const deviceData = mockDevices.find(d => d.id === node.id);
+          if (deviceData) {
+            return { ...node, data: deviceData };
+          }
+        }
+        return node;
+      })
+    );
+  }, [setNodes]);
+
+  // Highlight tracked device
+  useEffect(() => {
+    setNodes((nds) =>
+      nds.map((node) => {
+        if (node.type === 'device') {
+          const isTracked = node.id === trackedDevice;
+          return {
+            ...node,
+            style: {
+              ...node.style,
+              border: isTracked ? '3px solid hsl(var(--primary))' : '1px solid hsl(var(--border))',
+              boxShadow: isTracked ? '0 0 20px hsl(var(--primary) / 0.5)' : 'none',
+            },
+          };
+        }
+        return node;
+      })
+    );
+  }, [trackedDevice, setNodes]);
 
   // Auto-tracking effect
   useEffect(() => {
@@ -213,10 +331,15 @@ export const FloorPlan = () => {
             <Button
               variant="outline"
               size="sm"
-              className="bg-card/50 border-border hover:bg-card"
+              onClick={() => setShowMinimap(!showMinimap)}
+              className={`${
+                showMinimap 
+                  ? 'bg-gradient-primary text-primary-foreground shadow-glow' 
+                  : 'bg-card/50 border-border hover:bg-card'
+              } transition-smooth`}
             >
               <Layers className="h-4 w-4 mr-2" />
-              Show Minimap
+              {showMinimap ? 'Hide Minimap' : 'Show Minimap'}
             </Button>
             <Button
               variant="outline"
@@ -376,146 +499,50 @@ export const FloorPlan = () => {
         )}
       </div>
 
-      {/* Floor Plan Canvas - Active Tracking Display */}
+      {/* Interactive Floor Plan with ReactFlow */}
       <div className="bg-gradient-card border border-border rounded-xl overflow-hidden shadow-elevated hover-card">
-        <div className="p-6">
-          <div className="bg-background/20 rounded-lg border border-border h-96 p-6">
-            {trackedDevice ? (
-              <div className="h-full flex flex-col">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="relative">
-                      <div className="w-4 h-4 bg-gradient-primary rounded-full animate-pulse"></div>
-                      <div className="absolute inset-0 w-4 h-4 bg-gradient-primary rounded-full animate-ping opacity-75"></div>
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-foreground">Active Tracking</h3>
-                      <p className="text-sm text-muted-foreground">{trackingReason}</p>
-                    </div>
-                  </div>
-                  {autoTrackingEnabled && (
-                    <Badge className="bg-gradient-success text-white animate-pulse">
-                      AUTO
-                    </Badge>
-                  )}
-                </div>
-                
-                <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Device Info Panel */}
-                  <div className="space-y-4">
-                    <div className="bg-card/50 rounded-lg p-4 border border-border">
-                      <h4 className="font-semibold text-foreground mb-3">Device Information</h4>
-                      {(() => {
-                        const device = mockDevices.find(d => d.id === trackedDevice);
-                        return device ? (
-                          <div className="space-y-3">
-                            <div className="flex justify-between">
-                              <span className="text-muted-foreground">Device:</span>
-                              <span className="text-foreground font-medium">{device.name}</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-muted-foreground">Item:</span>
-                              <span className="text-foreground font-medium">{device.attachedItem}</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-muted-foreground">Value:</span>
-                              <span className="text-foreground font-bold">${device.itemValue?.toLocaleString()}</span>
-                            </div>
-                            <div className="flex justify-between items-center">
-                              <span className="text-muted-foreground">Risk Level:</span>
-                              <Badge 
-                                variant={device.riskLevel === 'critical' ? 'destructive' : device.riskLevel === 'high' ? 'default' : 'secondary'}
-                                className="font-medium"
-                              >
-                                {device.riskLevel?.toUpperCase()}
-                              </Badge>
-                            </div>
-                            <div className="flex justify-between items-center">
-                              <span className="text-muted-foreground">Movement:</span>
-                              <Badge 
-                                variant={device.movementPattern === 'critical' ? 'destructive' : device.movementPattern === 'suspicious' ? 'default' : 'secondary'}
-                                className={device.movementPattern !== 'normal' ? 'animate-pulse' : ''}
-                              >
-                                {device.movementPattern?.toUpperCase()}
-                              </Badge>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-muted-foreground">Battery:</span>
-                              <span className={`font-medium ${device.battery < 30 ? 'text-destructive' : 'text-foreground'}`}>
-                                {device.battery}%
-                              </span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-muted-foreground">Signal:</span>
-                              <span className="text-foreground">{device.rssi} dBm</span>
-                            </div>
-                          </div>
-                        ) : null;
-                      })()}
-                    </div>
-                  </div>
-                  
-                  {/* Live Tracking Visualization */}
-                  <div className="space-y-4">
-                    <div className="bg-card/50 rounded-lg p-4 border border-border">
-                      <h4 className="font-semibold text-foreground mb-3">Live Location</h4>
-                      <div className="relative bg-background/30 rounded-lg h-40 flex items-center justify-center border border-border/50">
-                        <div className="relative">
-                          {/* Simulated device position */}
-                          <div className="w-6 h-6 bg-gradient-primary rounded-full shadow-glow animate-bounce"></div>
-                          {/* Radar rings */}
-                          <div className="absolute inset-0 w-6 h-6 border-2 border-primary/30 rounded-full animate-ping"></div>
-                          <div className="absolute -inset-2 w-10 h-10 border border-primary/20 rounded-full animate-pulse"></div>
-                          <div className="absolute -inset-4 w-14 h-14 border border-primary/10 rounded-full animate-pulse"></div>
-                        </div>
-                        <div className="absolute bottom-2 left-2 text-xs text-muted-foreground">
-                          Zone: High Security Area
-                        </div>
-                      </div>
-                      <div className="mt-3 space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Last Update:</span>
-                          <span className="text-foreground">
-                            {mockDevices.find(d => d.id === trackedDevice)?.lastMovement?.toLocaleTimeString() || 'N/A'}
-                          </span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-muted-foreground">Coordinates:</span>
-                          <span className="text-foreground font-mono">X: 142, Y: 89</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Alert Banner for Critical Items */}
-                {(() => {
-                  const device = mockDevices.find(d => d.id === trackedDevice);
-                  return device && (device.movementPattern === 'critical' || device.movementPattern === 'suspicious') ? (
-                    <div className="mt-4 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-destructive rounded-full animate-pulse"></div>
-                        <span className="text-sm font-medium text-destructive">
-                          {device.movementPattern === 'critical' ? '🚨 CRITICAL ALERT: Unusual movement detected!' : '⚠️ WARNING: Suspicious activity pattern'}
-                        </span>
-                      </div>
-                    </div>
-                  ) : null;
-                })()}
+        <div className="p-4">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="bg-gradient-primary p-2 rounded-lg">
+                <Map className="h-4 w-4 text-primary-foreground" />
               </div>
-            ) : (
-              <div className="h-full flex items-center justify-center">
-                <div className="text-center">
-                  <div className="w-12 h-12 bg-gradient-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Target className="h-6 w-6 text-primary" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-foreground mb-2">Initializing Tracking System</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {autoTrackingEnabled ? 'Scanning for high-value items and suspicious activity...' : 'Select a device to begin tracking'}
-                  </p>
-                </div>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">Interactive Floor Plan</h3>
+                <p className="text-sm text-muted-foreground">
+                  {trackedDevice ? `Tracking: ${mockDevices.find(d => d.id === trackedDevice)?.attachedItem}` : 'Real-time device monitoring'}
+                </p>
               </div>
+            </div>
+            {trackedDevice && (
+              <Badge className="bg-gradient-primary text-primary-foreground animate-pulse">
+                🎯 ACTIVE
+              </Badge>
             )}
+          </div>
+          
+          <div className="bg-background/20 rounded-lg border border-border h-96 overflow-hidden">
+            <ReactFlow
+              nodes={nodes}
+              edges={edges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              onConnect={onConnect}
+              nodeTypes={nodeTypes}
+              fitView
+              className="bg-background/10"
+              style={{ backgroundColor: 'hsl(var(--background) / 0.1)' }}
+            >
+              <Controls className="bg-card border-border" />
+              <Background color="hsl(var(--muted-foreground) / 0.2)" gap={20} />
+              {showMinimap && (
+                <MiniMap 
+                  className="bg-card border border-border rounded-lg"
+                  nodeColor="hsl(var(--primary))"
+                  maskColor="hsl(var(--background) / 0.9)"
+                />
+              )}
+            </ReactFlow>
           </div>
         </div>
       </div>
