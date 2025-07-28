@@ -67,6 +67,10 @@
     /* Animation Variables */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    
+    /* Mobile-optimized spacing */
+    --mobile-padding: 1rem;
+    --desktop-padding: 2rem;
 
     --sidebar-background: 0 0% 98%;
 
@@ -131,5 +135,82 @@
 
   body {
     @apply bg-background text-foreground;
+  }
+  
+  /* Smooth scrolling for better mobile experience */
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  /* Enhanced mobile touch targets */
+  @media (max-width: 768px) {
+    button, a[role="button"] {
+      min-height: 44px;
+      min-width: 44px;
+    }
+  }
+}
+
+@layer components {
+  /* Enhanced pulse glow animation */
+  .animate-pulse-glow {
+    animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  @keyframes pulse-glow {
+    0%, 100% {
+      opacity: 1;
+      filter: drop-shadow(0 0 8px currentColor);
+    }
+    50% {
+      opacity: 0.7;
+      filter: drop-shadow(0 0 20px currentColor);
+    }
+  }
+  
+  /* Status pulse for alerts */
+  .animate-status-pulse {
+    animation: status-pulse 1.5s ease-in-out infinite;
+  }
+  
+  @keyframes status-pulse {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.1);
+      opacity: 0.8;
+    }
+  }
+  
+  /* Enhanced card hover effect */
+  .hover-card {
+    transition: var(--transition-smooth);
+  }
+  
+  .hover-card:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: var(--shadow-elevated);
+  }
+  
+  /* Mobile-first responsive grid */
+  .mobile-grid {
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  @media (min-width: 768px) {
+    .mobile-grid {
+      gap: 1rem;
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .mobile-grid {
+      gap: 1.5rem;
+    }
   }
 }

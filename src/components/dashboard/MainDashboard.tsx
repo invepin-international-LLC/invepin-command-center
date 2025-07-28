@@ -88,160 +88,229 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-background p-4">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <div className="bg-gradient-primary p-2 rounded-lg shadow-glow">
-            <Shield className="h-6 w-6 text-primary-foreground" />
+    <div className="min-h-screen bg-background">
+      {/* Enhanced Header */}
+      <div className="sticky top-0 z-50 backdrop-blur-xl border-b border-border/30 bg-background/95">
+        <div className="container mx-auto p-4">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            {/* Logo and Title */}
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <div className="absolute -inset-1 bg-gradient-primary rounded-xl blur opacity-75 animate-pulse-glow"></div>
+                <div className="relative bg-gradient-primary p-3 rounded-xl shadow-glow">
+                  <Shield className="h-7 w-7 text-primary-foreground" />
+                </div>
+              </div>
+              <div>
+                <h1 className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
+                  Command Center
+                </h1>
+                <p className="text-sm lg:text-base text-muted-foreground">Welcome back, {user.name}</p>
+              </div>
+            </div>
+            
+            {/* User Actions */}
+            <div className="flex items-center gap-3 flex-wrap">
+              <Badge className={`${getRoleColor(user.role)} text-white px-3 py-1 shadow-card`}>
+                <Users className="h-3 w-3 mr-1" />
+                {user.role.toUpperCase()}
+              </Badge>
+              <Button variant="outline" size="sm" onClick={onLogout} className="hover:shadow-card transition-all">
+                Sign Out
+              </Button>
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl font-bold">Command Center</h1>
-            <p className="text-muted-foreground">Welcome back, {user.name}</p>
+          
+          {/* Enhanced Navigation */}
+          <div className="mt-6 overflow-x-auto">
+            <div className="flex gap-2 min-w-max pb-2">
+              <Button 
+                variant={activeView === 'overview' ? 'default' : 'outline'} 
+                size="sm"
+                onClick={() => setActiveView('overview')}
+                className={`transition-all duration-300 ${
+                  activeView === 'overview' 
+                    ? 'bg-gradient-primary shadow-glow scale-105' 
+                    : 'hover:shadow-card hover:scale-105'
+                }`}
+              >
+                Overview
+              </Button>
+              <Button 
+                variant={activeView === 'devices' ? 'default' : 'outline'} 
+                size="sm"
+                onClick={() => setActiveView('devices')}
+                className={`transition-all duration-300 ${
+                  activeView === 'devices' 
+                    ? 'bg-gradient-primary shadow-glow scale-105' 
+                    : 'hover:shadow-card hover:scale-105'
+                }`}
+              >
+                <Smartphone className="h-4 w-4 mr-1" />
+                <span className="hidden sm:inline">Devices</span>
+              </Button>
+              <Button 
+                variant={activeView === 'floorplan' ? 'default' : 'outline'} 
+                size="sm"
+                onClick={() => setActiveView('floorplan')}
+                className={`transition-all duration-300 ${
+                  activeView === 'floorplan' 
+                    ? 'bg-gradient-primary shadow-glow scale-105' 
+                    : 'hover:shadow-card hover:scale-105'
+                }`}
+              >
+                <MapPin className="h-4 w-4 mr-1" />
+                <span className="hidden sm:inline">Floor Plan</span>
+              </Button>
+              <Button 
+                variant={activeView === 'scanner' ? 'default' : 'outline'} 
+                size="sm"
+                onClick={() => setActiveView('scanner')}
+                className={`transition-all duration-300 ${
+                  activeView === 'scanner' 
+                    ? 'bg-gradient-primary shadow-glow scale-105' 
+                    : 'hover:shadow-card hover:scale-105'
+                }`}
+              >
+                <Package className="h-4 w-4 mr-1" />
+                <span className="hidden sm:inline">Scanner</span>
+              </Button>
+              <Button 
+                variant={activeView === 'analytics' ? 'default' : 'outline'} 
+                size="sm"
+                onClick={() => setActiveView('analytics')}
+                className={`transition-all duration-300 ${
+                  activeView === 'analytics' 
+                    ? 'bg-gradient-primary shadow-glow scale-105' 
+                    : 'hover:shadow-card hover:scale-105'
+                }`}
+              >
+                <TrendingUp className="h-4 w-4 mr-1" />
+                <span className="hidden sm:inline">Analytics</span>
+              </Button>
+              <Button 
+                variant={activeView === 'notifications' ? 'default' : 'outline'} 
+                size="sm"
+                onClick={() => setActiveView('notifications')}
+                className={`transition-all duration-300 ${
+                  activeView === 'notifications' 
+                    ? 'bg-gradient-primary shadow-glow scale-105' 
+                    : 'hover:shadow-card hover:scale-105'
+                }`}
+              >
+                <Bell className="h-4 w-4 mr-1" />
+                <span className="hidden sm:inline">Alerts</span>
+              </Button>
+              <Button 
+                variant={activeView === 'bar' ? 'default' : 'outline'} 
+                size="sm"
+                onClick={() => setActiveView('bar')}
+                className={`transition-all duration-300 ${
+                  activeView === 'bar' 
+                    ? 'bg-gradient-primary shadow-glow scale-105' 
+                    : 'hover:shadow-card hover:scale-105'
+                }`}
+              >
+                <Wine className="h-4 w-4 mr-1" />
+                <span className="hidden sm:inline">Bar</span>
+              </Button>
+            </div>
           </div>
-        </div>
-        
-        <div className="flex items-center gap-3">
-          <div className="flex gap-1">
-            <Button 
-              variant={activeView === 'overview' ? 'default' : 'outline'} 
-              size="sm"
-              onClick={() => setActiveView('overview')}
-              className={activeView === 'overview' ? 'bg-gradient-primary' : ''}
-            >
-              Overview
-            </Button>
-            <Button 
-              variant={activeView === 'devices' ? 'default' : 'outline'} 
-              size="sm"
-              onClick={() => setActiveView('devices')}
-              className={activeView === 'devices' ? 'bg-gradient-primary' : ''}
-            >
-              <Smartphone className="h-4 w-4 mr-1" />
-              Devices
-            </Button>
-            <Button 
-              variant={activeView === 'floorplan' ? 'default' : 'outline'} 
-              size="sm"
-              onClick={() => setActiveView('floorplan')}
-              className={activeView === 'floorplan' ? 'bg-gradient-primary' : ''}
-            >
-              <MapPin className="h-4 w-4 mr-1" />
-              Floor Plan
-            </Button>
-            <Button 
-              variant={activeView === 'scanner' ? 'default' : 'outline'} 
-              size="sm"
-              onClick={() => setActiveView('scanner')}
-              className={activeView === 'scanner' ? 'bg-gradient-primary' : ''}
-            >
-              <Package className="h-4 w-4 mr-1" />
-              Scanner
-            </Button>
-            <Button 
-              variant={activeView === 'analytics' ? 'default' : 'outline'} 
-              size="sm"
-              onClick={() => setActiveView('analytics')}
-              className={activeView === 'analytics' ? 'bg-gradient-primary' : ''}
-            >
-              <TrendingUp className="h-4 w-4 mr-1" />
-              Analytics
-            </Button>
-            <Button 
-              variant={activeView === 'notifications' ? 'default' : 'outline'} 
-              size="sm"
-              onClick={() => setActiveView('notifications')}
-              className={activeView === 'notifications' ? 'bg-gradient-primary' : ''}
-            >
-              <Bell className="h-4 w-4 mr-1" />
-              Alerts
-            </Button>
-            <Button 
-              variant={activeView === 'bar' ? 'default' : 'outline'} 
-              size="sm"
-              onClick={() => setActiveView('bar')}
-              className={activeView === 'bar' ? 'bg-gradient-primary' : ''}
-            >
-              <Wine className="h-4 w-4 mr-1" />
-              Bar
-            </Button>
-          </div>
-          <Badge className={`${getRoleColor(user.role)} text-white`}>
-            <Users className="h-3 w-3 mr-1" />
-            {user.role.toUpperCase()}
-          </Badge>
-          <Button variant="outline" size="sm" onClick={onLogout}>
-            Sign Out
-          </Button>
         </div>
       </div>
 
-      {/* System Status */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <Card className="bg-gradient-card border-border">
-          <CardContent className="p-4 text-center">
-            <div className="flex items-center justify-center mb-2">
-              <Wifi className="h-6 w-6 text-success animate-pulse-glow" />
-            </div>
-            <p className="text-sm font-medium">Colony</p>
-            <p className="text-xs text-success">Connected</p>
-          </CardContent>
-        </Card>
+      {/* Main Content */}
+      <div className="container mx-auto p-4 space-y-6">
 
-        <Card className="bg-gradient-card border-border">
-          <CardContent className="p-4 text-center">
-            <div className="flex items-center justify-center mb-2">
-              <Cloud className="h-6 w-6 text-primary animate-pulse-glow" />
-            </div>
-            <p className="text-sm font-medium">Hive</p>
-            <p className="text-xs text-primary">Synced</p>
-          </CardContent>
-        </Card>
+        {/* Enhanced System Status */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
+          <Card className="relative overflow-hidden group hover:shadow-elevated transition-all duration-300 hover:scale-105">
+            <div className="absolute inset-0 bg-gradient-success opacity-10 group-hover:opacity-20 transition-opacity"></div>
+            <CardContent className="relative p-4 lg:p-6 text-center">
+              <div className="flex items-center justify-center mb-3">
+                <div className="relative">
+                  <div className="absolute -inset-2 bg-success rounded-full blur opacity-30 animate-pulse-glow"></div>
+                  <Wifi className="relative h-6 w-6 lg:h-8 lg:w-8 text-success" />
+                </div>
+              </div>
+              <p className="text-sm lg:text-base font-medium">Colony</p>
+              <p className="text-xs lg:text-sm text-success font-semibold">Connected</p>
+            </CardContent>
+          </Card>
 
-        <Card className="bg-gradient-card border-border">
-          <CardContent className="p-4 text-center">
-            <div className="flex items-center justify-center mb-2">
-              <Smartphone className="h-6 w-6 text-warning" />
-            </div>
-            <p className="text-sm font-medium">Devices</p>
-            <p className="text-xs text-warning">{stats.connectedDevices} Active</p>
-          </CardContent>
-        </Card>
+          <Card className="relative overflow-hidden group hover:shadow-elevated transition-all duration-300 hover:scale-105">
+            <div className="absolute inset-0 bg-gradient-primary opacity-10 group-hover:opacity-20 transition-opacity"></div>
+            <CardContent className="relative p-4 lg:p-6 text-center">
+              <div className="flex items-center justify-center mb-3">
+                <div className="relative">
+                  <div className="absolute -inset-2 bg-primary rounded-full blur opacity-30 animate-pulse-glow"></div>
+                  <Cloud className="relative h-6 w-6 lg:h-8 lg:w-8 text-primary" />
+                </div>
+              </div>
+              <p className="text-sm lg:text-base font-medium">Hive</p>
+              <p className="text-xs lg:text-sm text-primary font-semibold">Synced</p>
+            </CardContent>
+          </Card>
 
-        <Card className="bg-gradient-card border-border">
-          <CardContent className="p-4 text-center">
-            <div className="flex items-center justify-center mb-2">
-              <Activity className="h-6 w-6 text-success" />
-            </div>
-            <p className="text-sm font-medium">System</p>
-            <p className="text-xs text-success">Operational</p>
-          </CardContent>
-        </Card>
-      </div>
+          <Card className="relative overflow-hidden group hover:shadow-elevated transition-all duration-300 hover:scale-105">
+            <div className="absolute inset-0 bg-gradient-warning opacity-10 group-hover:opacity-20 transition-opacity"></div>
+            <CardContent className="relative p-4 lg:p-6 text-center">
+              <div className="flex items-center justify-center mb-3">
+                <div className="relative">
+                  <div className="absolute -inset-2 bg-warning rounded-full blur opacity-30"></div>
+                  <Smartphone className="relative h-6 w-6 lg:h-8 lg:w-8 text-warning" />
+                </div>
+              </div>
+              <p className="text-sm lg:text-base font-medium">Devices</p>
+              <p className="text-xs lg:text-sm text-warning font-semibold">{stats.connectedDevices} Active</p>
+            </CardContent>
+          </Card>
+
+          <Card className="relative overflow-hidden group hover:shadow-elevated transition-all duration-300 hover:scale-105">
+            <div className="absolute inset-0 bg-gradient-success opacity-10 group-hover:opacity-20 transition-opacity"></div>
+            <CardContent className="relative p-4 lg:p-6 text-center">
+              <div className="flex items-center justify-center mb-3">
+                <div className="relative">
+                  <div className="absolute -inset-2 bg-success rounded-full blur opacity-30"></div>
+                  <Activity className="relative h-6 w-6 lg:h-8 lg:w-8 text-success" />
+                </div>
+              </div>
+              <p className="text-sm lg:text-base font-medium">System</p>
+              <p className="text-xs lg:text-sm text-success font-semibold">Operational</p>
+            </CardContent>
+          </Card>
+        </div>
 
       {/* Content based on active view */}
       {activeView === 'overview' ? (
         <>
-          {/* Industry Selector */}
-          <Card className="mb-6 bg-gradient-card border-border">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Package className="h-5 w-5" />
+          {/* Enhanced Industry Selector */}
+          <Card className="relative overflow-hidden border-border/50 backdrop-blur-sm">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5"></div>
+            <CardHeader className="relative">
+              <CardTitle className="flex items-center gap-3 text-lg lg:text-xl">
+                <div className="p-2 bg-gradient-primary rounded-lg shadow-glow">
+                  <Package className="h-5 w-5 text-primary-foreground" />
+                </div>
                 Industry Mode
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-base">
                 Configure dashboard for your industry type
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+            <CardContent className="relative">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                 {(['retail', 'hospitality', 'casino', 'pharma'] as const).map((industry) => (
                   <Button
                     key={industry}
                     variant={selectedIndustry === industry ? "default" : "outline"}
                     size="sm"
                     onClick={() => setSelectedIndustry(industry)}
-                    className={selectedIndustry === industry ? "bg-gradient-primary shadow-glow" : ""}
+                    className={`transition-all duration-300 ${
+                      selectedIndustry === industry 
+                        ? "bg-gradient-primary shadow-glow scale-105 font-semibold" 
+                        : "hover:shadow-card hover:scale-105"
+                    }`}
                   >
                     {industry.charAt(0).toUpperCase() + industry.slice(1)}
                   </Button>
@@ -250,101 +319,130 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
             </CardContent>
           </Card>
 
-          {/* KPI Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <Card className="bg-gradient-card border-border">
-              <CardContent className="p-4">
+          {/* Enhanced KPI Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+            <Card className="relative overflow-hidden group hover:shadow-elevated transition-all duration-300 hover:scale-105">
+              <div className="absolute inset-0 bg-gradient-success opacity-10 group-hover:opacity-20 transition-opacity"></div>
+              <CardContent className="relative p-4 lg:p-6">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">{industryLabels[selectedIndustry].primary}</p>
-                    <p className="text-2xl font-bold">{stats.inventoryAccuracy}%</p>
+                  <div className="space-y-1">
+                    <p className="text-xs lg:text-sm text-muted-foreground font-medium">
+                      {industryLabels[selectedIndustry].primary}
+                    </p>
+                    <p className="text-xl lg:text-3xl font-bold text-success">{stats.inventoryAccuracy}%</p>
                   </div>
-                  <CheckCircle className="h-8 w-8 text-success" />
+                  <div className="relative">
+                    <div className="absolute -inset-2 bg-success rounded-full blur opacity-30"></div>
+                    <CheckCircle className="relative h-8 w-8 lg:h-10 lg:w-10 text-success" />
+                  </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-card border-border">
-              <CardContent className="p-4">
+            <Card className="relative overflow-hidden group hover:shadow-elevated transition-all duration-300 hover:scale-105">
+              <div className="absolute inset-0 bg-gradient-danger opacity-10 group-hover:opacity-20 transition-opacity"></div>
+              <CardContent className="relative p-4 lg:p-6">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Active Alerts</p>
-                    <p className="text-2xl font-bold text-danger">{stats.activeAlerts}</p>
+                  <div className="space-y-1">
+                    <p className="text-xs lg:text-sm text-muted-foreground font-medium">Active Alerts</p>
+                    <p className="text-xl lg:text-3xl font-bold text-danger">{stats.activeAlerts}</p>
                   </div>
-                  <AlertTriangle className="h-8 w-8 text-danger animate-status-pulse" />
+                  <div className="relative">
+                    <div className="absolute -inset-2 bg-danger rounded-full blur opacity-30 animate-pulse"></div>
+                    <AlertTriangle className="relative h-8 w-8 lg:h-10 lg:w-10 text-danger animate-status-pulse" />
+                  </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-card border-border">
-              <CardContent className="p-4">
+            <Card className="relative overflow-hidden group hover:shadow-elevated transition-all duration-300 hover:scale-105">
+              <div className="absolute inset-0 bg-gradient-primary opacity-10 group-hover:opacity-20 transition-opacity"></div>
+              <CardContent className="relative p-4 lg:p-6">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Connected Devices</p>
-                    <p className="text-2xl font-bold">{stats.connectedDevices}</p>
+                  <div className="space-y-1">
+                    <p className="text-xs lg:text-sm text-muted-foreground font-medium">Connected Devices</p>
+                    <p className="text-xl lg:text-3xl font-bold text-primary">{stats.connectedDevices}</p>
                   </div>
-                  <Smartphone className="h-8 w-8 text-primary" />
+                  <div className="relative">
+                    <div className="absolute -inset-2 bg-primary rounded-full blur opacity-30"></div>
+                    <Smartphone className="relative h-8 w-8 lg:h-10 lg:w-10 text-primary" />
+                  </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-gradient-card border-border">
-              <CardContent className="p-4">
+            <Card className="relative overflow-hidden group hover:shadow-elevated transition-all duration-300 hover:scale-105">
+              <div className="absolute inset-0 bg-gradient-success opacity-10 group-hover:opacity-20 transition-opacity"></div>
+              <CardContent className="relative p-4 lg:p-6">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-muted-foreground">Battery Health</p>
-                    <p className="text-2xl font-bold text-success">{stats.batteryHealth}%</p>
+                  <div className="space-y-1">
+                    <p className="text-xs lg:text-sm text-muted-foreground font-medium">Battery Health</p>
+                    <p className="text-xl lg:text-3xl font-bold text-success">{stats.batteryHealth}%</p>
                   </div>
-                  <Battery className="h-8 w-8 text-success" />
+                  <div className="relative">
+                    <div className="absolute -inset-2 bg-success rounded-full blur opacity-30"></div>
+                    <Battery className="relative h-8 w-8 lg:h-10 lg:w-10 text-success" />
+                  </div>
                 </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* Quick Actions */}
-          <Card className="mb-6 bg-gradient-card border-border">
-            <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-              <CardDescription>Frequently used operations</CardDescription>
+          {/* Enhanced Quick Actions */}
+          <Card className="relative overflow-hidden border-border/50 backdrop-blur-sm">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5"></div>
+            <CardHeader className="relative">
+              <CardTitle className="text-lg lg:text-xl">Quick Actions</CardTitle>
+              <CardDescription className="text-base">Frequently used operations</CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <CardContent className="relative">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
                 {quickActions.map((action, index) => (
                   <Button
                     key={index}
                     variant="outline"
-                    className="h-20 flex flex-col gap-2 hover:shadow-card transition-all duration-300"
+                    className="h-20 lg:h-24 flex flex-col gap-2 group hover:shadow-elevated transition-all duration-300 hover:scale-105 hover:border-primary/50"
                   >
-                    <action.icon className="h-6 w-6" />
-                    <span className="text-xs">{action.label}</span>
+                    <div className="relative">
+                      <div className="absolute -inset-2 bg-primary rounded-full blur opacity-0 group-hover:opacity-30 transition-opacity"></div>
+                      <action.icon className="relative h-6 w-6 lg:h-8 lg:w-8 group-hover:text-primary transition-colors" />
+                    </div>
+                    <span className="text-xs lg:text-sm font-medium group-hover:text-primary transition-colors">
+                      {action.label}
+                    </span>
                   </Button>
                 ))}
               </div>
             </CardContent>
           </Card>
 
-          {/* Recent Alerts */}
-          <Card className="bg-gradient-card border-border">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <AlertTriangle className="h-5 w-5 text-danger" />
+          {/* Enhanced Recent Alerts */}
+          <Card className="relative overflow-hidden border-border/50 backdrop-blur-sm">
+            <div className="absolute inset-0 bg-gradient-to-br from-danger/5 to-warning/5"></div>
+            <CardHeader className="relative">
+              <CardTitle className="flex items-center gap-3 text-lg lg:text-xl">
+                <div className="p-2 bg-gradient-danger rounded-lg shadow-glow">
+                  <AlertTriangle className="h-5 w-5 text-white animate-pulse" />
+                </div>
                 Recent Alerts
               </CardTitle>
-              <CardDescription>Live security and system notifications</CardDescription>
+              <CardDescription className="text-base">Live security and system notifications</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="relative">
               <div className="space-y-3">
                 {recentAlerts.map((alert) => (
                   <div
                     key={alert.id}
-                    className="flex items-center justify-between p-3 bg-background/30 rounded-lg border border-border/50"
+                    className="group flex items-center justify-between p-4 lg:p-5 bg-background/60 backdrop-blur-sm rounded-xl border border-border/50 hover:shadow-elevated hover:border-primary/30 transition-all duration-300 hover:scale-[1.02]"
                   >
-                    <div className="flex-1">
-                      <p className="font-medium">{alert.item}</p>
-                      <p className="text-sm text-muted-foreground">{alert.location}</p>
+                    <div className="flex-1 space-y-1">
+                      <p className="font-semibold text-sm lg:text-base group-hover:text-primary transition-colors">
+                        {alert.item}
+                      </p>
+                      <p className="text-xs lg:text-sm text-muted-foreground">{alert.location}</p>
                     </div>
-                    <div className="text-right">
-                      <p className={`text-sm font-medium ${getSeverityColor(alert.severity)}`}>
+                    <div className="text-right space-y-1">
+                      <p className={`text-xs lg:text-sm font-bold ${getSeverityColor(alert.severity)}`}>
                         {alert.type.replace('_', ' ').toUpperCase()}
                       </p>
                       <p className="text-xs text-muted-foreground">{alert.time}</p>
@@ -368,6 +466,7 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
       ) : (
         <Notifications />
       )}
+      </div>
     </div>
   );
 };
