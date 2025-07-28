@@ -43,26 +43,93 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
   const [selectedIndustry, setSelectedIndustry] = useState<'retail' | 'hospitality' | 'casino' | 'pharma'>('retail');
   const [activeView, setActiveView] = useState<'overview' | 'devices' | 'floorplan' | 'scanner' | 'analytics' | 'notifications' | 'bar' | 'tutorial'>('overview');
 
-  // Mock real-time data
-  const stats = {
-    connectedDevices: 127,
-    activeAlerts: 3,
-    inventoryAccuracy: 99.2,
-    batteryHealth: 94
+  // Industry-specific data
+  const getIndustryData = (industry: string) => {
+    const industryConfig = {
+      retail: {
+        stats: {
+          connectedDevices: 127,
+          activeAlerts: 3,
+          inventoryAccuracy: 99.2,
+          batteryHealth: 94
+        },
+        alerts: [
+          { id: 1, type: 'movement', item: 'Premium Electronics', location: 'Electronics Aisle', time: '2 min ago', severity: 'high' },
+          { id: 2, type: 'low_battery', item: 'Security Tag #47', location: 'Clothing Section', time: '15 min ago', severity: 'medium' },
+          { id: 3, type: 'disconnect', item: 'High-Value Watch', location: 'Jewelry Counter', time: '1 hour ago', severity: 'high' }
+        ],
+        quickActions: [
+          { label: 'Scan Inventory', icon: Package, color: 'bg-gradient-primary' },
+          { label: 'View Floor Plan', icon: MapPin, color: 'bg-gradient-success' },
+          { label: 'Security Check', icon: Shield, color: 'bg-gradient-warning' },
+          { label: 'Loss Report', icon: TrendingUp, color: 'bg-gradient-danger' }
+        ]
+      },
+      hospitality: {
+        stats: {
+          connectedDevices: 89,
+          activeAlerts: 1,
+          inventoryAccuracy: 97.8,
+          batteryHealth: 92
+        },
+        alerts: [
+          { id: 1, type: 'consumption', item: 'Minibar - Room 204', location: 'Floor 2', time: '5 min ago', severity: 'medium' },
+          { id: 2, type: 'low_battery', item: 'Room Service Tracker', location: 'Kitchen', time: '30 min ago', severity: 'low' },
+          { id: 3, type: 'temperature', item: 'Wine Cellar', location: 'Basement', time: '45 min ago', severity: 'medium' }
+        ],
+        quickActions: [
+          { label: 'Room Service', icon: Bell, color: 'bg-gradient-primary' },
+          { label: 'Minibar Status', icon: Wine, color: 'bg-gradient-success' },
+          { label: 'Guest Check-in', icon: Users, color: 'bg-gradient-warning' },
+          { label: 'Revenue Report', icon: TrendingUp, color: 'bg-gradient-danger' }
+        ]
+      },
+      casino: {
+        stats: {
+          connectedDevices: 245,
+          activeAlerts: 7,
+          inventoryAccuracy: 99.9,
+          batteryHealth: 96
+        },
+        alerts: [
+          { id: 1, type: 'movement', item: 'High-Value Chips', location: 'Table 12', time: '1 min ago', severity: 'high' },
+          { id: 2, type: 'suspicious', item: 'Player Activity', location: 'Blackjack Area', time: '8 min ago', severity: 'high' },
+          { id: 3, type: 'low_battery', item: 'Chip Tracker #89', location: 'Poker Room', time: '20 min ago', severity: 'medium' }
+        ],
+        quickActions: [
+          { label: 'Security Monitor', icon: Shield, color: 'bg-gradient-primary' },
+          { label: 'Chip Tracking', icon: Package, color: 'bg-gradient-success' },
+          { label: 'Table Status', icon: MapPin, color: 'bg-gradient-warning' },
+          { label: 'Incident Report', icon: AlertTriangle, color: 'bg-gradient-danger' }
+        ]
+      },
+      pharma: {
+        stats: {
+          connectedDevices: 156,
+          activeAlerts: 2,
+          inventoryAccuracy: 99.8,
+          batteryHealth: 98
+        },
+        alerts: [
+          { id: 1, type: 'temperature', item: 'Cold Storage Unit B', location: 'Pharmacy Wing', time: '3 min ago', severity: 'high' },
+          { id: 2, type: 'compliance', item: 'Controlled Substance', location: 'Vault', time: '12 min ago', severity: 'medium' },
+          { id: 3, type: 'expiry', item: 'Medication Batch #447', location: 'Storage Room C', time: '25 min ago', severity: 'low' }
+        ],
+        quickActions: [
+          { label: 'Cold Chain Monitor', icon: Activity, color: 'bg-gradient-primary' },
+          { label: 'Drug Tracking', icon: Package, color: 'bg-gradient-success' },
+          { label: 'Compliance Check', icon: CheckCircle, color: 'bg-gradient-warning' },
+          { label: 'Audit Report', icon: TrendingUp, color: 'bg-gradient-danger' }
+        ]
+      }
+    };
+    return industryConfig[industry as keyof typeof industryConfig];
   };
 
-  const recentAlerts = [
-    { id: 1, type: 'movement', item: 'Premium Whiskey Bottle', location: 'Bar Section A', time: '2 min ago', severity: 'high' },
-    { id: 2, type: 'low_battery', item: 'Invepin Device #47', location: 'Electronics Aisle', time: '15 min ago', severity: 'medium' },
-    { id: 3, type: 'disconnect', item: 'High-Value Watch', location: 'Jewelry Counter', time: '1 hour ago', severity: 'high' }
-  ];
-
-  const quickActions = [
-    { label: 'Scan Inventory', icon: Package, color: 'bg-gradient-primary' },
-    { label: 'View Floor Plan', icon: MapPin, color: 'bg-gradient-success' },
-    { label: 'Device Status', icon: Smartphone, color: 'bg-gradient-warning' },
-    { label: 'Generate Report', icon: TrendingUp, color: 'bg-gradient-danger' }
-  ];
+  const currentIndustryData = getIndustryData(selectedIndustry);
+  const stats = currentIndustryData.stats;
+  const recentAlerts = currentIndustryData.alerts;
+  const quickActions = currentIndustryData.quickActions;
 
   const industryLabels = {
     retail: { primary: 'Shrinkage Prevention', secondary: 'Loss Rate', kpi: 'Theft Alerts' },
@@ -469,19 +536,19 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
           </Card>
         </>
       ) : activeView === 'devices' ? (
-        <BLEScanner />
+        <BLEScanner industry={selectedIndustry} />
       ) : activeView === 'floorplan' ? (
-        <FloorPlan />
+        <FloorPlan industry={selectedIndustry} />
       ) : activeView === 'scanner' ? (
-        <BarcodeScanner />
+        <BarcodeScanner industry={selectedIndustry} />
       ) : activeView === 'analytics' ? (
-        <Analytics />
+        <Analytics industry={selectedIndustry} />
       ) : activeView === 'bar' ? (
-        <BarManagement />
+        <BarManagement industry={selectedIndustry} />
       ) : activeView === 'tutorial' ? (
         <TutorialSystem />
       ) : (
-        <Notifications />
+        <Notifications industry={selectedIndustry} />
       )}
       </div>
     </div>

@@ -27,6 +27,10 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
+interface NotificationsProps {
+  industry?: string;
+}
+
 interface NotificationItem {
   id: string;
   type: 'security' | 'device' | 'system' | 'maintenance' | 'info';
@@ -108,7 +112,7 @@ const mockNotifications: NotificationItem[] = [
   }
 ];
 
-export const Notifications = () => {
+export const Notifications = ({ industry = 'retail' }: NotificationsProps = {}) => {
   const [notifications, setNotifications] = useState<NotificationItem[]>(mockNotifications);
   const [settings, setSettings] = useState<NotificationSettings>({
     pushEnabled: true,

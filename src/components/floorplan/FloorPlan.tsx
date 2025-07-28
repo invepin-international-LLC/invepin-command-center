@@ -33,6 +33,10 @@ import { DeviceNode } from './nodes/DeviceNode';
 import { ItemNode } from './nodes/ItemNode';
 import { ZoneNode } from './nodes/ZoneNode';
 
+interface FloorPlanProps {
+  industry?: string;
+}
+
 interface DeviceData {
   id: string;
   name: string;
@@ -156,7 +160,7 @@ const initialNodes: Node[] = [
 
 const initialEdges: Edge[] = [];
 
-export const FloorPlan = () => {
+export const FloorPlan = ({ industry = 'retail' }: FloorPlanProps = {}) => {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [showMinimap, setShowMinimap] = useState(false);

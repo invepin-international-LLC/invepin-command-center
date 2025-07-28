@@ -18,7 +18,11 @@ import { Bartender, Bottle, PourEvent } from "@/types/bar";
 import { useLossPrevention } from "@/hooks/useLossPrevention";
 import { useInventoryManagement } from "@/hooks/useInventoryManagement";
 
-export const BarManagement = () => {
+interface BarManagementProps {
+  industry?: string;
+}
+
+export const BarManagement = ({ industry = 'retail' }: BarManagementProps = {}) => {
   const { toast } = useToast();
   const { monitorPourEvent, monitorBottleLevel } = useLossPrevention();
   const { processPouredItem } = useInventoryManagement();

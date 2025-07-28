@@ -16,6 +16,10 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
+interface BLEScannerProps {
+  industry?: string;
+}
+
 interface BLEDevice {
   id: string;
   name: string;
@@ -29,7 +33,7 @@ interface BLEDevice {
   attachedItem?: string;
 }
 
-export const BLEScanner = () => {
+export const BLEScanner = ({ industry = 'retail' }: BLEScannerProps = {}) => {
   const [isScanning, setIsScanning] = useState(false);
   const [devices, setDevices] = useState<BLEDevice[]>([]);
   const { toast } = useToast();

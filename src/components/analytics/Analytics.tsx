@@ -21,6 +21,10 @@ import {
   Legend,
   ResponsiveContainer
 } from 'recharts';
+
+interface AnalyticsProps {
+  industry?: string;
+}
 import { 
   TrendingUp, 
   TrendingDown,
@@ -128,7 +132,7 @@ const MetricCard = ({ title, value, change, trend, icon: Icon }: MetricCardProps
   );
 };
 
-export const Analytics = () => {
+export const Analytics = ({ industry = 'retail' }: AnalyticsProps = {}) => {
   const [timeRange, setTimeRange] = useState('7d');
   const [selectedMetric, setSelectedMetric] = useState('all');
   const { toast } = useToast();

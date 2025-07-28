@@ -19,6 +19,10 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
+interface BarcodeScannerProps {
+  industry?: string;
+}
+
 interface ScanResult {
   id: string;
   code: string;
@@ -29,7 +33,7 @@ interface ScanResult {
   status: 'pending' | 'verified' | 'error';
 }
 
-export const BarcodeScanner = () => {
+export const BarcodeScanner = ({ industry = 'retail' }: BarcodeScannerProps = {}) => {
   const [isScanning, setIsScanning] = useState(false);
   const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
   const [scanResults, setScanResults] = useState<ScanResult[]>([]);
