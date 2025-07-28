@@ -163,6 +163,7 @@ export const FloorPlan = () => {
   const [trackedDevice, setTrackedDevice] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'devices' | 'items' | 'zones'>('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'connected' | 'disconnected' | 'connecting'>('all');
   const [autoTrackingEnabled, setAutoTrackingEnabled] = useState(true);
   const [trackingReason, setTrackingReason] = useState<string>('');
   const { toast } = useToast();
@@ -297,6 +298,8 @@ export const FloorPlan = () => {
   const resetView = () => {
     setTrackedDevice(null);
     setSearchQuery('');
+    setStatusFilter('all');
+    setFilterType('all');
     setAutoTrackingEnabled(true); // Re-enable auto-tracking
     setTrackingReason('');
     toast({
@@ -306,11 +309,23 @@ export const FloorPlan = () => {
   };
 
   const getDeviceList = () => {
-    return mockDevices.filter(device => 
-      searchQuery === '' || 
-      device.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      device.id.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    return mockDevices.filter(device => {
+      // Status filter
+      if (statusFilter !== 'all' && device.status !== statusFilter) {
+        return false;
+      }
+      
+      // Search query filter
+      if (searchQuery !== '' && 
+          !device.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+          !device.id.toLowerCase().includes(searchQuery.toLowerCase()) &&
+          !device.attachedItem?.toLowerCase().includes(searchQuery.toLowerCase())
+      ) {
+        return false;
+      }
+      
+      return true;
+    });
   };
 
   return (
@@ -580,22 +595,40 @@ export const FloorPlan = () => {
             </p>
             <div className="space-y-2 text-xs">
               <button 
-                className="flex items-center gap-3 w-full text-left p-2 rounded-lg hover:bg-background/50 transition-smooth group"
-                onClick={() => setSearchQuery('connected')}
+                className={`flex items-center gap-3 w-full text-left p-2 rounded-lg hover:bg-background/50 transition-smooth group ${statusFilter === 'connected' ? 'bg-primary/10 border border-primary/20' : ''}`}
+                onClick={() => {
+                  setStatusFilter('connected');
+                  toast({
+                    title: "Filter Applied",
+                    description: "Showing only connected devices",
+                  });
+                }}
               >
                 <div className="w-3 h-3 bg-gradient-success rounded-full"></div>
                 <span className="text-muted-foreground group-hover:text-foreground">Connected Devices</span>
               </button>
               <button 
-                className="flex items-center gap-3 w-full text-left p-2 rounded-lg hover:bg-background/50 transition-smooth group"
-                onClick={() => setSearchQuery('connecting')}
+                className={`flex items-center gap-3 w-full text-left p-2 rounded-lg hover:bg-background/50 transition-smooth group ${statusFilter === 'connecting' ? 'bg-primary/10 border border-primary/20' : ''}`}
+                onClick={() => {
+                  setStatusFilter('connecting');
+                  toast({
+                    title: "Filter Applied", 
+                    description: "Showing only connecting devices",
+                  });
+                }}
               >
                 <div className="w-3 h-3 bg-gradient-warning rounded-full animate-pulse-glow"></div>
                 <span className="text-muted-foreground group-hover:text-foreground">Connecting Devices</span>
               </button>
               <button 
-                className="flex items-center gap-3 w-full text-left p-2 rounded-lg hover:bg-background/50 transition-smooth group"
-                onClick={() => setSearchQuery('disconnected')}
+                className={`flex items-center gap-3 w-full text-left p-2 rounded-lg hover:bg-background/50 transition-smooth group ${statusFilter === 'disconnected' ? 'bg-primary/10 border border-primary/20' : ''}`}
+                onClick={() => {
+                  setStatusFilter('disconnected');
+                  toast({
+                    title: "Filter Applied",
+                    description: "Showing only disconnected devices", 
+                  });
+                }}
               >
                 <div className="w-3 h-3 bg-gradient-danger rounded-full"></div>
                 <span className="text-muted-foreground group-hover:text-foreground">Disconnected Devices</span>
@@ -672,9 +705,16 @@ export const FloorPlan = () => {
               >
                 <span className="text-warning">🔋</span> Find Low Battery Devices
               </button>
-              <button 
+               <button 
                 className="flex items-center gap-2 w-full text-left p-2 rounded-lg hover:bg-background/50 transition-smooth text-muted-foreground hover:text-foreground"
-                onClick={() => setSearchQuery('')}
+                onClick={() => {
+                  setSearchQuery('');
+                  setStatusFilter('all');
+                  toast({
+                    title: "Filter Cleared",
+                    description: "Showing all devices",
+                  });
+                }}
               >
                 <span className="text-primary">👁️</span> Show All Devices
               </button>
