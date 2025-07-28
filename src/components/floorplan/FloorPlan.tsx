@@ -376,29 +376,146 @@ export const FloorPlan = () => {
         )}
       </div>
 
-      {/* Floor Plan Canvas - Simplified */}
+      {/* Floor Plan Canvas - Active Tracking Display */}
       <div className="bg-gradient-card border border-border rounded-xl overflow-hidden shadow-elevated hover-card">
         <div className="p-6">
-          <div className="bg-background/20 rounded-lg border-2 border-dashed border-border/50 h-96 flex items-center justify-center">
-            <div className="text-center">
-              <MapPin className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-foreground mb-2">Smart Tracking Active</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                {autoTrackingEnabled ? 'Auto-tracking high-value & suspicious items' : 'Manual tracking mode'}
-              </p>
-              {trackedDevice && (
-                <div className="space-y-2">
-                  <Badge className="bg-gradient-primary text-primary-foreground">
-                    🎯 {mockDevices.find(d => d.id === trackedDevice)?.attachedItem}
-                  </Badge>
-                  <p className="text-xs text-muted-foreground">
-                    Value: ${mockDevices.find(d => d.id === trackedDevice)?.itemValue?.toLocaleString()} | 
-                    Risk: {mockDevices.find(d => d.id === trackedDevice)?.riskLevel} | 
-                    Pattern: {mockDevices.find(d => d.id === trackedDevice)?.movementPattern}
+          <div className="bg-background/20 rounded-lg border border-border h-96 p-6">
+            {trackedDevice ? (
+              <div className="h-full flex flex-col">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="relative">
+                      <div className="w-4 h-4 bg-gradient-primary rounded-full animate-pulse"></div>
+                      <div className="absolute inset-0 w-4 h-4 bg-gradient-primary rounded-full animate-ping opacity-75"></div>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-foreground">Active Tracking</h3>
+                      <p className="text-sm text-muted-foreground">{trackingReason}</p>
+                    </div>
+                  </div>
+                  {autoTrackingEnabled && (
+                    <Badge className="bg-gradient-success text-white animate-pulse">
+                      AUTO
+                    </Badge>
+                  )}
+                </div>
+                
+                <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Device Info Panel */}
+                  <div className="space-y-4">
+                    <div className="bg-card/50 rounded-lg p-4 border border-border">
+                      <h4 className="font-semibold text-foreground mb-3">Device Information</h4>
+                      {(() => {
+                        const device = mockDevices.find(d => d.id === trackedDevice);
+                        return device ? (
+                          <div className="space-y-3">
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">Device:</span>
+                              <span className="text-foreground font-medium">{device.name}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">Item:</span>
+                              <span className="text-foreground font-medium">{device.attachedItem}</span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">Value:</span>
+                              <span className="text-foreground font-bold">${device.itemValue?.toLocaleString()}</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span className="text-muted-foreground">Risk Level:</span>
+                              <Badge 
+                                variant={device.riskLevel === 'critical' ? 'destructive' : device.riskLevel === 'high' ? 'default' : 'secondary'}
+                                className="font-medium"
+                              >
+                                {device.riskLevel?.toUpperCase()}
+                              </Badge>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span className="text-muted-foreground">Movement:</span>
+                              <Badge 
+                                variant={device.movementPattern === 'critical' ? 'destructive' : device.movementPattern === 'suspicious' ? 'default' : 'secondary'}
+                                className={device.movementPattern !== 'normal' ? 'animate-pulse' : ''}
+                              >
+                                {device.movementPattern?.toUpperCase()}
+                              </Badge>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">Battery:</span>
+                              <span className={`font-medium ${device.battery < 30 ? 'text-destructive' : 'text-foreground'}`}>
+                                {device.battery}%
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">Signal:</span>
+                              <span className="text-foreground">{device.rssi} dBm</span>
+                            </div>
+                          </div>
+                        ) : null;
+                      })()}
+                    </div>
+                  </div>
+                  
+                  {/* Live Tracking Visualization */}
+                  <div className="space-y-4">
+                    <div className="bg-card/50 rounded-lg p-4 border border-border">
+                      <h4 className="font-semibold text-foreground mb-3">Live Location</h4>
+                      <div className="relative bg-background/30 rounded-lg h-40 flex items-center justify-center border border-border/50">
+                        <div className="relative">
+                          {/* Simulated device position */}
+                          <div className="w-6 h-6 bg-gradient-primary rounded-full shadow-glow animate-bounce"></div>
+                          {/* Radar rings */}
+                          <div className="absolute inset-0 w-6 h-6 border-2 border-primary/30 rounded-full animate-ping"></div>
+                          <div className="absolute -inset-2 w-10 h-10 border border-primary/20 rounded-full animate-pulse"></div>
+                          <div className="absolute -inset-4 w-14 h-14 border border-primary/10 rounded-full animate-pulse"></div>
+                        </div>
+                        <div className="absolute bottom-2 left-2 text-xs text-muted-foreground">
+                          Zone: High Security Area
+                        </div>
+                      </div>
+                      <div className="mt-3 space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Last Update:</span>
+                          <span className="text-foreground">
+                            {mockDevices.find(d => d.id === trackedDevice)?.lastMovement?.toLocaleTimeString() || 'N/A'}
+                          </span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className="text-muted-foreground">Coordinates:</span>
+                          <span className="text-foreground font-mono">X: 142, Y: 89</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Alert Banner for Critical Items */}
+                {(() => {
+                  const device = mockDevices.find(d => d.id === trackedDevice);
+                  return device && (device.movementPattern === 'critical' || device.movementPattern === 'suspicious') ? (
+                    <div className="mt-4 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-destructive rounded-full animate-pulse"></div>
+                        <span className="text-sm font-medium text-destructive">
+                          {device.movementPattern === 'critical' ? '🚨 CRITICAL ALERT: Unusual movement detected!' : '⚠️ WARNING: Suspicious activity pattern'}
+                        </span>
+                      </div>
+                    </div>
+                  ) : null;
+                })()}
+              </div>
+            ) : (
+              <div className="h-full flex items-center justify-center">
+                <div className="text-center">
+                  <div className="w-12 h-12 bg-gradient-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Target className="h-6 w-6 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-foreground mb-2">Initializing Tracking System</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {autoTrackingEnabled ? 'Scanning for high-value items and suspicious activity...' : 'Select a device to begin tracking'}
                   </p>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
