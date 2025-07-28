@@ -12,6 +12,7 @@ import {
   Node,
   BackgroundVariant
 } from '@xyflow/react';
+// React Flow CSS import for styling
 import '@xyflow/react/dist/style.css';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
