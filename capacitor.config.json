@@ -1,0 +1,16 @@
+{
+  "appId": "app.lovable.39d95d1ca18543749ad97aad10032895",
+  "appName": "Invepin Bar Management",
+  "webDir": "dist",
+  "server": {
+    "url": "https://39d95d1c-a185-4374-9ad9-7aad10032895.lovableproject.com?forceHideBadge=true",
+    "cleartext": true
+  },
+  "plugins": {
+    "Camera": {
+      "permissions": [
+        "camera"
+      ]
+    }
+  }
+}

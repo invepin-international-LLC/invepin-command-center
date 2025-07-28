@@ -6,8 +6,8 @@ import { Bartender } from "@/types/bar";
 
 interface BartenderDashboardProps {
   bartenders: Bartender[];
-  onClockIn: (bartenderId: string) => void;
-  onClockOut: (bartenderId: string) => void;
+  onClockIn: (bartenderId: string, method?: 'face_recognition' | 'manual', confidence?: number) => void;
+  onClockOut: (bartenderId: string, method?: 'face_recognition' | 'manual', confidence?: number) => void;
 }
 
 export const BartenderDashboard = ({ bartenders, onClockIn, onClockOut }: BartenderDashboardProps) => {

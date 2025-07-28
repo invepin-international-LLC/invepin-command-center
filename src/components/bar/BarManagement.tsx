@@ -10,6 +10,7 @@ import { RecentActivity } from "./RecentActivity";
 import { BLEDeviceManager } from "@/components/devices/BLEDeviceManager";
 import { LossPreventionDashboard } from "@/components/alerts/LossPreventionDashboard";
 import { ManagerDashboard } from "@/components/manager/ManagerDashboard";
+import { MobileBartenderInterface } from "@/components/mobile/MobileBartenderInterface";
 import { Bartender, Bottle, PourEvent } from "@/types/bar";
 import { useLossPrevention } from "@/hooks/useLossPrevention";
 
@@ -112,7 +113,7 @@ export const BarManagement = () => {
     }
   ]);
 
-  const handleClockIn = (bartenderId: string) => {
+  const handleClockIn = (bartenderId: string, method: 'face_recognition' | 'manual' = 'manual', confidence?: number) => {
     setBartenders(prev => prev.map(b => 
       b.id === bartenderId 
         ? { ...b, isOnShift: true, shiftStart: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }
@@ -120,13 +121,16 @@ export const BarManagement = () => {
     ));
     
     const bartender = bartenders.find(b => b.id === bartenderId);
+    const methodText = method === 'face_recognition' ? 'via face recognition' : 'manually';
+    const confidenceText = confidence ? ` (${(confidence * 100).toFixed(1)}% confidence)` : '';
+    
     toast({
       title: "Shift Started",
-      description: `${bartender?.name} is now on shift`,
+      description: `${bartender?.name} clocked in ${methodText}${confidenceText}`,
     });
   };
 
-  const handleClockOut = (bartenderId: string) => {
+  const handleClockOut = (bartenderId: string, method: 'face_recognition' | 'manual' = 'manual', confidence?: number) => {
     setBartenders(prev => prev.map(b => 
       b.id === bartenderId 
         ? { ...b, isOnShift: false, shiftStart: undefined }
@@ -134,9 +138,12 @@ export const BarManagement = () => {
     ));
     
     const bartender = bartenders.find(b => b.id === bartenderId);
+    const methodText = method === 'face_recognition' ? 'via face recognition' : 'manually';
+    const confidenceText = confidence ? ` (${(confidence * 100).toFixed(1)}% confidence)` : '';
+    
     toast({
       title: "Shift Ended", 
-      description: `${bartender?.name} has clocked out`,
+      description: `${bartender?.name} clocked out ${methodText}${confidenceText}`,
     });
   };
 
@@ -162,11 +169,12 @@ export const BarManagement = () => {
 
   return (
     <Tabs defaultValue="overview" className="space-y-6">
-      <TabsList className="grid w-full grid-cols-6">
+      <TabsList className="grid w-full grid-cols-7">
         <TabsTrigger value="overview">Overview</TabsTrigger>
         <TabsTrigger value="pour-detection">Live Pours</TabsTrigger>
         <TabsTrigger value="ble-devices">BLE Devices</TabsTrigger>
         <TabsTrigger value="loss-prevention">Loss Prevention</TabsTrigger>
+        <TabsTrigger value="mobile">Mobile Staff</TabsTrigger>
         <TabsTrigger value="manager">Manager</TabsTrigger>
         <TabsTrigger value="analytics">Analytics</TabsTrigger>
       </TabsList>
@@ -200,6 +208,16 @@ export const BarManagement = () => {
 
       <TabsContent value="loss-prevention">
         <LossPreventionDashboard />
+      </TabsContent>
+
+      <TabsContent value="mobile">
+        <div className="max-w-md mx-auto">
+          <MobileBartenderInterface 
+            bartenders={bartenders}
+            onClockIn={handleClockIn}
+            onClockOut={handleClockOut}
+          />
+        </div>
       </TabsContent>
 
       <TabsContent value="manager">
