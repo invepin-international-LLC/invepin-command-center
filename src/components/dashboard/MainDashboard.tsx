@@ -43,6 +43,49 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
   const [selectedIndustry, setSelectedIndustry] = useState<'retail' | 'hospitality' | 'casino' | 'pharma'>('retail');
   const [activeView, setActiveView] = useState<'overview' | 'devices' | 'floorplan' | 'scanner' | 'analytics' | 'notifications' | 'bar' | 'tutorial'>('overview');
 
+  // Industry-specific navigation tabs
+  const getIndustryTabs = (industry: string) => {
+    const industryTabs = {
+      retail: [
+        { id: 'overview', label: 'Overview', icon: null },
+        { id: 'devices', label: 'Devices', icon: Smartphone },
+        { id: 'floorplan', label: 'Floor Plan', icon: MapPin },
+        { id: 'scanner', label: 'Scanner', icon: Package },
+        { id: 'analytics', label: 'Analytics', icon: TrendingUp },
+        { id: 'notifications', label: 'Security Alerts', icon: Bell },
+        { id: 'tutorial', label: 'Tutorial', icon: BookOpen }
+      ],
+      hospitality: [
+        { id: 'overview', label: 'Overview', icon: null },
+        { id: 'devices', label: 'Devices', icon: Smartphone },
+        { id: 'floorplan', label: 'Floor Plan', icon: MapPin },
+        { id: 'bar', label: 'Bar & Minibar', icon: Wine },
+        { id: 'analytics', label: 'Analytics', icon: TrendingUp },
+        { id: 'notifications', label: 'Guest Alerts', icon: Bell },
+        { id: 'tutorial', label: 'Tutorial', icon: BookOpen }
+      ],
+      casino: [
+        { id: 'overview', label: 'Overview', icon: null },
+        { id: 'devices', label: 'Devices', icon: Smartphone },
+        { id: 'floorplan', label: 'Floor Plan', icon: MapPin },
+        { id: 'scanner', label: 'Chip Scanner', icon: Package },
+        { id: 'analytics', label: 'Analytics', icon: TrendingUp },
+        { id: 'notifications', label: 'Security Alerts', icon: Bell },
+        { id: 'tutorial', label: 'Tutorial', icon: BookOpen }
+      ],
+      pharma: [
+        { id: 'overview', label: 'Overview', icon: null },
+        { id: 'devices', label: 'Devices', icon: Smartphone },
+        { id: 'floorplan', label: 'Floor Plan', icon: MapPin },
+        { id: 'scanner', label: 'Drug Scanner', icon: Package },
+        { id: 'analytics', label: 'Analytics', icon: TrendingUp },
+        { id: 'notifications', label: 'Compliance Alerts', icon: Bell },
+        { id: 'tutorial', label: 'Tutorial', icon: BookOpen }
+      ]
+    };
+    return industryTabs[industry as keyof typeof industryTabs];
+  };
+
   // Industry-specific data
   const getIndustryData = (industry: string) => {
     const industryConfig = {
@@ -130,6 +173,17 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
   const stats = currentIndustryData.stats;
   const recentAlerts = currentIndustryData.alerts;
   const quickActions = currentIndustryData.quickActions;
+  const currentTabs = getIndustryTabs(selectedIndustry);
+
+  // Reset activeView to overview when industry changes if current view is not available
+  const handleIndustryChange = (industry: 'retail' | 'hospitality' | 'casino' | 'pharma') => {
+    setSelectedIndustry(industry);
+    const newTabs = getIndustryTabs(industry);
+    const availableTabIds = newTabs.map(tab => tab.id);
+    if (!availableTabIds.includes(activeView)) {
+      setActiveView('overview');
+    }
+  };
 
   const industryLabels = {
     retail: { primary: 'Shrinkage Prevention', secondary: 'Loss Rate', kpi: 'Theft Alerts' },
@@ -193,109 +247,22 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
           {/* Enhanced Navigation */}
           <div className="mt-6 overflow-x-auto">
             <div className="flex gap-2 min-w-max pb-2">
-              <Button 
-                variant={activeView === 'overview' ? 'default' : 'outline'} 
-                size="sm"
-                onClick={() => setActiveView('overview')}
-                className={`transition-all duration-300 ${
-                  activeView === 'overview' 
-                    ? 'bg-gradient-primary shadow-glow scale-105' 
-                    : 'hover:shadow-card hover:scale-105'
-                }`}
-              >
-                Overview
-              </Button>
-              <Button 
-                variant={activeView === 'devices' ? 'default' : 'outline'} 
-                size="sm"
-                onClick={() => setActiveView('devices')}
-                className={`transition-all duration-300 ${
-                  activeView === 'devices' 
-                    ? 'bg-gradient-primary shadow-glow scale-105' 
-                    : 'hover:shadow-card hover:scale-105'
-                }`}
-              >
-                <Smartphone className="h-4 w-4 mr-1" />
-                <span className="hidden sm:inline">Devices</span>
-              </Button>
-              <Button 
-                variant={activeView === 'floorplan' ? 'default' : 'outline'} 
-                size="sm"
-                onClick={() => setActiveView('floorplan')}
-                className={`transition-all duration-300 ${
-                  activeView === 'floorplan' 
-                    ? 'bg-gradient-primary shadow-glow scale-105' 
-                    : 'hover:shadow-card hover:scale-105'
-                }`}
-              >
-                <MapPin className="h-4 w-4 mr-1" />
-                <span className="hidden sm:inline">Floor Plan</span>
-              </Button>
-              <Button 
-                variant={activeView === 'scanner' ? 'default' : 'outline'} 
-                size="sm"
-                onClick={() => setActiveView('scanner')}
-                className={`transition-all duration-300 ${
-                  activeView === 'scanner' 
-                    ? 'bg-gradient-primary shadow-glow scale-105' 
-                    : 'hover:shadow-card hover:scale-105'
-                }`}
-              >
-                <Package className="h-4 w-4 mr-1" />
-                <span className="hidden sm:inline">Scanner</span>
-              </Button>
-              <Button 
-                variant={activeView === 'analytics' ? 'default' : 'outline'} 
-                size="sm"
-                onClick={() => setActiveView('analytics')}
-                className={`transition-all duration-300 ${
-                  activeView === 'analytics' 
-                    ? 'bg-gradient-primary shadow-glow scale-105' 
-                    : 'hover:shadow-card hover:scale-105'
-                }`}
-              >
-                <TrendingUp className="h-4 w-4 mr-1" />
-                <span className="hidden sm:inline">Analytics</span>
-              </Button>
-              <Button 
-                variant={activeView === 'notifications' ? 'default' : 'outline'} 
-                size="sm"
-                onClick={() => setActiveView('notifications')}
-                className={`transition-all duration-300 ${
-                  activeView === 'notifications' 
-                    ? 'bg-gradient-primary shadow-glow scale-105' 
-                    : 'hover:shadow-card hover:scale-105'
-                }`}
-              >
-                <Bell className="h-4 w-4 mr-1" />
-                <span className="hidden sm:inline">Alerts</span>
-              </Button>
-              <Button 
-                variant={activeView === 'bar' ? 'default' : 'outline'} 
-                size="sm"
-                onClick={() => setActiveView('bar')}
-                className={`transition-all duration-300 ${
-                  activeView === 'bar' 
-                    ? 'bg-gradient-primary shadow-glow scale-105' 
-                    : 'hover:shadow-card hover:scale-105'
-                }`}
-              >
-                <Wine className="h-4 w-4 mr-1" />
-                <span className="hidden sm:inline">Bar</span>
-              </Button>
-              <Button 
-                variant={activeView === 'tutorial' ? 'default' : 'outline'} 
-                size="sm"
-                onClick={() => setActiveView('tutorial')}
-                className={`transition-all duration-300 ${
-                  activeView === 'tutorial' 
-                    ? 'bg-gradient-primary shadow-glow scale-105' 
-                    : 'hover:shadow-card hover:scale-105'
-                }`}
-              >
-                <BookOpen className="h-4 w-4 mr-1" />
-                <span className="hidden sm:inline">Tutorial</span>
-              </Button>
+              {currentTabs.map((tab) => (
+                <Button 
+                  key={tab.id}
+                  variant={activeView === tab.id ? 'default' : 'outline'} 
+                  size="sm"
+                  onClick={() => setActiveView(tab.id as any)}
+                  className={`transition-all duration-300 ${
+                    activeView === tab.id 
+                      ? 'bg-gradient-primary shadow-glow scale-105' 
+                      : 'hover:shadow-card hover:scale-105'
+                  }`}
+                >
+                  {tab.icon && <tab.icon className="h-4 w-4 mr-1" />}
+                  <span className={tab.icon ? "hidden sm:inline" : ""}>{tab.label}</span>
+                </Button>
+              ))}
             </div>
           </div>
         </div>
@@ -387,7 +354,7 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
                     key={industry}
                     variant={selectedIndustry === industry ? "default" : "outline"}
                     size="sm"
-                    onClick={() => setSelectedIndustry(industry)}
+                    onClick={() => handleIndustryChange(industry)}
                     className={`transition-all duration-300 ${
                       selectedIndustry === industry 
                         ? "bg-gradient-primary shadow-glow scale-105 font-semibold" 
