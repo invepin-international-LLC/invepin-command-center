@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BLEScanner } from "@/components/devices/BLEScanner";
 import { FloorPlan } from "@/components/floorplan/FloorPlan";
+import { BarcodeScanner } from "@/components/scanner/BarcodeScanner";
 import { 
   Shield, 
   Smartphone, 
@@ -33,7 +34,7 @@ interface MainDashboardProps {
 
 export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
   const [selectedIndustry, setSelectedIndustry] = useState<'retail' | 'hospitality' | 'casino' | 'pharma'>('retail');
-  const [activeView, setActiveView] = useState<'overview' | 'devices' | 'floorplan'>('overview');
+  const [activeView, setActiveView] = useState<'overview' | 'devices' | 'floorplan' | 'scanner'>('overview');
 
   // Mock real-time data
   const stats = {
@@ -122,6 +123,15 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
             >
               <MapPin className="h-4 w-4 mr-1" />
               Floor Plan
+            </Button>
+            <Button 
+              variant={activeView === 'scanner' ? 'default' : 'outline'} 
+              size="sm"
+              onClick={() => setActiveView('scanner')}
+              className={activeView === 'scanner' ? 'bg-gradient-primary' : ''}
+            >
+              <Package className="h-4 w-4 mr-1" />
+              Scanner
             </Button>
           </div>
           <Badge className={`${getRoleColor(user.role)} text-white`}>
@@ -315,8 +325,10 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
         </>
       ) : activeView === 'devices' ? (
         <BLEScanner />
-      ) : (
+      ) : activeView === 'floorplan' ? (
         <FloorPlan />
+      ) : (
+        <BarcodeScanner />
       )}
     </div>
   );
