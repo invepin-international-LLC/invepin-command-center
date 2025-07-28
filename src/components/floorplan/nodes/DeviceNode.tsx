@@ -47,33 +47,39 @@ export const DeviceNode = memo(({ data }: DeviceNodeProps) => {
   };
 
   return (
-    <div className="bg-gradient-card border border-border rounded-lg p-3 min-w-[180px] shadow-card">
-      <Handle type="target" position={Position.Top} className="!bg-primary" />
+    <div className="bg-gradient-card border border-border rounded-xl p-4 min-w-[200px] shadow-elevated hover-card transition-smooth">
+      <Handle 
+        type="target" 
+        position={Position.Top} 
+        className="!w-3 !h-3 !bg-gradient-primary !border-2 !border-primary-foreground !shadow-glow" 
+      />
       
-      <div className="flex items-center gap-2 mb-2">
-        <div className="bg-gradient-primary p-1 rounded">
-          <Smartphone className="h-3 w-3 text-primary-foreground" />
+      <div className="flex items-center gap-3 mb-3">
+        <div className="bg-gradient-primary p-2 rounded-lg shadow-glow">
+          <Smartphone className="h-4 w-4 text-primary-foreground" />
         </div>
         <div className="flex-1">
-          <p className="text-xs font-medium truncate">{data.name}</p>
-          <p className="text-[10px] text-muted-foreground">{data.id}</p>
+          <p className="text-sm font-semibold text-foreground truncate">{data.name}</p>
+          <p className="text-xs text-muted-foreground">{data.id}</p>
         </div>
-        {getStatusIcon(data.status)}
+        <div className="animate-status-pulse">
+          {getStatusIcon(data.status)}
+        </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-2 text-[10px]">
-        <div className="flex items-center gap-1">
-          <Battery className={`h-3 w-3 ${getBatteryColor(data.battery)}`} />
-          <span>{data.battery}%</span>
+      <div className="grid grid-cols-2 gap-3 text-xs mb-3">
+        <div className="flex items-center gap-2 bg-background/30 rounded-lg p-2">
+          <Battery className={`h-4 w-4 ${getBatteryColor(data.battery)}`} />
+          <span className="font-medium text-foreground">{data.battery}%</span>
         </div>
-        <div className="flex items-center gap-1">
-          <Signal className="h-3 w-3 text-primary" />
-          <div className="flex gap-[1px]">
+        <div className="flex items-center gap-2 bg-background/30 rounded-lg p-2">
+          <Signal className="h-4 w-4 text-primary" />
+          <div className="flex gap-1">
             {[...Array(4)].map((_, i) => (
               <div
                 key={i}
-                className={`w-[2px] h-2 ${
-                  i < getSignalStrength(data.rssi) ? 'bg-primary' : 'bg-muted'
+                className={`w-1 h-3 rounded-full transition-smooth ${
+                  i < getSignalStrength(data.rssi) ? 'bg-gradient-primary' : 'bg-muted'
                 }`}
               />
             ))}
@@ -82,14 +88,18 @@ export const DeviceNode = memo(({ data }: DeviceNodeProps) => {
       </div>
 
       {data.attachedItem && (
-        <div className="mt-2 pt-2 border-t border-border/50">
-          <Badge variant="secondary" className="text-[10px] px-1 py-0">
+        <div className="mt-3 pt-3 border-t border-border/30">
+          <Badge variant="secondary" className="text-xs px-2 py-1 bg-secondary/20 text-secondary-foreground">
             {data.attachedItem}
           </Badge>
         </div>
       )}
 
-      <Handle type="source" position={Position.Bottom} className="!bg-primary" />
+      <Handle 
+        type="source" 
+        position={Position.Bottom} 
+        className="!w-3 !h-3 !bg-gradient-primary !border-2 !border-primary-foreground !shadow-glow" 
+      />
     </div>
   );
 });

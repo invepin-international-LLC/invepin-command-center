@@ -38,50 +38,61 @@ export const ZoneNode = memo(({ data }: ZoneNodeProps) => {
 
   const getZoneColor = (type: string) => {
     switch (type) {
-      case 'retail': return 'bg-primary/10 border-primary/20 text-primary';
-      case 'storage': return 'bg-warning/10 border-warning/20 text-warning';
-      case 'office': return 'bg-success/10 border-success/20 text-success';
-      case 'security': return 'bg-danger/10 border-danger/20 text-danger';
-      case 'entrance': return 'bg-accent/10 border-accent/20 text-accent-foreground';
-      case 'checkout': return 'bg-secondary/10 border-secondary/20 text-secondary-foreground';
-      default: return 'bg-muted/10 border-muted/20 text-muted-foreground';
+      case 'retail': return 'bg-primary/10 border-primary/40 text-primary shadow-glow';
+      case 'storage': return 'bg-warning/10 border-warning/40 text-warning shadow-card';
+      case 'office': return 'bg-success/10 border-success/40 text-success shadow-card';
+      case 'security': return 'bg-danger/10 border-danger/40 text-danger shadow-card';
+      case 'entrance': return 'bg-accent/10 border-accent/40 text-accent-foreground shadow-card';
+      case 'checkout': return 'bg-secondary/10 border-secondary/40 text-secondary-foreground shadow-card';
+      default: return 'bg-muted/10 border-muted/40 text-muted-foreground shadow-card';
     }
   };
 
   return (
-    <div className={`border-2 border-dashed rounded-xl p-4 min-w-[200px] min-h-[120px] ${getZoneColor(data.type)}`}>
-      <Handle type="target" position={Position.Top} className="!bg-transparent !border-current" />
+    <div className={`border-2 border-dashed rounded-2xl p-5 min-w-[220px] min-h-[140px] transition-smooth hover-card ${getZoneColor(data.type)}`}>
+      <Handle 
+        type="target" 
+        position={Position.Top} 
+        className="!w-4 !h-4 !bg-transparent !border-2 !border-current !rounded-full !shadow-glow" 
+      />
       
-      <div className="flex items-center gap-2 mb-3">
-        <div className="bg-current/10 p-2 rounded-lg">
+      <div className="flex items-center gap-3 mb-4">
+        <div className="bg-current/15 p-3 rounded-xl shadow-card">
           {getZoneIcon(data.type)}
         </div>
         <div className="flex-1">
-          <p className="text-sm font-semibold">{data.name}</p>
-          <p className="text-xs opacity-70 capitalize">{data.type} Zone</p>
+          <p className="text-base font-bold">{data.name}</p>
+          <p className="text-sm opacity-80 capitalize">{data.type} Zone</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-2 text-xs">
-        <div className="bg-background/20 rounded p-2 text-center">
-          <p className="font-bold">{data.deviceCount}</p>
-          <p className="opacity-70">Devices</p>
+      <div className="grid grid-cols-2 gap-3 text-sm">
+        <div className="bg-background/30 rounded-xl p-3 text-center border border-current/20">
+          <p className="text-lg font-bold">{data.deviceCount}</p>
+          <p className="opacity-80 text-xs">Devices</p>
         </div>
-        <div className="bg-background/20 rounded p-2 text-center">
-          <p className="font-bold">{data.itemCount}</p>
-          <p className="opacity-70">Items</p>
+        <div className="bg-background/30 rounded-xl p-3 text-center border border-current/20">
+          <p className="text-lg font-bold">{data.itemCount}</p>
+          <p className="opacity-80 text-xs">Items</p>
         </div>
       </div>
 
       {data.alertCount && data.alertCount > 0 && (
-        <div className="mt-2">
-          <Badge variant="destructive" className="text-[10px] px-2 py-0">
+        <div className="mt-3">
+          <Badge 
+            variant="destructive" 
+            className="text-xs px-3 py-1 bg-gradient-danger text-danger-foreground animate-pulse-glow"
+          >
             {data.alertCount} Alert{data.alertCount > 1 ? 's' : ''}
           </Badge>
         </div>
       )}
 
-      <Handle type="source" position={Position.Bottom} className="!bg-transparent !border-current" />
+      <Handle 
+        type="source" 
+        position={Position.Bottom} 
+        className="!w-4 !h-4 !bg-transparent !border-2 !border-current !rounded-full !shadow-glow" 
+      />
     </div>
   );
 });

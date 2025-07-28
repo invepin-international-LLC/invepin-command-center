@@ -293,85 +293,89 @@ export const FloorPlan = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Floor Plan Header */}
-      <Card className="bg-gradient-card border-border">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="bg-gradient-primary p-2 rounded-lg">
-                <Map className="h-5 w-5 text-primary-foreground" />
-              </div>
-              <div>
-                <CardTitle>Interactive Floor Plan</CardTitle>
-                <CardDescription>Real-time visualization of devices and tracked items</CardDescription>
-              </div>
+      <div className="bg-gradient-card border border-border rounded-xl p-6 hover-card">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="bg-gradient-primary p-3 rounded-lg shadow-glow">
+              <Map className="h-6 w-6 text-primary-foreground" />
             </div>
-            
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowMinimap(!showMinimap)}
-              >
-                <Layers className="h-4 w-4 mr-1" />
-                {showMinimap ? 'Hide' : 'Show'} Minimap
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={resetView}
-              >
-                <RotateCcw className="h-4 w-4 mr-1" />
-                Reset View
-              </Button>
+            <div>
+              <h2 className="text-xl font-bold text-foreground">Interactive Floor Plan</h2>
+              <p className="text-sm text-muted-foreground">Real-time visualization of devices and tracked items</p>
             </div>
           </div>
-        </CardHeader>
-      </Card>
+          
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowMinimap(!showMinimap)}
+              className="bg-card/50 border-border hover:bg-card"
+            >
+              <Layers className="h-4 w-4 mr-2" />
+              {showMinimap ? 'Hide' : 'Show'} Minimap
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={resetView}
+              className="bg-card/50 border-border hover:bg-card"
+            >
+              <RotateCcw className="h-4 w-4 mr-2" />
+              Reset View
+            </Button>
+          </div>
+        </div>
+      </div>
 
       {/* Filter Controls */}
-      <Card className="bg-gradient-card border-border">
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between">
+      <div className="bg-gradient-card border border-border rounded-xl p-4 hover-card">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm font-medium">Filter View:</span>
-              <div className="flex gap-1">
-                {['all', 'zones', 'devices', 'items'].map((type) => (
-                  <Button
-                    key={type}
-                    variant={filterType === type ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => handleFilterChange(type as typeof filterType)}
-                    className={filterType === type ? 'bg-gradient-primary' : ''}
-                  >
-                    {type.charAt(0).toUpperCase() + type.slice(1)}
-                  </Button>
-                ))}
-              </div>
+              <Filter className="h-4 w-4 text-primary" />
+              <span className="text-sm font-semibold text-foreground">Filter View:</span>
             </div>
-
-            <div className="flex items-center gap-4 text-sm">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-primary rounded"></div>
-                <span>Devices</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-success rounded"></div>
-                <span>Items</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 bg-secondary rounded"></div>
-                <span>Zones</span>
-              </div>
+            <div className="flex gap-2">
+              {['all', 'zones', 'devices', 'items'].map((type) => (
+                <Button
+                  key={type}
+                  variant={filterType === type ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => handleFilterChange(type as typeof filterType)}
+                  className={`${
+                    filterType === type 
+                      ? 'bg-gradient-primary text-primary-foreground shadow-glow' 
+                      : 'bg-card/50 border-border hover:bg-card'
+                  } transition-smooth`}
+                >
+                  {type.charAt(0).toUpperCase() + type.slice(1)}
+                </Button>
+              ))}
             </div>
           </div>
-        </CardContent>
-      </Card>
+
+          <div className="flex items-center gap-6 text-sm">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-gradient-primary rounded-full shadow-glow"></div>
+              <span className="text-foreground">Devices</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-gradient-success rounded-full"></div>
+              <span className="text-foreground">Items</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 bg-secondary rounded-full"></div>
+              <span className="text-foreground">Zones</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Floor Plan Canvas */}
-      <Card className="bg-gradient-card border-border overflow-hidden">
+      <div className="bg-gradient-card border border-border rounded-xl overflow-hidden shadow-elevated hover-card">
         <div style={{ width: '100%', height: '600px' }}>
           <ReactFlow
             nodes={nodes}
@@ -381,22 +385,26 @@ export const FloorPlan = () => {
             onConnect={onConnect}
             nodeTypes={nodeTypes}
             fitView
-            fitViewOptions={{ padding: 0.2 }}
+            fitViewOptions={{ padding: 0.3 }}
             attributionPosition="bottom-left"
-            style={{ backgroundColor: 'hsl(var(--background))' }}
+            style={{ 
+              backgroundColor: 'hsl(var(--background))',
+              borderRadius: '12px'
+            }}
           >
             <Controls
               position="top-right"
               style={{
                 background: 'hsl(var(--card))',
                 border: '1px solid hsl(var(--border))',
-                borderRadius: '8px',
+                borderRadius: '12px',
+                boxShadow: 'var(--shadow-card)',
               }}
             />
             <Background
               variant={BackgroundVariant.Dots}
-              gap={20}
-              size={1}
+              gap={24}
+              size={1.5}
               color="hsl(var(--border))"
             />
             {showMinimap && (
@@ -409,88 +417,110 @@ export const FloorPlan = () => {
                 style={{
                   background: 'hsl(var(--card))',
                   border: '1px solid hsl(var(--border))',
-                  borderRadius: '8px',
+                  borderRadius: '12px',
+                  boxShadow: 'var(--shadow-card)',
                 }}
               />
             )}
           </ReactFlow>
         </div>
-      </Card>
+      </div>
 
       {/* Legend */}
-      <Card className="bg-gradient-card border-border">
-        <CardContent className="p-4">
-          <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
-            <MapPin className="h-4 w-4" />
-            Legend
-          </h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
-            <div>
-              <p className="font-medium mb-1">Device Status:</p>
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-success rounded-full"></div>
-                  <span>Connected</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-warning rounded-full animate-pulse"></div>
-                  <span>Connecting</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-danger rounded-full"></div>
-                  <span>Disconnected</span>
-                </div>
+      <div className="bg-gradient-card border border-border rounded-xl p-6 hover-card">
+        <h3 className="text-lg font-bold mb-4 flex items-center gap-3 text-foreground">
+          <div className="bg-gradient-primary p-2 rounded-lg">
+            <MapPin className="h-4 w-4 text-primary-foreground" />
+          </div>
+          Legend & Guide
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 text-sm">
+          <div className="space-y-3">
+            <p className="font-semibold text-foreground flex items-center gap-2">
+              <div className="w-2 h-2 bg-gradient-primary rounded-full"></div>
+              Device Status
+            </p>
+            <div className="space-y-2 text-xs">
+              <div className="flex items-center gap-3">
+                <div className="w-3 h-3 bg-gradient-success rounded-full"></div>
+                <span className="text-muted-foreground">Connected</span>
               </div>
-            </div>
-            
-            <div>
-              <p className="font-medium mb-1">Item Status:</p>
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-success rounded-full"></div>
-                  <span>Secure</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-warning rounded-full"></div>
-                  <span>Moving</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-danger rounded-full"></div>
-                  <span>Alert/Missing</span>
-                </div>
+              <div className="flex items-center gap-3">
+                <div className="w-3 h-3 bg-gradient-warning rounded-full animate-pulse-glow"></div>
+                <span className="text-muted-foreground">Connecting</span>
               </div>
-            </div>
-
-            <div>
-              <p className="font-medium mb-1">Connections:</p>
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-[2px] bg-success"></div>
-                  <span>Secure Link</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-[2px] bg-warning"></div>
-                  <span>Active Link</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-[2px] bg-danger border-dashed border-t-2 bg-transparent"></div>
-                  <span>Alert Link</span>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <p className="font-medium mb-1">Interaction:</p>
-              <div className="space-y-1 text-muted-foreground">
-                <p>• Drag to pan view</p>
-                <p>• Scroll to zoom</p>
-                <p>• Click nodes for details</p>
-                <p>• Connect devices to items</p>
+              <div className="flex items-center gap-3">
+                <div className="w-3 h-3 bg-gradient-danger rounded-full"></div>
+                <span className="text-muted-foreground">Disconnected</span>
               </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
+          
+          <div className="space-y-3">
+            <p className="font-semibold text-foreground flex items-center gap-2">
+              <div className="w-2 h-2 bg-gradient-success rounded-full"></div>
+              Item Status
+            </p>
+            <div className="space-y-2 text-xs">
+              <div className="flex items-center gap-3">
+                <div className="w-3 h-3 bg-gradient-success rounded-full"></div>
+                <span className="text-muted-foreground">Secure</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-3 h-3 bg-gradient-warning rounded-full"></div>
+                <span className="text-muted-foreground">Moving</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-3 h-3 bg-gradient-danger rounded-full"></div>
+                <span className="text-muted-foreground">Alert/Missing</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <p className="font-semibold text-foreground flex items-center gap-2">
+              <div className="w-2 h-2 bg-accent rounded-full"></div>
+              Connections
+            </p>
+            <div className="space-y-2 text-xs">
+              <div className="flex items-center gap-3">
+                <div className="w-6 h-[3px] bg-gradient-success rounded-full"></div>
+                <span className="text-muted-foreground">Secure Link</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-6 h-[3px] bg-gradient-warning rounded-full"></div>
+                <span className="text-muted-foreground">Active Link</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-6 h-[3px] bg-gradient-danger rounded-full opacity-60" 
+                     style={{ background: 'repeating-linear-gradient(90deg, hsl(var(--danger)) 0px, hsl(var(--danger)) 4px, transparent 4px, transparent 8px)' }}></div>
+                <span className="text-muted-foreground">Alert Link</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <p className="font-semibold text-foreground flex items-center gap-2">
+              <div className="w-2 h-2 bg-secondary rounded-full"></div>
+              Interaction
+            </p>
+            <div className="space-y-2 text-xs text-muted-foreground">
+              <p className="flex items-center gap-2">
+                <span className="text-primary">•</span> Drag to pan view
+              </p>
+              <p className="flex items-center gap-2">
+                <span className="text-primary">•</span> Scroll to zoom
+              </p>
+              <p className="flex items-center gap-2">
+                <span className="text-primary">•</span> Click nodes for details
+              </p>
+              <p className="flex items-center gap-2">
+                <span className="text-primary">•</span> Connect devices to items
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
