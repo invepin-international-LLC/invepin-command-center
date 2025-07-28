@@ -132,6 +132,13 @@ export const Notifications = () => {
     // Check current notification permission
     if ('Notification' in window) {
       setPermissionStatus(Notification.permission);
+    } else {
+      console.log('Notification API not supported. Browser:', navigator.userAgent);
+      toast({
+        title: "Browser Compatibility",
+        description: "This browser doesn't support push notifications. Consider using Chrome, Firefox, or Safari for full functionality.",
+        variant: "destructive"
+      });
     }
 
     // Simulate real-time notifications
