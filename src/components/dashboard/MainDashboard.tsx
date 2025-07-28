@@ -6,6 +6,7 @@ import { BLEScanner } from "@/components/devices/BLEScanner";
 import { FloorPlan } from "@/components/floorplan/FloorPlan";
 import { BarcodeScanner } from "@/components/scanner/BarcodeScanner";
 import { Analytics } from "@/components/analytics/Analytics";
+import { Notifications } from "@/components/notifications/Notifications";
 import { 
   Shield, 
   Smartphone, 
@@ -18,7 +19,8 @@ import {
   TrendingUp,
   Activity,
   Users,
-  Package
+  Package,
+  Bell
 } from "lucide-react";
 
 interface User {
@@ -35,7 +37,7 @@ interface MainDashboardProps {
 
 export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
   const [selectedIndustry, setSelectedIndustry] = useState<'retail' | 'hospitality' | 'casino' | 'pharma'>('retail');
-  const [activeView, setActiveView] = useState<'overview' | 'devices' | 'floorplan' | 'scanner' | 'analytics'>('overview');
+  const [activeView, setActiveView] = useState<'overview' | 'devices' | 'floorplan' | 'scanner' | 'analytics' | 'notifications'>('overview');
 
   // Mock real-time data
   const stats = {
@@ -142,6 +144,15 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
             >
               <TrendingUp className="h-4 w-4 mr-1" />
               Analytics
+            </Button>
+            <Button 
+              variant={activeView === 'notifications' ? 'default' : 'outline'} 
+              size="sm"
+              onClick={() => setActiveView('notifications')}
+              className={activeView === 'notifications' ? 'bg-gradient-primary' : ''}
+            >
+              <Bell className="h-4 w-4 mr-1" />
+              Alerts
             </Button>
           </div>
           <Badge className={`${getRoleColor(user.role)} text-white`}>
@@ -339,8 +350,10 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
         <FloorPlan />
       ) : activeView === 'scanner' ? (
         <BarcodeScanner />
-      ) : (
+      ) : activeView === 'analytics' ? (
         <Analytics />
+      ) : (
+        <Notifications />
       )}
     </div>
   );
