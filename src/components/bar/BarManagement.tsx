@@ -178,16 +178,16 @@ export const BarManagement = () => {
 
   return (
     <Tabs defaultValue="overview" className="space-y-6">
-      <TabsList className="flex w-full flex-wrap gap-1 h-auto p-1">
-        <TabsTrigger value="overview" className="flex-1 min-w-0 text-xs sm:text-sm px-2 py-2">Overview</TabsTrigger>
-        <TabsTrigger value="pour-detection" className="flex-1 min-w-0 text-xs sm:text-sm px-2 py-2">Live Pours</TabsTrigger>
-        <TabsTrigger value="ble-devices" className="flex-1 min-w-0 text-xs sm:text-sm px-2 py-2">BLE Devices</TabsTrigger>
-        <TabsTrigger value="loss-prevention" className="flex-1 min-w-0 text-xs sm:text-sm px-2 py-2">Loss Prevention</TabsTrigger>
-        <TabsTrigger value="inventory" className="flex-1 min-w-0 text-xs sm:text-sm px-2 py-2">Inventory</TabsTrigger>
-        <TabsTrigger value="shifts" className="flex-1 min-w-0 text-xs sm:text-sm px-2 py-2">Shift Reports</TabsTrigger>
-        <TabsTrigger value="mobile" className="flex-1 min-w-0 text-xs sm:text-sm px-2 py-2">Mobile Staff</TabsTrigger>
-        <TabsTrigger value="manager" className="flex-1 min-w-0 text-xs sm:text-sm px-2 py-2">Manager</TabsTrigger>
-        <TabsTrigger value="analytics" className="flex-1 min-w-0 text-xs sm:text-sm px-2 py-2">Analytics</TabsTrigger>
+      <TabsList className="flex w-full flex-wrap gap-1 h-auto p-1 bg-muted">
+        <TabsTrigger value="overview" className="flex-shrink-0 text-xs sm:text-sm px-3 py-2 whitespace-nowrap">Overview</TabsTrigger>
+        <TabsTrigger value="pour-detection" className="flex-shrink-0 text-xs sm:text-sm px-3 py-2 whitespace-nowrap">Live Pours</TabsTrigger>
+        <TabsTrigger value="ble-devices" className="flex-shrink-0 text-xs sm:text-sm px-3 py-2 whitespace-nowrap">BLE Devices</TabsTrigger>
+        <TabsTrigger value="loss-prevention" className="flex-shrink-0 text-xs sm:text-sm px-3 py-2 whitespace-nowrap">Loss Prevention</TabsTrigger>
+        <TabsTrigger value="inventory" className="flex-shrink-0 text-xs sm:text-sm px-3 py-2 whitespace-nowrap">Inventory</TabsTrigger>
+        <TabsTrigger value="shifts" className="flex-shrink-0 text-xs sm:text-sm px-3 py-2 whitespace-nowrap">Shift Reports</TabsTrigger>
+        <TabsTrigger value="mobile" className="flex-shrink-0 text-xs sm:text-sm px-3 py-2 whitespace-nowrap">Mobile Staff</TabsTrigger>
+        <TabsTrigger value="manager" className="flex-shrink-0 text-xs sm:text-sm px-3 py-2 whitespace-nowrap">Manager</TabsTrigger>
+        <TabsTrigger value="analytics" className="flex-shrink-0 text-xs sm:text-sm px-3 py-2 whitespace-nowrap">Analytics</TabsTrigger>
       </TabsList>
 
       <TabsContent value="overview" className="space-y-6">

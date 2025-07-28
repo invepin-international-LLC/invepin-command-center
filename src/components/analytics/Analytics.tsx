@@ -501,21 +501,21 @@ export const Analytics = () => {
             <CardContent>
               <div className="space-y-4">
                 {/* Heatmap Grid */}
-                <div className="grid grid-cols-12 gap-1 p-4 bg-background/20 rounded-lg">
+                <div className="grid grid-cols-12 gap-1 p-4 bg-muted/20 rounded-lg">
                   {Array.from({ length: 144 }, (_, i) => {
                     const intensity = Math.random();
                     const getHeatColor = (intensity: number) => {
-                      if (intensity > 0.8) return 'bg-red-500/80';
-                      if (intensity > 0.6) return 'bg-orange-500/70';
-                      if (intensity > 0.4) return 'bg-yellow-500/60';
-                      if (intensity > 0.2) return 'bg-green-500/50';
-                      return 'bg-blue-500/30';
+                      if (intensity > 0.8) return 'bg-destructive/80 border-destructive/20';
+                      if (intensity > 0.6) return 'bg-warning/70 border-warning/20';
+                      if (intensity > 0.4) return 'bg-accent/60 border-accent/20';
+                      if (intensity > 0.2) return 'bg-success/50 border-success/20';
+                      return 'bg-primary/30 border-primary/20';
                     };
                     
                     return (
                       <div
                         key={i}
-                        className={`aspect-square rounded-sm cursor-pointer transition-all duration-200 hover:scale-125 hover:shadow-lg ${getHeatColor(intensity)}`}
+                        className={`aspect-square rounded-sm cursor-pointer transition-all duration-200 hover:scale-110 hover:shadow-lg border ${getHeatColor(intensity)}`}
                         title={`Zone ${Math.floor(i / 12) + 1}-${(i % 12) + 1}: ${(intensity * 100).toFixed(0)}% activity`}
                       />
                     );
@@ -527,23 +527,23 @@ export const Analytics = () => {
                   <div className="flex items-center gap-2">
                     <span className="text-muted-foreground">Activity Level:</span>
                     <div className="flex items-center gap-1">
-                      <div className="w-3 h-3 bg-blue-500/30 rounded-sm"></div>
+                      <div className="w-3 h-3 bg-primary/30 border border-primary/20 rounded-sm"></div>
                       <span>Low</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <div className="w-3 h-3 bg-green-500/50 rounded-sm"></div>
+                      <div className="w-3 h-3 bg-success/50 border border-success/20 rounded-sm"></div>
                       <span>Moderate</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <div className="w-3 h-3 bg-yellow-500/60 rounded-sm"></div>
+                      <div className="w-3 h-3 bg-accent/60 border border-accent/20 rounded-sm"></div>
                       <span>High</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <div className="w-3 h-3 bg-orange-500/70 rounded-sm"></div>
+                      <div className="w-3 h-3 bg-warning/70 border border-warning/20 rounded-sm"></div>
                       <span>Very High</span>
                     </div>
                     <div className="flex items-center gap-1">
-                      <div className="w-3 h-3 bg-red-500/80 rounded-sm"></div>
+                      <div className="w-3 h-3 bg-destructive/80 border border-destructive/20 rounded-sm"></div>
                       <span>Critical</span>
                     </div>
                   </div>
