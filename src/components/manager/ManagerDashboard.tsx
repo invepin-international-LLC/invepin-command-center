@@ -59,12 +59,12 @@ export const ManagerDashboard = () => {
           </p>
         </div>
         
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button variant="outline" onClick={refreshData} disabled={loading}>
             <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
-          <Button className="bg-gradient-primary">
+          <Button className="bg-gradient-primary text-xs sm:text-sm">
             <Download className="h-4 w-4 mr-2" />
             Export Report
           </Button>

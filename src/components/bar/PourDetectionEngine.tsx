@@ -271,7 +271,7 @@ export const PourDetectionEngine = () => {
             {recentPours.length > 0 ? (
               recentPours.slice(0, 5).map((pour) => (
                 <div key={pour.id} className="p-3 bg-background/30 rounded-lg border border-border/50">
-                  <div className="flex items-center justify-between mb-2">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
                     <div className="flex items-center gap-2">
                       <DropletIcon className="h-4 w-4 text-primary" />
                       <span className="font-medium">{pour.bottleId.replace('-', ' ').toUpperCase()}</span>
@@ -339,7 +339,7 @@ export const PourDetectionEngine = () => {
               <h4 className="font-medium">Pour Quality Distribution</h4>
               
               <div className="space-y-2">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-wrap items-center justify-between gap-1">
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full bg-success"></div>
                     <span className="text-sm">Perfect (95%+)</span>
@@ -347,7 +347,7 @@ export const PourDetectionEngine = () => {
                   <span className="text-sm font-medium">{analytics.perfectPours}</span>
                 </div>
                 
-                <div className="flex items-center justify-between">
+                <div className="flex flex-wrap items-center justify-between gap-1">
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full bg-primary"></div>
                     <span className="text-sm">Good (85-94%)</span>
@@ -357,7 +357,7 @@ export const PourDetectionEngine = () => {
                   </span>
                 </div>
                 
-                <div className="flex items-center justify-between">
+                <div className="flex flex-wrap items-center justify-between gap-1">
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full bg-warning"></div>
                     <span className="text-sm">Over Pour</span>
@@ -365,7 +365,7 @@ export const PourDetectionEngine = () => {
                   <span className="text-sm font-medium">{analytics.overPours}</span>
                 </div>
                 
-                <div className="flex items-center justify-between">
+                <div className="flex flex-wrap items-center justify-between gap-1">
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full bg-danger"></div>
                     <span className="text-sm">Under Pour</span>

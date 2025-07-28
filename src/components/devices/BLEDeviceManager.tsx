@@ -45,7 +45,7 @@ export const BLEDeviceManager = ({ bottles }: BLEDeviceManagerProps) => {
       {/* BLE Device Management */}
       <Card className="bg-gradient-card border-border">
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <CardTitle className="flex items-center gap-2">
                 <Bluetooth className="h-5 w-5" />
@@ -66,7 +66,7 @@ export const BLEDeviceManager = ({ bottles }: BLEDeviceManagerProps) => {
         <CardContent className="space-y-4">
           {devices.map((device) => (
             <div key={device.id} className="p-4 bg-background/30 rounded-lg border border-border/50">
-              <div className="flex items-center justify-between mb-3">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
                 <div className="flex items-center gap-3">
                   <div className="text-2xl">{getDeviceTypeIcon(device.type)}</div>
                   <div>
@@ -104,13 +104,13 @@ export const BLEDeviceManager = ({ bottles }: BLEDeviceManagerProps) => {
                 </div>
               )}
 
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div className="flex items-center gap-2">
                   <Select 
                     value={device.assignedBottle || "unassigned"} 
                     onValueChange={(value) => assignBottle(device.id, value === "unassigned" ? undefined : value)}
                   >
-                    <SelectTrigger className="w-48">
+                    <SelectTrigger className="w-full sm:w-48">
                       <SelectValue placeholder="Assign to bottle" />
                     </SelectTrigger>
                     <SelectContent>
@@ -167,7 +167,7 @@ export const BLEDeviceManager = ({ bottles }: BLEDeviceManagerProps) => {
               
               return (
                 <div key={data.deviceId} className="p-3 bg-primary/10 rounded-lg border border-primary/20 animate-pulse">
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                     <div>
                       <p className="font-medium text-primary">🔴 LIVE POUR</p>
                       <p className="text-sm">{bottle?.name} via {device?.name}</p>

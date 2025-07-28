@@ -30,7 +30,7 @@ export const BottleInventory = ({ bottles, bartenders }: BottleInventoryProps) =
           const assignedBartender = bartenders.find(b => b.id === bottle.assignedBartender);
           return (
             <div key={bottle.id} className="p-3 bg-background/30 rounded-lg border border-border/50">
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
                 <div>
                   <p className="font-medium">{bottle.name}</p>
                   <p className="text-sm text-muted-foreground">{bottle.brand}</p>
@@ -44,7 +44,7 @@ export const BottleInventory = ({ bottles, bartenders }: BottleInventoryProps) =
               </div>
               
               <div className="space-y-2">
-                <div className="flex items-center justify-between text-sm">
+                <div className="flex flex-wrap items-center justify-between gap-1 text-sm">
                   <span>Level</span>
                   <span className={`font-medium ${getBottleLevelColor(bottle.level)}`}>
                     {bottle.level}%
@@ -52,14 +52,14 @@ export const BottleInventory = ({ bottles, bartenders }: BottleInventoryProps) =
                 </div>
                 <Progress value={bottle.level} className="h-2" />
                 
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <div className="flex flex-wrap items-center justify-between gap-1 text-xs text-muted-foreground">
                   <span>Last pour: {bottle.lastPour}</span>
                   {assignedBartender && (
                     <span>Assigned: {assignedBartender.name}</span>
                   )}
                 </div>
                 {bottle.sensorId && (
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <div className="flex flex-wrap items-center justify-between gap-1 text-xs text-muted-foreground">
                     <span>Sensor: {bottle.sensorId}</span>
                     <Badge variant="outline" className="text-xs">BLE Connected</Badge>
                   </div>

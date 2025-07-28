@@ -28,7 +28,7 @@ export const BartenderDashboard = ({ bartenders, onClockIn, onClockOut }: Barten
       </CardHeader>
       <CardContent className="space-y-4">
         {bartenders.map((bartender) => (
-          <div key={bartender.id} className="flex items-center justify-between p-3 bg-background/30 rounded-lg border border-border/50">
+          <div key={bartender.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 bg-background/30 rounded-lg border border-border/50">
             <div className="flex items-center gap-3">
               <Avatar className="h-10 w-10">
                 <AvatarImage src={bartender.avatar} />

@@ -132,7 +132,7 @@ export const AlertSettings = () => {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-4">
-            <div className="flex items-center justify-between p-3 bg-background/30 rounded-lg border border-border/50">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 bg-background/30 rounded-lg border border-border/50">
               <div className="flex items-center gap-3">
                 <Bell className="h-5 w-5 text-primary" />
                 <div>
@@ -151,7 +151,7 @@ export const AlertSettings = () => {
               />
             </div>
 
-            <div className="flex items-center justify-between p-3 bg-background/30 rounded-lg border border-border/50">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 bg-background/30 rounded-lg border border-border/50">
               <div className="flex items-center gap-3">
                 <Mail className="h-5 w-5 text-primary" />
                 <div>
@@ -170,7 +170,7 @@ export const AlertSettings = () => {
               />
             </div>
 
-            <div className="flex items-center justify-between p-3 bg-background/30 rounded-lg border border-border/50">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 bg-background/30 rounded-lg border border-border/50">
               <div className="flex items-center gap-3">
                 <Phone className="h-5 w-5 text-primary" />
                 <div>
@@ -189,7 +189,7 @@ export const AlertSettings = () => {
               />
             </div>
 
-            <div className="flex items-center justify-between p-3 bg-background/30 rounded-lg border border-border/50">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 bg-background/30 rounded-lg border border-border/50">
               <div className="flex items-center gap-3">
                 <Smartphone className="h-5 w-5 text-primary" />
                 <div>

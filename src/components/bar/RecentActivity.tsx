@@ -26,7 +26,7 @@ export const RecentActivity = ({ recentPours, bottles, bartenders }: RecentActiv
             const bartender = bartenders.find(b => b.id === pour.bartenderId);
             
             return (
-              <div key={pour.id} className="flex items-center justify-between p-3 bg-background/30 rounded-lg border border-border/50">
+              <div key={pour.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 bg-background/30 rounded-lg border border-border/50">
                 <div className="flex items-center gap-3">
                   <DropletIcon className="h-4 w-4 text-primary" />
                   <div>

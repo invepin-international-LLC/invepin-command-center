@@ -25,7 +25,7 @@ export const StatsOverview = ({ bartenders, bottles }: StatsOverviewProps) => {
     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
       <Card className="bg-gradient-card border-border">
         <CardContent className="p-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div>
               <p className="text-sm text-muted-foreground">Active Bartenders</p>
               <p className="text-2xl font-bold">{activeBartenders.length}</p>
@@ -37,7 +37,7 @@ export const StatsOverview = ({ bartenders, bottles }: StatsOverviewProps) => {
 
       <Card className="bg-gradient-card border-border">
         <CardContent className="p-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div>
               <p className="text-sm text-muted-foreground">Today's Pours</p>
               <p className="text-2xl font-bold">{totalPours}</p>
@@ -49,7 +49,7 @@ export const StatsOverview = ({ bartenders, bottles }: StatsOverviewProps) => {
 
       <Card className="bg-gradient-card border-border">
         <CardContent className="p-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div>
               <p className="text-sm text-muted-foreground">Avg Accuracy</p>
               <p className={`text-2xl font-bold ${getAccuracyColor(avgAccuracy)}`}>{avgAccuracy}%</p>
@@ -61,7 +61,7 @@ export const StatsOverview = ({ bartenders, bottles }: StatsOverviewProps) => {
 
       <Card className="bg-gradient-card border-border">
         <CardContent className="p-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div>
               <p className="text-sm text-muted-foreground">Low Stock</p>
               <p className={`text-2xl font-bold ${lowStockBottles > 0 ? 'text-danger' : 'text-success'}`}>

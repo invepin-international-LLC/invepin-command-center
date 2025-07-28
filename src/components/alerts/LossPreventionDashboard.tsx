@@ -239,7 +239,7 @@ export const LossPreventionDashboard = () => {
             <CardContent className="space-y-3">
               {resolvedAlerts.map((alert) => (
                 <div key={alert.id} className="p-3 bg-background/30 rounded-lg border border-border/50 opacity-75">
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div className="flex items-center gap-3">
                       <div className="text-lg">{getTypeIcon(alert.type)}</div>
                       <div>

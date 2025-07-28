@@ -153,7 +153,7 @@ export const Analytics = () => {
       {/* Analytics Header */}
       <Card className="bg-gradient-card border-border">
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="bg-gradient-primary p-2 rounded-lg">
                 <BarChart3 className="h-5 w-5 text-primary-foreground" />
@@ -164,9 +164,9 @@ export const Analytics = () => {
               </div>
             </div>
             
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <Select value={timeRange} onValueChange={setTimeRange}>
-                <SelectTrigger className="w-32">
+                <SelectTrigger className="w-full sm:w-32">
                   <Calendar className="h-4 w-4 mr-2" />
                   <SelectValue />
                 </SelectTrigger>
@@ -178,7 +178,7 @@ export const Analytics = () => {
                 </SelectContent>
               </Select>
               
-              <Button variant="outline" size="sm" onClick={() => handleExport('csv')}>
+              <Button variant="outline" size="sm" onClick={() => handleExport('csv')} className="text-xs">
                 <Download className="h-4 w-4 mr-1" />
                 Export
               </Button>
