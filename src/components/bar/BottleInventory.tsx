@@ -40,68 +40,71 @@ export const BottleInventory = ({ bottles, bartenders }: BottleInventoryProps) =
           </Button>
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-6">
         {bottles.map((bottle) => {
           const assignedBartender = bartenders.find(b => b.id === bottle.assignedBartender);
           const { remainingML, shotsRemaining } = calculateRemainingShots(bottle.level);
           
           return (
-            <div key={bottle.id} className="p-4 bg-background/30 rounded-lg border border-border/50">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
-                <div className="min-w-0 flex-1">
-                  <p className="font-medium truncate">{bottle.name}</p>
-                  <p className="text-sm text-muted-foreground truncate">{bottle.brand}</p>
-                </div>
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
-                  <Badge variant={bottle.isActive ? "default" : "secondary"}>
-                    {bottle.isActive ? "Active" : "Idle"}
-                  </Badge>
-                  <span className="text-xs text-muted-foreground">{bottle.pourCount} pours today</span>
+            <div key={bottle.id} className="p-6 bg-background/30 rounded-lg border border-border/50">
+              {/* Header Section */}
+              <div className="flex flex-col gap-4 mb-6">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-semibold text-lg mb-1">{bottle.name}</h3>
+                    <p className="text-muted-foreground">{bottle.brand}</p>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <Badge variant={bottle.isActive ? "default" : "secondary"} className="whitespace-nowrap">
+                      {bottle.isActive ? "Active" : "Idle"}
+                    </Badge>
+                    <span className="text-sm text-muted-foreground whitespace-nowrap">{bottle.pourCount} pours today</span>
+                  </div>
                 </div>
               </div>
               
-              <div className="space-y-3">
+              <div className="space-y-6">
                 {/* Remaining Shots - Prominent Display */}
-                <div className="p-3 bg-gradient-primary/10 rounded-lg border border-primary/20">
+                <div className="p-4 bg-gradient-primary/10 rounded-lg border border-primary/20">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-primary">Remaining Shots</span>
+                    <span className="font-medium text-primary">Remaining Shots</span>
                     <div className="text-right">
-                      <p className="text-xl font-bold text-primary">{shotsRemaining}</p>
-                      <p className="text-xs text-muted-foreground">{remainingML.toFixed(0)}ml left</p>
+                      <p className="text-2xl font-bold text-primary">{shotsRemaining}</p>
+                      <p className="text-sm text-muted-foreground">{remainingML.toFixed(0)}ml remaining</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Level Progress */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between text-sm">
-                    <span>Level</span>
-                    <span className={`font-medium ${getBottleLevelColor(bottle.level)}`}>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium">Current Level</span>
+                    <span className={`font-bold text-lg ${getBottleLevelColor(bottle.level)}`}>
                       {bottle.level}%
                     </span>
                   </div>
-                  <Progress value={bottle.level} className="h-3" />
+                  <Progress value={bottle.level} className="h-4" />
                 </div>
                 
                 {/* Additional Info */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-muted-foreground">
-                  <div className="flex items-center justify-between sm:justify-start">
-                    <span>Last pour:</span>
-                    <span className="ml-1 truncate">{bottle.lastPour}</span>
+                <div className="grid grid-cols-1 gap-3">
+                  <div className="flex items-center justify-between py-2 border-b border-border/30">
+                    <span className="text-muted-foreground">Last Pour</span>
+                    <span className="font-medium">{bottle.lastPour}</span>
                   </div>
                   {assignedBartender && (
-                    <div className="flex items-center justify-between sm:justify-start">
-                      <span>Assigned:</span>
-                      <span className="ml-1 truncate">{assignedBartender.name}</span>
+                    <div className="flex items-center justify-between py-2 border-b border-border/30">
+                      <span className="text-muted-foreground">Assigned To</span>
+                      <span className="font-medium">{assignedBartender.name}</span>
                     </div>
                   )}
                 </div>
                 
                 {bottle.sensorId && (
-                  <div className="flex items-center justify-between pt-2 border-t border-border/50">
-                    <span className="text-xs text-muted-foreground">Sensor: {bottle.sensorId}</span>
-                    <Badge variant="outline" className="text-xs">
-                      <div className="w-2 h-2 bg-green-500 rounded-full mr-1 animate-pulse"></div>
+                  <div className="flex items-center justify-between pt-4 border-t border-border/50">
+                    <span className="text-sm text-muted-foreground">Sensor ID: {bottle.sensorId}</span>
+                    <Badge variant="outline" className="text-sm">
+                      <div className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
                       BLE Connected
                     </Badge>
                   </div>
