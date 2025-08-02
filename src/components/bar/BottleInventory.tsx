@@ -46,7 +46,7 @@ export const BottleInventory = ({ bottles, bartenders, onAddBottle }: BottleInve
       lastPour: 'Never',
       pourCount: 0,
       isActive: true,
-      assignedBartender: newBottle.assignedBartender || undefined,
+      assignedBartender: newBottle.assignedBartender === 'unassigned' ? undefined : newBottle.assignedBartender,
       sensorId: newBottle.sensorId || undefined
     };
     
@@ -123,7 +123,7 @@ export const BottleInventory = ({ bottles, bartenders, onAddBottle }: BottleInve
                       <SelectValue placeholder="Select bartender" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">No assignment</SelectItem>
+                      <SelectItem value="unassigned">No assignment</SelectItem>
                       {bartenders.map((bartender) => (
                         <SelectItem key={bartender.id} value={bartender.id}>
                           {bartender.name}
