@@ -3,6 +3,10 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
 import { 
   Map, 
   RotateCcw,
@@ -12,7 +16,19 @@ import {
   MapPin,
   Navigation,
   Target,
-  Eye
+  Eye,
+  Settings,
+  Package,
+  Users,
+  AlertTriangle,
+  Activity,
+  Wifi,
+  Battery,
+  TrendingUp,
+  ShoppingBag,
+  Wine,
+  Shield,
+  X
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -35,6 +51,29 @@ import { ZoneNode } from './nodes/ZoneNode';
 
 interface FloorPlanProps {
   industry?: string;
+}
+
+interface ZoneManagementData {
+  id: string;
+  name: string;
+  type: string;
+  deviceCount: number;
+  itemCount: number;
+  alertCount?: number;
+  devices: DeviceData[];
+  recentActivity: Array<{
+    id: string;
+    type: 'movement' | 'alert' | 'connection' | 'battery';
+    message: string;
+    timestamp: string;
+    severity: 'low' | 'medium' | 'high' | 'critical';
+  }>;
+  metrics: {
+    uptime: number;
+    avgSignalStrength: number;
+    totalValue: number;
+    lastInspection: string;
+  };
 }
 
 interface DeviceData {
@@ -331,6 +370,8 @@ export const FloorPlan = ({ industry = 'retail' }: FloorPlanProps = {}) => {
   const [statusFilter, setStatusFilter] = useState<'all' | 'connected' | 'disconnected' | 'connecting'>('all');
   const [autoTrackingEnabled, setAutoTrackingEnabled] = useState(true);
   const [trackingReason, setTrackingReason] = useState<string>('');
+  const [selectedZone, setSelectedZone] = useState<ZoneManagementData | null>(null);
+  const [isZoneModalOpen, setIsZoneModalOpen] = useState(false);
   const { toast } = useToast();
 
   // Update nodes when industry changes
@@ -497,6 +538,98 @@ export const FloorPlan = ({ industry = 'retail' }: FloorPlanProps = {}) => {
       return true;
     });
   };
+
+  // Generate zone management data
+  const getZoneManagementData = (zoneId: string): ZoneManagementData => {
+    const baseZones = [
+      {
+        id: 'zone-1',
+        name: 'Entrance Hall',
+        type: 'entrance',
+        deviceCount: 2,
+        itemCount: 3,
+      },
+      {
+        id: 'zone-2',
+        name: industry === 'hospitality' ? 'Bar Area' : industry === 'casino' ? 'Gaming Floor' : industry === 'pharma' ? 'Secure Storage' : 'High Security',
+        type: 'security',
+        deviceCount: 3,
+        itemCount: 5,
+        alertCount: 1,
+      },
+      {
+        id: 'zone-3',
+        name: industry === 'hospitality' ? 'Wine Cellar' : industry === 'casino' ? 'VIP Area' : industry === 'pharma' ? 'Cold Storage' : 'Storage Area',
+        type: 'storage',
+        deviceCount: 1,
+        itemCount: 2,
+      },
+    ];
+
+    const zone = baseZones.find(z => z.id === zoneId) || baseZones[0];
+    const zoneDevices = mockDevices.slice(0, zone.deviceCount);
+    
+    return {
+      ...zone,
+      devices: zoneDevices,
+      recentActivity: [
+        {
+          id: 'act-1',
+          type: 'movement',
+          message: `Device ${zoneDevices[0]?.name} detected movement`,
+          timestamp: '2 minutes ago',
+          severity: 'medium',
+        },
+        {
+          id: 'act-2',
+          type: 'connection',
+          message: `${zoneDevices[1]?.name} connected successfully`,
+          timestamp: '5 minutes ago',
+          severity: 'low',
+        },
+        {
+          id: 'act-3',
+          type: 'alert',
+          message: 'Unauthorized access attempt detected',
+          timestamp: '10 minutes ago',
+          severity: 'high',
+        },
+        {
+          id: 'act-4',
+          type: 'battery',
+          message: `Low battery warning for ${zoneDevices[0]?.name}`,
+          timestamp: '1 hour ago',
+          severity: 'medium',
+        },
+      ],
+      metrics: {
+        uptime: 98.5,
+        avgSignalStrength: -52,
+        totalValue: zoneDevices.reduce((sum, device) => sum + (device.itemValue || 0), 0),
+        lastInspection: '2 hours ago',
+      },
+    };
+  };
+
+  // Handle zone click
+  const handleZoneClick = (zoneId: string) => {
+    const zoneData = getZoneManagementData(zoneId);
+    setSelectedZone(zoneData);
+    setIsZoneModalOpen(true);
+    toast({
+      title: "Zone Selected",
+      description: `Opening management interface for ${zoneData.name}`,
+    });
+  };
+
+  // Handle node clicks
+  const onNodeClick = useCallback((event: React.MouseEvent, node: Node) => {
+    if (node.type === 'zone') {
+      handleZoneClick(node.id);
+    } else if (node.type === 'device') {
+      trackDevice(node.id);
+    }
+  }, []);
 
   return (
     <div className="space-y-4">
@@ -714,6 +847,7 @@ export const FloorPlan = ({ industry = 'retail' }: FloorPlanProps = {}) => {
               onNodesChange={onNodesChange}
               onEdgesChange={onEdgesChange}
               onConnect={onConnect}
+              onNodeClick={onNodeClick}
               nodeTypes={nodeTypes}
               fitView
               className="reactflow-wrapper w-full h-full"
@@ -971,6 +1105,266 @@ export const FloorPlan = ({ industry = 'retail' }: FloorPlanProps = {}) => {
           </div>
         </div>
       </div>
+
+      {/* Zone Management Modal */}
+      <Dialog open={isZoneModalOpen} onOpenChange={setIsZoneModalOpen}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-hidden">
+          <DialogHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="bg-gradient-primary p-3 rounded-lg">
+                  <Shield className="h-6 w-6 text-primary-foreground" />
+                </div>
+                <div>
+                  <DialogTitle className="text-xl">{selectedZone?.name}</DialogTitle>
+                  <DialogDescription className="text-base">
+                    Manage devices, monitor activity, and configure settings for this zone
+                  </DialogDescription>
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsZoneModalOpen(false)}
+                className="hover:bg-destructive/10 hover:text-destructive"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </DialogHeader>
+
+          {selectedZone && (
+            <div className="mt-6">
+              <Tabs defaultValue="overview" className="space-y-4">
+                <TabsList className="grid w-full grid-cols-4">
+                  <TabsTrigger value="overview">Overview</TabsTrigger>
+                  <TabsTrigger value="devices">Devices</TabsTrigger>
+                  <TabsTrigger value="activity">Activity</TabsTrigger>
+                  <TabsTrigger value="settings">Settings</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="overview" className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Card>
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-sm font-medium flex items-center gap-2">
+                          <Activity className="h-4 w-4" />
+                          Zone Status
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-2">
+                          <div className="flex justify-between text-sm">
+                            <span>Uptime</span>
+                            <span className="font-bold text-success">{selectedZone.metrics.uptime}%</span>
+                          </div>
+                          <Progress value={selectedZone.metrics.uptime} className="h-2" />
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-sm font-medium flex items-center gap-2">
+                          <Wifi className="h-4 w-4" />
+                          Signal Strength
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-2">
+                          <div className="flex justify-between text-sm">
+                            <span>Average RSSI</span>
+                            <span className="font-bold">{selectedZone.metrics.avgSignalStrength} dBm</span>
+                          </div>
+                          <Progress value={Math.abs(selectedZone.metrics.avgSignalStrength + 100)} className="h-2" />
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-sm font-medium flex items-center gap-2">
+                          <TrendingUp className="h-4 w-4" />
+                          Total Value
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold text-primary">
+                          ${selectedZone.metrics.totalValue.toLocaleString()}
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          Across {selectedZone.itemCount} monitored items
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-base flex items-center gap-2">
+                          <Package className="h-5 w-5" />
+                          Zone Summary
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-3">
+                        <div className="flex justify-between">
+                          <span className="text-sm text-muted-foreground">Active Devices</span>
+                          <Badge variant="default">{selectedZone.deviceCount}</Badge>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-sm text-muted-foreground">Monitored Items</span>
+                          <Badge variant="secondary">{selectedZone.itemCount}</Badge>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-sm text-muted-foreground">Active Alerts</span>
+                          <Badge variant={selectedZone.alertCount ? "destructive" : "default"}>
+                            {selectedZone.alertCount || 0}
+                          </Badge>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-sm text-muted-foreground">Last Inspection</span>
+                          <span className="text-sm font-medium">{selectedZone.metrics.lastInspection}</span>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader>
+                        <CardTitle className="text-base flex items-center gap-2">
+                          <AlertTriangle className="h-5 w-5" />
+                          Recent Alerts
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <ScrollArea className="h-32">
+                          <div className="space-y-2">
+                            {selectedZone.recentActivity
+                              .filter(activity => activity.type === 'alert')
+                              .map(alert => (
+                                <div key={alert.id} className="flex items-start gap-2 p-2 rounded bg-destructive/10 border border-destructive/20">
+                                  <AlertTriangle className="h-4 w-4 text-destructive mt-0.5 flex-shrink-0" />
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm text-destructive font-medium">{alert.message}</p>
+                                    <p className="text-xs text-muted-foreground">{alert.timestamp}</p>
+                                  </div>
+                                </div>
+                              ))}
+                          </div>
+                        </ScrollArea>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="devices" className="space-y-4">
+                  <div className="grid gap-4">
+                    {selectedZone.devices.map(device => (
+                      <Card key={device.id}>
+                        <CardContent className="p-4">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="flex flex-col items-center">
+                                <div className={`w-3 h-3 rounded-full ${device.status === 'connected' ? 'bg-success' : device.status === 'connecting' ? 'bg-warning' : 'bg-destructive'}`}></div>
+                                <span className="text-xs mt-1">{device.status}</span>
+                              </div>
+                              <div>
+                                <h4 className="font-semibold">{device.name}</h4>
+                                <p className="text-sm text-muted-foreground">{device.attachedItem}</p>
+                                <div className="flex items-center gap-2 mt-1">
+                                  <Badge variant="outline" className="text-xs">
+                                    <Battery className="h-3 w-3 mr-1" />
+                                    {device.battery}%
+                                  </Badge>
+                                  <Badge variant="outline" className="text-xs">
+                                    <Wifi className="h-3 w-3 mr-1" />
+                                    {device.rssi} dBm
+                                  </Badge>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-bold">${device.itemValue?.toLocaleString()}</p>
+                              <Badge variant={device.riskLevel === 'critical' ? 'destructive' : device.riskLevel === 'high' ? 'default' : 'secondary'}>
+                                {device.riskLevel}
+                              </Badge>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="activity" className="space-y-4">
+                  <ScrollArea className="h-64">
+                    <div className="space-y-3">
+                      {selectedZone.recentActivity.map(activity => (
+                        <div key={activity.id} className="flex items-start gap-3 p-3 rounded-lg border border-border/50 bg-background/30">
+                          <div className={`p-2 rounded-lg ${
+                            activity.severity === 'critical' ? 'bg-destructive/20 text-destructive' :
+                            activity.severity === 'high' ? 'bg-warning/20 text-warning' :
+                            activity.severity === 'medium' ? 'bg-primary/20 text-primary' :
+                            'bg-success/20 text-success'
+                          }`}>
+                            {activity.type === 'movement' && <Activity className="h-4 w-4" />}
+                            {activity.type === 'alert' && <AlertTriangle className="h-4 w-4" />}
+                            {activity.type === 'connection' && <Wifi className="h-4 w-4" />}
+                            {activity.type === 'battery' && <Battery className="h-4 w-4" />}
+                          </div>
+                          <div className="flex-1">
+                            <p className="font-medium">{activity.message}</p>
+                            <p className="text-sm text-muted-foreground">{activity.timestamp}</p>
+                          </div>
+                          <Badge variant={
+                            activity.severity === 'critical' ? 'destructive' :
+                            activity.severity === 'high' ? 'default' :
+                            'secondary'
+                          }>
+                            {activity.severity}
+                          </Badge>
+                        </div>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                </TabsContent>
+
+                <TabsContent value="settings" className="space-y-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-base">Zone Configuration</CardTitle>
+                      <CardDescription>Manage security settings and monitoring preferences</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium">Alert Notifications</p>
+                          <p className="text-sm text-muted-foreground">Receive alerts for this zone</p>
+                        </div>
+                        <Badge variant="default">Enabled</Badge>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium">Auto-Tracking</p>
+                          <p className="text-sm text-muted-foreground">Automatically track high-value items</p>
+                        </div>
+                        <Badge variant="default">Active</Badge>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium">Zone Access Level</p>
+                          <p className="text-sm text-muted-foreground">Current security clearance level</p>
+                        </div>
+                        <Badge variant="secondary">Level {selectedZone.type === 'security' ? '3' : '2'}</Badge>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              </Tabs>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
