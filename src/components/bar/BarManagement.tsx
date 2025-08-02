@@ -156,6 +156,19 @@ export const BarManagement = ({ industry = 'retail' }: BarManagementProps = {}) 
     });
   };
 
+  const handleAddBottle = (newBottleData: Omit<Bottle, 'id'>) => {
+    const newBottle: Bottle = {
+      ...newBottleData,
+      id: `bottle-${Date.now()}`, // Generate unique ID
+    };
+    
+    setBottles(prev => [...prev, newBottle]);
+    toast({
+      title: "Bottle Added",
+      description: `${newBottle.name} has been added to inventory`,
+    });
+  };
+
   // Simulate monitoring integration with inventory updates
   const simulatePourEvent = () => {
     const mockPour: PourEvent = {
@@ -203,7 +216,7 @@ export const BarManagement = ({ industry = 'retail' }: BarManagementProps = {}) 
             onClockIn={handleClockIn}
             onClockOut={handleClockOut}
           />
-          <BottleInventory bottles={bottles} bartenders={bartenders} />
+          <BottleInventory bottles={bottles} bartenders={bartenders} onAddBottle={handleAddBottle} />
         </div>
 
         <RecentActivity 
