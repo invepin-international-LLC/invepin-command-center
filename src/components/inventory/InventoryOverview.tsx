@@ -13,12 +13,16 @@ import {
   Truck
 } from "lucide-react";
 import { InventoryAnalytics } from "@/types/inventory";
+import { useToast } from "@/hooks/use-toast";
 
 interface InventoryOverviewProps {
   analytics: InventoryAnalytics;
+  onReceiveInventory?: () => void;
 }
 
-export const InventoryOverview = ({ analytics }: InventoryOverviewProps) => {
+
+export const InventoryOverview = ({ analytics, onReceiveInventory }: InventoryOverviewProps) => {
+  const { toast } = useToast();
   const profitColor = analytics.profitMargin >= 45 ? 'text-success' : analytics.profitMargin >= 35 ? 'text-warning' : 'text-danger';
   const turnoverColor = analytics.turnoverRate >= 3 ? 'text-success' : analytics.turnoverRate >= 2 ? 'text-warning' : 'text-danger';
 
@@ -30,7 +34,16 @@ export const InventoryOverview = ({ analytics }: InventoryOverviewProps) => {
           <h2 className="text-2xl font-bold">Inventory Overview</h2>
           <p className="text-muted-foreground">Real-time stock analytics and performance metrics</p>
         </div>
-        <Button className="bg-gradient-success hover:shadow-glow">
+        <Button className="bg-gradient-success hover:shadow-glow" onClick={() => {
+          if (onReceiveInventory) {
+            onReceiveInventory();
+          } else {
+            toast({
+              title: "Receive Inventory",
+              description: "Go to Stock Levels and use Adjust to add received stock.",
+            });
+          }
+        }}>
           <Package className="h-4 w-4 mr-2" />
           Receive Inventory
         </Button>

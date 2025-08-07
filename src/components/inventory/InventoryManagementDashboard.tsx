@@ -13,6 +13,7 @@ import {
   Settings,
   TrendingUp
 } from "lucide-react";
+import { useState } from "react";
 
 export const InventoryManagementDashboard = () => {
   const {
@@ -25,6 +26,7 @@ export const InventoryManagementDashboard = () => {
   } = useInventoryManagement();
 
   const activeAlerts = reorderAlerts.filter(alert => !alert.acknowledged).length;
+  const [activeTab, setActiveTab] = useState("overview");
 
   if (!analytics) {
     return (
@@ -66,7 +68,7 @@ export const InventoryManagementDashboard = () => {
       </div>
 
       {/* Main Tabs */}
-      <Tabs defaultValue="overview" className="space-y-6">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="overview" className="flex items-center gap-2">
             <BarChart3 className="h-4 w-4" />
@@ -92,7 +94,7 @@ export const InventoryManagementDashboard = () => {
         </TabsList>
 
         <TabsContent value="overview">
-          <InventoryOverview analytics={analytics} />
+          <InventoryOverview analytics={analytics} onReceiveInventory={() => setActiveTab("stock-levels")} />
         </TabsContent>
 
         <TabsContent value="stock-levels">
