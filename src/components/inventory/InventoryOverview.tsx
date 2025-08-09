@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,30 @@ export const InventoryOverview = ({ analytics, onReceiveInventory }: InventoryOv
   const { toast } = useToast();
   const profitColor = analytics.profitMargin >= 45 ? 'text-success' : analytics.profitMargin >= 35 ? 'text-warning' : 'text-danger';
   const turnoverColor = analytics.turnoverRate >= 3 ? 'text-success' : analytics.turnoverRate >= 2 ? 'text-warning' : 'text-danger';
+
+  const [auditing, setAuditing] = useState(false);
+  const [auditProgress, setAuditProgress] = useState(0);
+
+  useEffect(() => {
+    if (!auditing) return;
+    setAuditProgress(0);
+    const interval = setInterval(() => {
+      setAuditProgress((p) => {
+        const next = p + Math.floor(Math.random() * 15) + 5;
+        if (next >= 100) {
+          clearInterval(interval);
+          setAuditing(false);
+          setAuditProgress(100);
+          toast({
+            title: 'Audit Complete',
+            description: 'Scanned 100% of items. 3 discrepancies flagged for review.',
+          });
+        }
+        return Math.min(next, 100);
+      });
+    }, 300);
+    return () => clearInterval(interval);
+  }, [auditing, toast]);
 
   return (
     <div className="space-y-6">

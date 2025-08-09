@@ -364,6 +364,7 @@ export const FloorPlan = ({ industry = 'retail' }: FloorPlanProps = {}) => {
   const [nodes, setNodes, onNodesChange] = useNodesState(getInitialNodes(industry));
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [showMinimap, setShowMinimap] = useState(false);
+  const [heatmapEnabled, setHeatmapEnabled] = useState(false);
   const [trackedDevice, setTrackedDevice] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'devices' | 'items' | 'zones'>('all');
@@ -631,6 +632,34 @@ export const FloorPlan = ({ industry = 'retail' }: FloorPlanProps = {}) => {
     }
   }, []);
 
+  // Heatmap utilities
+  const computeZoneHeat = (data: any): 'low' | 'medium' | 'high' => {
+    const alerts = (data?.alertCount ?? 0) as number;
+    const devices = (data?.deviceCount ?? 0) as number;
+    const score = alerts * 2 + devices;
+    if (score >= 5) return 'high';
+    if (score >= 3) return 'medium';
+    return 'low';
+  };
+
+  const toggleHeatmap = () => {
+    const next = !heatmapEnabled;
+    setHeatmapEnabled(next);
+    setNodes((nds) =>
+      nds.map((node) => {
+        if (node.type === 'zone') {
+          const heat = computeZoneHeat(node.data || {});
+          return { ...node, data: { ...node.data, showHeat: next, heatLevel: heat } };
+        }
+        return node;
+      })
+    );
+    toast({
+      title: next ? 'Heatmap Enabled' : 'Heatmap Disabled',
+      description: next ? 'Zone risk visualization is now active.' : 'Returning to normal view.',
+    });
+  };
+
   return (
     <div className="space-y-4">
       {/* Floor Plan Header */}
@@ -647,6 +676,19 @@ export const FloorPlan = ({ industry = 'retail' }: FloorPlanProps = {}) => {
           </div>
           
           <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={toggleHeatmap}
+              className={`${
+                heatmapEnabled
+                  ? 'bg-gradient-warning text-warning-foreground shadow-glow'
+                  : 'bg-card/50 border-border hover:bg-card'
+              } transition-smooth`}
+            >
+              <Activity className="h-4 w-4 mr-2" />
+              {heatmapEnabled ? 'Hide Heatmap' : 'Show Heatmap'}
+            </Button>
             <Button
               variant="outline"
               size="sm"

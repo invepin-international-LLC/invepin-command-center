@@ -17,6 +17,9 @@ interface ZoneNodeData {
   deviceCount: number;
   itemCount: number;
   alertCount?: number;
+  // Optional heatmap fields
+  heatLevel?: 'low' | 'medium' | 'high';
+  showHeat?: boolean;
 }
 
 interface ZoneNodeProps {
@@ -48,8 +51,22 @@ export const ZoneNode = memo(({ data }: ZoneNodeProps) => {
     }
   };
 
+  const getHeatClasses = (level: ZoneNodeData['heatLevel']) => {
+    if (!level) return '';
+    switch (level) {
+      case 'high':
+        return 'ring-2 ring-danger/60 bg-danger/10';
+      case 'medium':
+        return 'ring-2 ring-warning/50 bg-warning/10';
+      case 'low':
+        return 'ring-2 ring-success/40 bg-success/10';
+      default:
+        return '';
+    }
+  };
+
   return (
-    <div className={`border-2 border-dashed rounded-2xl p-5 min-w-[220px] min-h-[140px] transition-smooth hover-card ${getZoneColor(data.type)}`}>
+    <div className={`border-2 border-dashed rounded-2xl p-5 min-w-[220px] min-h-[140px] transition-smooth hover-card ${getZoneColor(data.type)} ${data.showHeat ? getHeatClasses(data.heatLevel) : ''}`}>
       <Handle 
         type="target" 
         position={Position.Top} 
