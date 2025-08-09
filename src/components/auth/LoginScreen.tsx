@@ -26,6 +26,8 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
   const [inventoryValue, setInventoryValue] = useState(0);
   const [alertCount, setAlertCount] = useState(0);
   const { toast } = useToast();
+  // Demo mode is disabled by default; enable via ?demo=1 or localStorage flag
+  const demoMode = new URLSearchParams(window.location.search).get('demo') === '1' || localStorage.getItem('invepin_demo_mode') === '1';
 
   // Simulate real-time data updates
   useEffect(() => {
@@ -63,23 +65,32 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
   ];
 
   const handleLogin = async () => {
+    if (!demoMode) {
+      toast({
+        title: "Authentication not configured",
+        description: "Please connect Supabase auth, or enable demo by adding ?demo=1 to the URL.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
     
     // Simulate authentication delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    await new Promise(resolve => setTimeout(resolve, 800));
     
     const user = mockUsers.find(u => u.email === email);
     
-    if (user && password === "demo123") {
+    if (user && password === "demo") {
       toast({
-        title: "Authentication Successful",
-        description: `Welcome back, ${user.name}!`,
+        title: "Demo Authentication",
+        description: `Welcome back, ${user.name}! (demo mode)`,
       });
       onLogin(user);
     } else {
       toast({
         title: "Authentication Failed",
-        description: "Invalid credentials. Use demo123 as password.",
+        description: "Invalid credentials.",
         variant: "destructive"
       });
     }
@@ -88,6 +99,14 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
   };
 
   const handleDemoLogin = (role: 'admin' | 'manager' | 'staff') => {
+    if (!demoMode) {
+      toast({
+        title: "Demo disabled",
+        description: "Enable demo by adding ?demo=1 to the URL.",
+        variant: "destructive",
+      });
+      return;
+    }
     const user = mockUsers.find(u => u.role === role)!;
     toast({
       title: "Demo Login",
@@ -265,35 +284,37 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
               </Button>
 
               {/* Demo Login Options */}
-              <div className="pt-4 border-t border-border/30">
-                <p className="text-sm text-muted-foreground text-center mb-3">Quick Demo Access:</p>
-                <div className="grid grid-cols-3 gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleDemoLogin('admin')}
-                    className="text-xs hover:bg-primary/10 hover:border-primary"
-                  >
-                    Admin
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleDemoLogin('manager')}
-                    className="text-xs hover:bg-primary/10 hover:border-primary"
-                  >
-                    Manager
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleDemoLogin('staff')}
-                    className="text-xs hover:bg-primary/10 hover:border-primary"
-                  >
-                    Staff
-                  </Button>
+              {demoMode && (
+                <div className="pt-4 border-t border-border/30">
+                  <p className="text-sm text-muted-foreground text-center mb-3">Quick Demo Access:</p>
+                  <div className="grid grid-cols-3 gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleDemoLogin('admin')}
+                      className="text-xs hover:bg-primary/10 hover:border-primary"
+                    >
+                      Admin
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleDemoLogin('manager')}
+                      className="text-xs hover:bg-primary/10 hover:border-primary"
+                    >
+                      Manager
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleDemoLogin('staff')}
+                      className="text-xs hover:bg-primary/10 hover:border-primary"
+                    >
+                      Staff
+                    </Button>
+                  </div>
                 </div>
-              </div>
+              )}
             </CardContent>
           </Card>
 

@@ -21,6 +21,10 @@ export class FaceRecognitionService {
   async initialize() {
     if (this.isInitialized) return;
 
+    if (typeof window !== 'undefined' && !window.isSecureContext) {
+      console.warn('Running in an insecure context. WebGPU and camera access may be restricted.');
+    }
+
     try {
       console.log('Initializing face recognition models...');
       
