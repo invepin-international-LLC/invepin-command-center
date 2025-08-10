@@ -200,10 +200,10 @@
     gap: 0.75rem;
     grid-template-columns: repeat(2, 1fr);
   }
-
+ @media (max-width: 600px)
 .p-1 {
   padding: 0px !important;
-}
+}}
   
   @media (min-width: 768px) {
     .mobile-grid {
