@@ -425,15 +425,15 @@ export const Notifications = ({ industry = 'retail' }: NotificationsProps = {}) 
         <TabsContent value="alerts" className="space-y-6">
           {/* Filter Controls */}
           <Card className="bg-gradient-card border-border">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
+            <CardContent className="mobile-compact">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
                   <div className="flex items-center gap-2">
                     <Filter className="h-4 w-4 text-muted-foreground" />
-                    <Label className="text-sm">Filter:</Label>
+                    <Label className="mobile-text-sm">Filter:</Label>
                   </div>
                   <Select value={filter} onValueChange={(value: any) => setFilter(value)}>
-                    <SelectTrigger className="w-32">
+                    <SelectTrigger className="w-28 sm:w-32">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -447,9 +447,9 @@ export const Notifications = ({ industry = 'retail' }: NotificationsProps = {}) 
                 </div>
                 
                 <div className="flex items-center gap-2">
-                  <Badge variant="secondary">{filteredNotifications.length} notifications</Badge>
+                  <Badge variant="secondary" className="mobile-text-xs">{filteredNotifications.length} notifications</Badge>
                   {notifications.length > 0 && (
-                    <Button variant="outline" size="sm" onClick={clearAllNotifications}>
+                    <Button variant="outline" size="sm" onClick={clearAllNotifications} className="mobile-text-xs">
                       Clear All
                     </Button>
                   )}
@@ -474,27 +474,27 @@ export const Notifications = ({ industry = 'retail' }: NotificationsProps = {}) 
               filteredNotifications.map((notification) => (
                 <Card 
                   key={notification.id} 
-                  className={`border transition-all duration-200 ${
+                  className={`border transition-all duration-200 mobile-card ${
                     notification.read ? 'bg-card' : 'bg-gradient-card'
                   } ${getSeverityColor(notification.severity)}`}
                 >
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-start gap-3 flex-1">
-                        <div className="mt-1">
+                  <CardContent className="mobile-compact">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-start gap-2 flex-1 min-w-0">
+                        <div className="mt-1 flex-shrink-0">
                           {getTypeIcon(notification.type)}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h4 className="font-medium truncate">{notification.title}</h4>
-                            <Badge variant="outline" className="text-xs capitalize">
+                          <div className="flex items-start gap-2 mb-1 flex-wrap">
+                            <h4 className="font-medium mobile-text-sm mobile-truncate flex-1">{notification.title}</h4>
+                            <Badge variant="outline" className="text-xs capitalize flex-shrink-0">
                               {notification.severity}
                             </Badge>
                             {!notification.read && (
-                              <div className="w-2 h-2 bg-primary rounded-full"></div>
+                              <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0 mt-1"></div>
                             )}
                           </div>
-                          <p className="text-sm text-muted-foreground mb-2">{notification.message}</p>
+                          <p className="mobile-text-xs text-muted-foreground mb-2 break-words">{notification.message}</p>
                           <div className="flex items-center gap-4 text-xs text-muted-foreground">
                             <div className="flex items-center gap-1">
                               <Clock className="h-3 w-3" />
