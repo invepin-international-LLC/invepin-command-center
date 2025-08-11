@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Shield, Smartphone, Wifi, Cloud, Activity, Database, Zap, Eye, TrendingUp, BarChart3 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase, isSupabaseConfigured } from "@/lib/supabaseClient";
 
 interface User {
   id: string;
@@ -65,37 +66,59 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
   ];
 
   const handleLogin = async () => {
-    if (!demoMode) {
-      toast({
-        title: "Authentication not configured",
-        description: "Please connect Supabase auth, or enable demo by adding ?demo=1 to the URL.",
-        variant: "destructive",
-      });
-      return;
-    }
-
     setIsLoading(true);
-    
-    // Simulate authentication delay
-    await new Promise(resolve => setTimeout(resolve, 800));
-    
-    const user = mockUsers.find(u => u.email === email);
-    
-    if (user && password === "demo") {
-      toast({
-        title: "Demo Authentication",
-        description: `Welcome back, ${user.name}! (demo mode)`,
-      });
-      onLogin(user);
-    } else {
-      toast({
-        title: "Authentication Failed",
-        description: "Invalid credentials.",
-        variant: "destructive"
-      });
+    try {
+      if (demoMode) {
+        // Demo flow
+        await new Promise((resolve) => setTimeout(resolve, 600));
+        const user = mockUsers.find((u) => u.email === email);
+        if (user && password === "demo") {
+          toast({
+            title: "Demo Authentication",
+            description: `Welcome back, ${user.name}! (demo mode)`,
+          });
+          onLogin(user);
+        } else {
+          toast({
+            title: "Authentication Failed",
+            description: "Invalid demo credentials.",
+            variant: "destructive",
+          });
+        }
+        return;
+      }
+
+      if (!isSupabaseConfigured) {
+        toast({
+          title: "Authentication not configured",
+          description: "Connect Supabase in Lovable or enable demo with ?demo=1",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error || !data.user) {
+        toast({
+          title: "Authentication Failed",
+          description: error?.message ?? "Invalid credentials.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const appUser: User = {
+        id: data.user.id,
+        email: data.user.email ?? email,
+        role: (data.user.user_metadata?.role as User['role']) ?? 'staff',
+        name: (data.user.user_metadata?.name as string) ?? (data.user.email?.split("@")[0] ?? "User"),
+      };
+
+      toast({ title: "Welcome", description: `Hello, ${appUser.name}` });
+      onLogin(appUser);
+    } finally {
+      setIsLoading(false);
     }
-    
-    setIsLoading(false);
   };
 
   const handleDemoLogin = (role: 'admin' | 'manager' | 'staff') => {
