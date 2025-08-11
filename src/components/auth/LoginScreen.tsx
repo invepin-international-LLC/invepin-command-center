@@ -29,8 +29,8 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
   const [alertCount, setAlertCount] = useState(0);
   const { toast } = useToast();
   const [showConfig, setShowConfig] = useState(false);
-  // Demo mode is disabled by default; enable via ?demo=1 or localStorage flag
-  const demoMode = new URLSearchParams(window.location.search).get('demo') === '1' || localStorage.getItem('invepin_demo_mode') === '1';
+  // Demo mode is enabled by default when Supabase is not configured. You can also enable via ?demo=1 or localStorage flag.
+  const demoMode = !isSupabaseConfigured || new URLSearchParams(window.location.search).get('demo') === '1' || localStorage.getItem('invepin_demo_mode') === '1';
 
   // Simulate real-time data updates
   useEffect(() => {
