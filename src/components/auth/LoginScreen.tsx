@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Shield, Smartphone, Wifi, Cloud, Activity, Database, Zap, Eye, TrendingUp, BarChart3 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase, isSupabaseConfigured } from "@/lib/supabaseClient";
+import { SupabaseConfigForm } from "@/components/auth/SupabaseConfigForm";
 
 interface User {
   id: string;
@@ -27,6 +28,7 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
   const [inventoryValue, setInventoryValue] = useState(0);
   const [alertCount, setAlertCount] = useState(0);
   const { toast } = useToast();
+  const [showConfig, setShowConfig] = useState(false);
   // Demo mode is disabled by default; enable via ?demo=1 or localStorage flag
   const demoMode = new URLSearchParams(window.location.search).get('demo') === '1' || localStorage.getItem('invepin_demo_mode') === '1';
 
@@ -336,6 +338,23 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
                       Staff
                     </Button>
                   </div>
+                </div>
+              )}
+              {!isSupabaseConfigured && (
+                <div className="pt-4 border-t border-border/30">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowConfig((v) => !v)}
+                    className="w-full hover:bg-primary/10 hover:border-primary"
+                  >
+                    {showConfig ? "Hide Supabase Configuration" : "Configure Supabase"}
+                  </Button>
+                  {showConfig && (
+                    <div className="mt-3">
+                      <SupabaseConfigForm />
+                    </div>
+                  )}
                 </div>
               )}
             </CardContent>
