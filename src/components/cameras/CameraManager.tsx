@@ -3,8 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Camera, Eye, Settings, Wifi, WifiOff, Play, Square } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Camera, Eye, Settings, Wifi, WifiOff, Play, Square, Grid3X3, Maximize2, RefreshCw } from "lucide-react";
 import { CameraViewer } from "./CameraViewer";
+import { MultiCameraViewer } from "./MultiCameraViewer";
 import { useToast } from "@/hooks/use-toast";
 
 interface CameraDevice {
@@ -22,6 +24,8 @@ export const CameraManager = () => {
   const [cameras, setCameras] = useState<CameraDevice[]>([]);
   const [selectedCamera, setSelectedCamera] = useState<CameraDevice | null>(null);
   const [isScanning, setIsScanning] = useState(false);
+  const [activeTab, setActiveTab] = useState<'grid' | 'individual'>('grid');
+  const [autoRefresh, setAutoRefresh] = useState(true);
   const { toast } = useToast();
 
   // Mock camera data - in real app, this would come from your API
@@ -63,9 +67,41 @@ export const CameraManager = () => {
         lastSeen: new Date(Date.now() - 300000).toISOString(), // 5 minutes ago
         resolution: '4K',
       },
+      {
+        id: 'cam-005',
+        name: 'Kitchen Security',
+        location: 'Kitchen Area',
+        type: 'security',
+        status: 'online',
+        lastSeen: new Date().toISOString(),
+        resolution: '1080p',
+      },
+      {
+        id: 'cam-006',
+        name: 'Dining Room Overview',
+        location: 'Main Dining',
+        type: 'security',
+        status: 'recording',
+        lastSeen: new Date().toISOString(),
+        resolution: '4K',
+      },
     ];
     setCameras(mockCameras);
   }, []);
+
+  // Auto-refresh camera status
+  useEffect(() => {
+    if (!autoRefresh) return;
+    
+    const interval = setInterval(() => {
+      setCameras(prev => prev.map(camera => ({
+        ...camera,
+        lastSeen: camera.status !== 'offline' ? new Date().toISOString() : camera.lastSeen
+      })));
+    }, 30000); // Refresh every 30 seconds
+
+    return () => clearInterval(interval);
+  }, [autoRefresh]);
 
   const scanForCameras = async () => {
     setIsScanning(true);
@@ -114,135 +150,172 @@ export const CameraManager = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-foreground">Camera Management</h2>
-          <p className="text-muted-foreground">Monitor all Invepin cameras across your venue</p>
+          <h2 className="text-xl sm:text-2xl font-bold text-foreground">Camera Management</h2>
+          <p className="text-sm sm:text-base text-muted-foreground">Monitor all Invepin cameras across your venue</p>
         </div>
-        <Button onClick={scanForCameras} disabled={isScanning} className="bg-gradient-primary">
-          {isScanning ? (
-            <>
-              <Settings className="h-4 w-4 mr-2 animate-spin" />
-              Scanning...
-            </>
-          ) : (
-            <>
-              <Camera className="h-4 w-4 mr-2" />
-              Scan for Cameras
-            </>
-          )}
-        </Button>
+        <div className="flex flex-col sm:flex-row gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setAutoRefresh(!autoRefresh)}
+            className={autoRefresh ? "bg-success/10 border-success" : ""}
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${autoRefresh ? 'animate-spin' : ''}`} />
+            Auto Refresh {autoRefresh ? 'On' : 'Off'}
+          </Button>
+          <Button onClick={scanForCameras} disabled={isScanning} className="bg-gradient-primary">
+            {isScanning ? (
+              <>
+                <Settings className="h-4 w-4 mr-2 animate-spin" />
+                Scanning...
+              </>
+            ) : (
+              <>
+                <Camera className="h-4 w-4 mr-2" />
+                Scan for Cameras
+              </>
+            )}
+          </Button>
+        </div>
       </div>
 
-      {/* Camera Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {cameras.map((camera) => (
-          <Card key={camera.id} className="bg-gradient-card border-border hover:shadow-elegant transition-all">
-            <CardHeader className="pb-3">
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-2">
-                  {getCameraIcon(camera.type)}
-                  <CardTitle className="text-lg">{camera.name}</CardTitle>
-                </div>
-                <Badge 
-                  className={`${getStatusColor(camera.status)} text-white`}
-                  variant="secondary"
-                >
-                  {camera.status}
-                </Badge>
-              </div>
-            </CardHeader>
-            
-            <CardContent className="space-y-4">
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Location:</span>
-                  <span className="text-foreground">{camera.location}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Resolution:</span>
-                  <span className="text-foreground">{camera.resolution}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Type:</span>
-                  <span className="text-foreground capitalize">{camera.type}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted-foreground">Last Seen:</span>
-                  <span className="text-foreground">
-                    {new Date(camera.lastSeen).toLocaleTimeString()}
-                  </span>
-                </div>
-              </div>
+      {/* View Tabs */}
+      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as 'grid' | 'individual')} className="w-full">
+        <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto sm:mx-0">
+          <TabsTrigger value="grid" className="flex items-center gap-2">
+            <Grid3X3 className="h-4 w-4" />
+            <span className="hidden sm:inline">All Cameras</span>
+            <span className="sm:hidden">Grid</span>
+          </TabsTrigger>
+          <TabsTrigger value="individual" className="flex items-center gap-2">
+            <Eye className="h-4 w-4" />
+            <span className="hidden sm:inline">Individual</span>
+            <span className="sm:hidden">Single</span>
+          </TabsTrigger>
+        </TabsList>
 
-              <div className="flex gap-2">
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="flex-1"
-                      disabled={camera.status === 'offline'}
-                      onClick={() => setSelectedCamera(camera)}
+        <TabsContent value="grid" className="space-y-4 sm:space-y-6">
+          <MultiCameraViewer cameras={cameras.filter(c => c.status !== 'offline')} />
+        </TabsContent>
+
+        <TabsContent value="individual" className="space-y-4 sm:space-y-6">
+
+          {/* Camera Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {cameras.map((camera) => (
+              <Card key={camera.id} className="bg-gradient-card border-border hover:shadow-elegant transition-all">
+                <CardHeader className="pb-3">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-2">
+                      {getCameraIcon(camera.type)}
+                      <CardTitle className="text-base sm:text-lg">{camera.name}</CardTitle>
+                    </div>
+                    <Badge 
+                      className={`${getStatusColor(camera.status)} text-white text-xs`}
+                      variant="secondary"
                     >
-                      <Eye className="h-4 w-4 mr-2" />
-                      View Feed
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-4xl w-full">
-                    <DialogHeader>
-                      <DialogTitle className="flex items-center gap-2">
-                        {getCameraIcon(camera.type)}
-                        {camera.name} - Live Feed
-                      </DialogTitle>
-                    </DialogHeader>
-                    {selectedCamera && (
-                      <CameraViewer camera={selectedCamera} />
-                    )}
-                  </DialogContent>
-                </Dialog>
+                      {camera.status}
+                    </Badge>
+                  </div>
+                </CardHeader>
                 
-                <Button variant="outline" size="sm">
-                  <Settings className="h-4 w-4" />
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2 text-xs sm:text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Location:</span>
+                      <span className="text-foreground">{camera.location}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Resolution:</span>
+                      <span className="text-foreground">{camera.resolution}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Type:</span>
+                      <span className="text-foreground capitalize">{camera.type}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Last Seen:</span>
+                      <span className="text-foreground text-xs">
+                        {new Date(camera.lastSeen).toLocaleTimeString()}
+                      </span>
+                    </div>
+                  </div>
 
+                  <div className="flex gap-2">
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="flex-1 text-xs sm:text-sm"
+                          disabled={camera.status === 'offline'}
+                          onClick={() => setSelectedCamera(camera)}
+                        >
+                          <Eye className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                          <span className="hidden sm:inline">View Feed</span>
+                          <span className="sm:hidden">View</span>
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="w-[95vw] max-w-4xl h-[90vh] max-h-none">
+                        <DialogHeader>
+                          <DialogTitle className="flex items-center gap-2 text-sm sm:text-base">
+                            {getCameraIcon(camera.type)}
+                            <span className="truncate">{camera.name} - Live Feed</span>
+                          </DialogTitle>
+                        </DialogHeader>
+                        <div className="flex-1 overflow-auto">
+                          {selectedCamera && (
+                            <CameraViewer camera={selectedCamera} />
+                          )}
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                    
+                    <Button variant="outline" size="sm" className="px-2 sm:px-3">
+                      <Settings className="h-3 w-3 sm:h-4 sm:w-4" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+      </Tabs>
+      
       {/* Status Summary */}
       <Card className="bg-gradient-card border-border">
         <CardHeader>
-          <CardTitle className="text-lg">System Status</CardTitle>
+          <CardTitle className="text-base sm:text-lg">System Status</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4">
             <div className="text-center">
-              <div className="text-2xl font-bold text-success">
+              <div className="text-xl sm:text-2xl font-bold text-success">
                 {cameras.filter(c => c.status === 'online').length}
               </div>
-              <div className="text-sm text-muted-foreground">Online</div>
+              <div className="text-xs sm:text-sm text-muted-foreground">Online</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-500">
+              <div className="text-xl sm:text-2xl font-bold text-blue-500">
                 {cameras.filter(c => c.status === 'recording').length}
               </div>
-              <div className="text-sm text-muted-foreground">Recording</div>
+              <div className="text-xs sm:text-sm text-muted-foreground">Recording</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-destructive">
+              <div className="text-xl sm:text-2xl font-bold text-destructive">
                 {cameras.filter(c => c.status === 'offline').length}
               </div>
-              <div className="text-sm text-muted-foreground">Offline</div>
+              <div className="text-xs sm:text-sm text-muted-foreground">Offline</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-foreground">
+              <div className="text-xl sm:text-2xl font-bold text-foreground">
                 {cameras.length}
               </div>
-              <div className="text-sm text-muted-foreground">Total</div>
+              <div className="text-xs sm:text-sm text-muted-foreground">Total</div>
             </div>
           </div>
         </CardContent>
