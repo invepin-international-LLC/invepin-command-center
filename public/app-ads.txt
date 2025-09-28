@@ -1,0 +1,7 @@
+# App-ads.txt for Invepin Bar Management
+# This file contains authorized digital sellers for our mobile app advertising inventory
+# Format: domain, publisher_id, relationship, certification_authority_id
+
+# Add your authorized advertising partners here when you implement ads
+# Example:
+# google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0
