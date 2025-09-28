@@ -9,6 +9,7 @@ import { Analytics } from "@/components/analytics/Analytics";
 import { Notifications } from "@/components/notifications/Notifications";
 import { BarManagement } from "@/components/bar/BarManagement";
 import { CameraManager } from "@/components/cameras/CameraManager";
+import { SecurityDashboard } from "@/components/dashboard/SecurityDashboard";
 import TutorialSystem from "@/components/tutorial/TutorialSystem";
 import { 
   Shield, 
@@ -43,7 +44,7 @@ interface MainDashboardProps {
 
 export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
   const [selectedIndustry, setSelectedIndustry] = useState<'retail' | 'hospitality' | 'casino' | 'pharma'>('retail');
-  const [activeView, setActiveView] = useState<'overview' | 'devices' | 'floorplan' | 'scanner' | 'analytics' | 'notifications' | 'bar' | 'tutorial' | 'cameras'>('overview');
+  const [activeView, setActiveView] = useState<'overview' | 'devices' | 'floorplan' | 'scanner' | 'analytics' | 'notifications' | 'bar' | 'tutorial' | 'cameras' | 'security'>('overview');
 
   // Industry-specific navigation tabs
   const getIndustryTabs = (industry: string) => {
@@ -56,6 +57,7 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
         { id: 'analytics', label: 'Analytics', icon: TrendingUp },
         { id: 'notifications', label: 'Security Alerts', icon: Bell },
         { id: 'cameras', label: 'Cameras', icon: Camera },
+        { id: 'security', label: 'Security Center', icon: Shield },
         { id: 'tutorial', label: 'Tutorial', icon: BookOpen }
       ],
       hospitality: [
@@ -66,6 +68,7 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
         { id: 'analytics', label: 'Analytics', icon: TrendingUp },
         { id: 'notifications', label: 'Guest Alerts', icon: Bell },
         { id: 'cameras', label: 'Cameras', icon: Camera },
+        { id: 'security', label: 'Security Center', icon: Shield },
         { id: 'tutorial', label: 'Tutorial', icon: BookOpen }
       ],
       casino: [
@@ -76,6 +79,7 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
         { id: 'analytics', label: 'Analytics', icon: TrendingUp },
         { id: 'notifications', label: 'Security Alerts', icon: Bell },
         { id: 'cameras', label: 'Cameras', icon: Camera },
+        { id: 'security', label: 'Security Center', icon: Shield },
         { id: 'tutorial', label: 'Tutorial', icon: BookOpen }
       ],
       pharma: [
@@ -86,6 +90,7 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
         { id: 'analytics', label: 'Analytics', icon: TrendingUp },
         { id: 'notifications', label: 'Compliance Alerts', icon: Bell },
         { id: 'cameras', label: 'Cameras', icon: Camera },
+        { id: 'security', label: 'Security Center', icon: Shield },
         { id: 'tutorial', label: 'Tutorial', icon: BookOpen }
       ]
     };
@@ -520,6 +525,8 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
         <BarManagement industry={selectedIndustry} />
       ) : activeView === 'cameras' ? (
         <CameraManager />
+      ) : activeView === 'security' ? (
+        <SecurityDashboard />
       ) : activeView === 'tutorial' ? (
         <TutorialSystem />
       ) : (
