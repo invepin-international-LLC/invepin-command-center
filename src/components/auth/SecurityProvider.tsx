@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabaseClient';
 import { toast } from '@/hooks/use-toast';
+import { useOrganization } from './OrganizationProvider';
 
 interface SecurityContextType {
   user: any | null;
@@ -25,13 +26,15 @@ export function SecurityProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<any | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [permissions, setPermissions] = useState<string[]>([]);
+  const { memberRole, organization } = useOrganization();
 
   useEffect(() => {
     // Get initial user
     supabase.auth.getUser().then(({ data: { user } }) => {
       setUser(user);
-      if (user?.user_metadata?.role) {
-        const role = user.user_metadata.role;
+      // Use organization role if available, otherwise fall back to user metadata
+      const role = memberRole || user?.user_metadata?.role;
+      if (role) {
         setUserRole(role);
         setPermissions(ROLE_PERMISSIONS[role as keyof typeof ROLE_PERMISSIONS] || []);
       }
@@ -40,8 +43,8 @@ export function SecurityProvider({ children }: { children: React.ReactNode }) {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user || null);
-      if (session?.user?.user_metadata?.role) {
-        const role = session.user.user_metadata.role;
+      const role = memberRole || session?.user?.user_metadata?.role;
+      if (role) {
         setUserRole(role);
         setPermissions(ROLE_PERMISSIONS[role as keyof typeof ROLE_PERMISSIONS] || []);
       } else {
@@ -51,14 +54,24 @@ export function SecurityProvider({ children }: { children: React.ReactNode }) {
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [memberRole]);
+
+  // Update role when organization member role changes
+  useEffect(() => {
+    if (memberRole && user) {
+      setUserRole(memberRole);
+      setPermissions(ROLE_PERMISSIONS[memberRole as keyof typeof ROLE_PERMISSIONS] || []);
+    }
+  }, [memberRole, user]);
 
   const hasPermission = (permission: string): boolean => {
     return permissions.includes('all') || permissions.includes(permission);
   };
 
   const isAuthorized = (requiredRoles: string[]): boolean => {
-    return userRole ? requiredRoles.includes(userRole) : false;
+    // Check if user has valid organization membership
+    if (!organization || !memberRole) return false;
+    return requiredRoles.includes(memberRole);
   };
 
   const updatePhoneNumber = async (phone: string): Promise<void> => {
