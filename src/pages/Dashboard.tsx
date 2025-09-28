@@ -10,7 +10,7 @@ interface User {
   name: string;
 }
 
-const Index = () => {
+const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
@@ -66,4 +66,4 @@ const Index = () => {
   return <MainDashboard user={user} onLogout={handleLogout} />;
 };
 
-export default Index;
+export default Dashboard;
