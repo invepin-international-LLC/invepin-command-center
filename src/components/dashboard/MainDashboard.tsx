@@ -51,22 +51,36 @@ interface MainDashboardProps {
 }
 
 export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
-  const [selectedIndustry, setSelectedIndustry] = useState<'retail' | 'hospitality' | 'casino' | 'pharma'>('retail');
+  const [selectedIndustry, setSelectedIndustry] = useState<'casino' | 'grocery' | 'hospitality' | 'healthcare' | 'bar'>('grocery');
   const [activeView, setActiveView] = useState<'overview' | 'devices' | 'floorplan' | 'scanner' | 'analytics' | 'notifications' | 'bar' | 'tutorial' | 'cameras' | 'security' | 'tracker' | 'panic'>('overview');
   const navigate = useNavigate();
 
   // All industries available
   const industries = [
-    { id: 'retail', name: 'Retail', icon: Store, color: 'from-blue-500 to-blue-700', textColor: 'text-blue-500', description: 'Loss prevention & inventory' },
-    { id: 'hospitality', name: 'Hospitality', icon: Wine, color: 'from-purple-500 to-purple-700', textColor: 'text-purple-500', description: 'Bar & minibar tracking' },
     { id: 'casino', name: 'Casino', icon: Activity, color: 'from-red-500 to-red-700', textColor: 'text-red-500', description: 'Chip & table monitoring' },
-    { id: 'pharma', name: 'Pharmaceutical', icon: Heart, color: 'from-green-500 to-green-700', textColor: 'text-green-500', description: 'Drug tracking & compliance' },
+    { id: 'grocery', name: 'Grocery', icon: Store, color: 'from-blue-500 to-blue-700', textColor: 'text-blue-500', description: 'Loss prevention & inventory' },
+    { id: 'hospitality', name: 'Hospitality', icon: Wine, color: 'from-purple-500 to-purple-700', textColor: 'text-purple-500', description: 'Hotel & restaurant tracking' },
+    { id: 'healthcare', name: 'Healthcare', icon: Heart, color: 'from-green-500 to-green-700', textColor: 'text-green-500', description: 'Medical supply tracking' },
+    { id: 'bar', name: 'Bar', icon: Wine, color: 'from-amber-500 to-amber-700', textColor: 'text-amber-500', description: 'Beverage & bottle tracking' },
   ];
 
   // Industry-specific navigation tabs
   const getIndustryTabs = (industry: string) => {
     const industryTabs = {
-      retail: [
+      casino: [
+        { id: 'overview', label: 'Overview', icon: null },
+        { id: 'tracker', label: 'Live Tracker', icon: Navigation },
+        { id: 'panic', label: 'Panic Button', icon: ShieldAlert },
+        { id: 'devices', label: 'Devices', icon: Smartphone },
+        { id: 'floorplan', label: 'Floor Plan', icon: MapPin },
+        { id: 'scanner', label: 'Chip Scanner', icon: Package },
+        { id: 'analytics', label: 'Analytics', icon: TrendingUp },
+        { id: 'notifications', label: 'Security Alerts', icon: Bell },
+        { id: 'cameras', label: 'Cameras', icon: Camera },
+        { id: 'security', label: 'Security Center', icon: Shield },
+        { id: 'tutorial', label: 'Tutorial', icon: BookOpen }
+      ],
+      grocery: [
         { id: 'overview', label: 'Overview', icon: null },
         { id: 'tracker', label: 'Live Tracker', icon: Navigation },
         { id: 'panic', label: 'Panic Button', icon: ShieldAlert },
@@ -81,33 +95,39 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
       ],
       hospitality: [
         { id: 'overview', label: 'Overview', icon: null },
+        { id: 'tracker', label: 'Live Tracker', icon: Navigation },
+        { id: 'panic', label: 'Panic Button', icon: ShieldAlert },
         { id: 'devices', label: 'Devices', icon: Smartphone },
         { id: 'floorplan', label: 'Floor Plan', icon: MapPin },
-        { id: 'bar', label: 'Bar & Minibar', icon: Wine },
+        { id: 'bar', label: 'Minibar Tracking', icon: Wine },
         { id: 'analytics', label: 'Analytics', icon: TrendingUp },
         { id: 'notifications', label: 'Guest Alerts', icon: Bell },
         { id: 'cameras', label: 'Cameras', icon: Camera },
         { id: 'security', label: 'Security Center', icon: Shield },
         { id: 'tutorial', label: 'Tutorial', icon: BookOpen }
       ],
-      casino: [
+      healthcare: [
         { id: 'overview', label: 'Overview', icon: null },
+        { id: 'tracker', label: 'Live Tracker', icon: Navigation },
+        { id: 'panic', label: 'Panic Button', icon: ShieldAlert },
         { id: 'devices', label: 'Devices', icon: Smartphone },
         { id: 'floorplan', label: 'Floor Plan', icon: MapPin },
-        { id: 'scanner', label: 'Chip Scanner', icon: Package },
+        { id: 'scanner', label: 'Medical Scanner', icon: Package },
         { id: 'analytics', label: 'Analytics', icon: TrendingUp },
-        { id: 'notifications', label: 'Security Alerts', icon: Bell },
+        { id: 'notifications', label: 'Supply Alerts', icon: Bell },
         { id: 'cameras', label: 'Cameras', icon: Camera },
         { id: 'security', label: 'Security Center', icon: Shield },
         { id: 'tutorial', label: 'Tutorial', icon: BookOpen }
       ],
-      pharma: [
+      bar: [
         { id: 'overview', label: 'Overview', icon: null },
+        { id: 'tracker', label: 'Live Tracker', icon: Navigation },
+        { id: 'panic', label: 'Panic Button', icon: ShieldAlert },
         { id: 'devices', label: 'Devices', icon: Smartphone },
         { id: 'floorplan', label: 'Floor Plan', icon: MapPin },
-        { id: 'scanner', label: 'Drug Scanner', icon: Package },
+        { id: 'bar', label: 'Bar Management', icon: Wine },
         { id: 'analytics', label: 'Analytics', icon: TrendingUp },
-        { id: 'notifications', label: 'Compliance Alerts', icon: Bell },
+        { id: 'notifications', label: 'Inventory Alerts', icon: Bell },
         { id: 'cameras', label: 'Cameras', icon: Camera },
         { id: 'security', label: 'Security Center', icon: Shield },
         { id: 'tutorial', label: 'Tutorial', icon: BookOpen }
@@ -119,7 +139,26 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
   // Industry-specific data
   const getIndustryData = (industry: string) => {
     const industryConfig = {
-      retail: {
+      casino: {
+        stats: {
+          connectedDevices: 245,
+          activeAlerts: 7,
+          inventoryAccuracy: 99.9,
+          batteryHealth: 96
+        },
+        alerts: [
+          { id: 1, type: 'movement', item: 'High-Value Chips', location: 'Table 12', time: '1 min ago', severity: 'high' },
+          { id: 2, type: 'suspicious', item: 'Player Activity', location: 'Blackjack Area', time: '8 min ago', severity: 'high' },
+          { id: 3, type: 'low_battery', item: 'Chip Tracker #89', location: 'Poker Room', time: '20 min ago', severity: 'medium' }
+        ],
+        quickActions: [
+          { label: 'Security Monitor', icon: Shield, color: 'bg-gradient-primary' },
+          { label: 'Chip Tracking', icon: Package, color: 'bg-gradient-success' },
+          { label: 'Table Status', icon: MapPin, color: 'bg-gradient-warning' },
+          { label: 'Incident Report', icon: AlertTriangle, color: 'bg-gradient-danger' }
+        ]
+      },
+      grocery: {
         stats: {
           connectedDevices: 127,
           activeAlerts: 3,
@@ -128,8 +167,8 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
         },
         alerts: [
           { id: 1, type: 'movement', item: 'Premium Electronics', location: 'Electronics Aisle', time: '2 min ago', severity: 'high' },
-          { id: 2, type: 'low_battery', item: 'Security Tag #47', location: 'Clothing Section', time: '15 min ago', severity: 'medium' },
-          { id: 3, type: 'disconnect', item: 'High-Value Watch', location: 'Jewelry Counter', time: '1 hour ago', severity: 'high' }
+          { id: 2, type: 'low_battery', item: 'Security Tag #47', location: 'Produce Section', time: '15 min ago', severity: 'medium' },
+          { id: 3, type: 'disconnect', item: 'High-Value Item', location: 'Checkout Area', time: '1 hour ago', severity: 'high' }
         ],
         quickActions: [
           { label: 'Scan Inventory', icon: Package, color: 'bg-gradient-primary' },
@@ -157,26 +196,7 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
           { label: 'Revenue Report', icon: TrendingUp, color: 'bg-gradient-danger' }
         ]
       },
-      casino: {
-        stats: {
-          connectedDevices: 245,
-          activeAlerts: 7,
-          inventoryAccuracy: 99.9,
-          batteryHealth: 96
-        },
-        alerts: [
-          { id: 1, type: 'movement', item: 'High-Value Chips', location: 'Table 12', time: '1 min ago', severity: 'high' },
-          { id: 2, type: 'suspicious', item: 'Player Activity', location: 'Blackjack Area', time: '8 min ago', severity: 'high' },
-          { id: 3, type: 'low_battery', item: 'Chip Tracker #89', location: 'Poker Room', time: '20 min ago', severity: 'medium' }
-        ],
-        quickActions: [
-          { label: 'Security Monitor', icon: Shield, color: 'bg-gradient-primary' },
-          { label: 'Chip Tracking', icon: Package, color: 'bg-gradient-success' },
-          { label: 'Table Status', icon: MapPin, color: 'bg-gradient-warning' },
-          { label: 'Incident Report', icon: AlertTriangle, color: 'bg-gradient-danger' }
-        ]
-      },
-      pharma: {
+      healthcare: {
         stats: {
           connectedDevices: 156,
           activeAlerts: 2,
@@ -184,15 +204,34 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
           batteryHealth: 98
         },
         alerts: [
-          { id: 1, type: 'temperature', item: 'Cold Storage Unit B', location: 'Pharmacy Wing', time: '3 min ago', severity: 'high' },
-          { id: 2, type: 'compliance', item: 'Controlled Substance', location: 'Vault', time: '12 min ago', severity: 'medium' },
-          { id: 3, type: 'expiry', item: 'Medication Batch #447', location: 'Storage Room C', time: '25 min ago', severity: 'low' }
+          { id: 1, type: 'temperature', item: 'Cold Storage Unit B', location: 'Medical Wing', time: '3 min ago', severity: 'high' },
+          { id: 2, type: 'compliance', item: 'Controlled Medication', location: 'Pharmacy', time: '12 min ago', severity: 'medium' },
+          { id: 3, type: 'expiry', item: 'Medical Supply Batch #447', location: 'Storage Room C', time: '25 min ago', severity: 'low' }
         ],
         quickActions: [
           { label: 'Cold Chain Monitor', icon: Activity, color: 'bg-gradient-primary' },
-          { label: 'Drug Tracking', icon: Package, color: 'bg-gradient-success' },
+          { label: 'Supply Tracking', icon: Package, color: 'bg-gradient-success' },
           { label: 'Compliance Check', icon: CheckCircle, color: 'bg-gradient-warning' },
           { label: 'Audit Report', icon: TrendingUp, color: 'bg-gradient-danger' }
+        ]
+      },
+      bar: {
+        stats: {
+          connectedDevices: 78,
+          activeAlerts: 4,
+          inventoryAccuracy: 98.5,
+          batteryHealth: 95
+        },
+        alerts: [
+          { id: 1, type: 'pour_detected', item: 'Premium Whiskey', location: 'Bar Station 3', time: '1 min ago', severity: 'medium' },
+          { id: 2, type: 'low_stock', item: 'Vodka Bottle', location: 'Main Bar', time: '10 min ago', severity: 'high' },
+          { id: 3, type: 'temperature', item: 'Beer Cooler', location: 'Storage', time: '30 min ago', severity: 'medium' }
+        ],
+        quickActions: [
+          { label: 'Bottle Inventory', icon: Wine, color: 'bg-gradient-primary' },
+          { label: 'Pour Tracking', icon: Activity, color: 'bg-gradient-success' },
+          { label: 'Stock Alert', icon: Bell, color: 'bg-gradient-warning' },
+          { label: 'Sales Report', icon: TrendingUp, color: 'bg-gradient-danger' }
         ]
       }
     };
@@ -206,7 +245,7 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
   const currentTabs = getIndustryTabs(selectedIndustry);
 
   // Reset activeView to overview when industry changes if current view is not available
-  const handleIndustryChange = (industry: 'retail' | 'hospitality' | 'casino' | 'pharma') => {
+  const handleIndustryChange = (industry: 'casino' | 'grocery' | 'hospitality' | 'healthcare' | 'bar') => {
     setSelectedIndustry(industry);
     const newTabs = getIndustryTabs(industry);
     const availableTabIds = newTabs.map(tab => tab.id);
@@ -216,10 +255,11 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
   };
 
   const industryLabels = {
-    retail: { primary: 'Shrinkage Prevention', secondary: 'Loss Rate', kpi: 'Theft Alerts' },
-    hospitality: { primary: 'Minibar Tracking', secondary: 'Room Service', kpi: 'Guest Usage' },
     casino: { primary: 'Chip Monitoring', secondary: 'Table Games', kpi: 'Security Events' },
-    pharma: { primary: 'Drug Tracking', secondary: 'Cold Chain', kpi: 'Compliance Score' }
+    grocery: { primary: 'Shrinkage Prevention', secondary: 'Loss Rate', kpi: 'Theft Alerts' },
+    hospitality: { primary: 'Minibar Tracking', secondary: 'Room Service', kpi: 'Guest Usage' },
+    healthcare: { primary: 'Supply Tracking', secondary: 'Cold Chain', kpi: 'Compliance Score' },
+    bar: { primary: 'Bottle Tracking', secondary: 'Pour Detection', kpi: 'Inventory Accuracy' }
   };
 
   const getRoleColor = (role: string) => {

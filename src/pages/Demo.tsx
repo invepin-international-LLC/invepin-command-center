@@ -5,10 +5,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { PublicNav } from "@/components/navigation/PublicNav";
 import { Eye, Shield, TrendingUp, AlertTriangle, CheckCircle, Play } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Demo = () => {
   const [activeDemo, setActiveDemo] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const demoScenarios = [
     {
@@ -93,7 +94,10 @@ const Demo = () => {
                   <CardContent>
                     <Button 
                       className="w-full" 
-                      onClick={() => setActiveDemo(scenario.id)}
+                      onClick={() => {
+                        setActiveDemo(scenario.id);
+                        navigate('/dashboard');
+                      }}
                     >
                       <Play className="h-4 w-4 mr-2" />
                       Start Demo
