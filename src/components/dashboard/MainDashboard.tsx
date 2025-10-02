@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -27,7 +28,11 @@ import {
   Bell,
   Wine,
   BookOpen,
-  Camera
+  Camera,
+  Store,
+  Building2,
+  Heart,
+  Navigation
 } from "lucide-react";
 
 interface User {
@@ -45,6 +50,14 @@ interface MainDashboardProps {
 export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
   const [selectedIndustry, setSelectedIndustry] = useState<'retail' | 'hospitality' | 'casino' | 'pharma'>('retail');
   const [activeView, setActiveView] = useState<'overview' | 'devices' | 'floorplan' | 'scanner' | 'analytics' | 'notifications' | 'bar' | 'tutorial' | 'cameras' | 'security'>('overview');
+  const navigate = useNavigate();
+
+  // Industry solutions for quick access
+  const industrySolutions = [
+    { id: 'retail', name: 'Retail', icon: Store, color: 'text-blue-500', route: '/solutions/retail' },
+    { id: 'enterprise', name: 'Enterprise', icon: Building2, color: 'text-purple-500', route: '/solutions/enterprise' },
+    { id: 'healthcare', name: 'Healthcare', icon: Heart, color: 'text-red-500', route: '/solutions/healthcare' },
+  ];
 
   // Industry-specific navigation tabs
   const getIndustryTabs = (industry: string) => {
@@ -345,6 +358,41 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
       {/* Content based on active view */}
       {activeView === 'overview' ? (
         <div className="animate-fade-in">
+          {/* Industry Solutions Quick Access */}
+          <Card className="relative overflow-hidden border-border/50 backdrop-blur-sm hover:shadow-elevated transition-all duration-300 mb-6">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5"></div>
+            <CardHeader className="relative">
+              <CardTitle className="flex items-center gap-3 text-lg lg:text-xl">
+                <div className="p-2 bg-gradient-primary rounded-lg shadow-glow hover:scale-110 transition-transform duration-200">
+                  <Navigation className="h-5 w-5 text-primary-foreground" />
+                </div>
+                Industry Solutions
+              </CardTitle>
+              <CardDescription className="text-base">
+                Explore specialized solutions for different industries
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="relative">
+              <div className="grid grid-cols-3 gap-4">
+                {industrySolutions.map((solution, index) => {
+                  const Icon = solution.icon;
+                  return (
+                    <Button
+                      key={solution.id}
+                      variant="outline"
+                      onClick={() => navigate(solution.route)}
+                      className="h-24 flex-col gap-3 hover-scale group border-border/50 hover:border-primary/50 hover:shadow-glow transition-all duration-300"
+                      style={{ animationDelay: `${index * 0.1}s` }}
+                    >
+                      <Icon className={`h-8 w-8 ${solution.color} group-hover:scale-125 transition-transform duration-300`} />
+                      <span className="text-sm font-semibold">{solution.name}</span>
+                    </Button>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Enhanced Industry Selector */}
           <Card className="relative overflow-hidden border-border/50 backdrop-blur-sm hover:shadow-elevated transition-all duration-300">
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5"></div>
@@ -353,10 +401,10 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
                 <div className="p-2 bg-gradient-primary rounded-lg shadow-glow hover:scale-110 transition-transform duration-200">
                   <Package className="h-5 w-5 text-primary-foreground" />
                 </div>
-                Industry Mode
+                Dashboard Mode
               </CardTitle>
               <CardDescription className="text-base">
-                Configure dashboard for your industry type
+                Configure dashboard view for your industry type
               </CardDescription>
             </CardHeader>
             <CardContent className="relative">
@@ -516,9 +564,44 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
           </Card>
         </div>
       ) : activeView === 'devices' ? (
-        <BLEScanner industry={selectedIndustry} />
+        <div className="animate-fade-in space-y-4">
+          <Card className="bg-gradient-card border-border">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-2xl font-bold flex items-center gap-2">
+                    <Smartphone className="h-6 w-6 text-primary" />
+                    BLE Device Scanner
+                  </h3>
+                  <p className="text-muted-foreground">Scan building for Invepin devices</p>
+                </div>
+                <Badge variant="outline">Auto-Scan Enabled</Badge>
+              </div>
+            </CardContent>
+          </Card>
+          <BLEScanner industry={selectedIndustry} />
+        </div>
       ) : activeView === 'floorplan' ? (
-        <FloorPlan industry={selectedIndustry} />
+        <div className="animate-fade-in space-y-4">
+          <Card className="bg-gradient-card border-border">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-2xl font-bold flex items-center gap-2">
+                    <MapPin className="h-6 w-6 text-primary animate-pulse" />
+                    Live Invepin Tracking
+                  </h3>
+                  <p className="text-muted-foreground">Real-time location and movement monitoring</p>
+                </div>
+                <Badge className="bg-success text-white animate-pulse px-3 py-1">
+                  <Activity className="h-3 w-3 mr-1" />
+                  LIVE TRACKING
+                </Badge>
+              </div>
+            </CardContent>
+          </Card>
+          <FloorPlan industry={selectedIndustry} />
+        </div>
       ) : activeView === 'scanner' ? (
         <BarcodeScanner industry={selectedIndustry} />
       ) : activeView === 'analytics' ? (
