@@ -12,6 +12,8 @@ import { BarManagement } from "@/components/bar/BarManagement";
 import { CameraManager } from "@/components/cameras/CameraManager";
 import { SecurityDashboard } from "@/components/dashboard/SecurityDashboard";
 import TutorialSystem from "@/components/tutorial/TutorialSystem";
+import { InvepinTracker } from "@/components/tracking/InvepinTracker";
+import { PanicButton } from "@/components/security/PanicButton";
 import { 
   Shield, 
   Smartphone, 
@@ -32,7 +34,8 @@ import {
   Store,
   Building2,
   Heart,
-  Navigation
+  Navigation,
+  ShieldAlert
 } from "lucide-react";
 
 interface User {
@@ -49,7 +52,7 @@ interface MainDashboardProps {
 
 export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
   const [selectedIndustry, setSelectedIndustry] = useState<'retail' | 'hospitality' | 'casino' | 'pharma'>('retail');
-  const [activeView, setActiveView] = useState<'overview' | 'devices' | 'floorplan' | 'scanner' | 'analytics' | 'notifications' | 'bar' | 'tutorial' | 'cameras' | 'security'>('overview');
+  const [activeView, setActiveView] = useState<'overview' | 'devices' | 'floorplan' | 'scanner' | 'analytics' | 'notifications' | 'bar' | 'tutorial' | 'cameras' | 'security' | 'tracker' | 'panic'>('overview');
   const navigate = useNavigate();
 
   // All industries available
@@ -65,6 +68,8 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
     const industryTabs = {
       retail: [
         { id: 'overview', label: 'Overview', icon: null },
+        { id: 'tracker', label: 'Live Tracker', icon: Navigation },
+        { id: 'panic', label: 'Panic Button', icon: ShieldAlert },
         { id: 'devices', label: 'Devices', icon: Smartphone },
         { id: 'floorplan', label: 'Floor Plan', icon: MapPin },
         { id: 'scanner', label: 'Scanner', icon: Package },
@@ -584,6 +589,10 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
           </Card>
           <FloorPlan industry={selectedIndustry} />
         </div>
+      ) : activeView === 'tracker' ? (
+        <InvepinTracker />
+      ) : activeView === 'panic' ? (
+        <PanicButton />
       ) : activeView === 'scanner' ? (
         <BarcodeScanner industry={selectedIndustry} />
       ) : activeView === 'analytics' ? (
