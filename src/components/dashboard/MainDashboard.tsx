@@ -222,34 +222,34 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background animate-fade-in">
       {/* Enhanced Header */}
-      <div className="sticky top-0 z-50 backdrop-blur-xl border-b border-border/30 bg-background/95">
+      <div className="sticky top-0 z-50 backdrop-blur-xl border-b border-border/30 bg-background/95 animate-slide-in-from-top">
         <div className="container mx-auto p-4">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             {/* Logo and Title */}
-            <div className="flex items-center gap-4">
-              <div className="relative">
-                <div className="absolute -inset-1 bg-gradient-primary rounded-xl blur opacity-75 animate-pulse-glow"></div>
-                <div className="relative bg-gradient-primary p-3 rounded-xl shadow-glow">
+            <div className="flex items-center gap-4 animate-fade-in">
+              <div className="relative group">
+                <div className="absolute -inset-1 bg-gradient-primary rounded-xl blur opacity-75 animate-pulse-glow group-hover:opacity-100 transition-opacity"></div>
+                <div className="relative bg-gradient-primary p-3 rounded-xl shadow-glow hover:scale-110 transition-transform duration-300">
                   <Shield className="h-7 w-7 text-primary-foreground" />
                 </div>
               </div>
               <div>
                 <h1 className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
-                  Command Center
+                  Invepin Command Center
                 </h1>
                 <p className="text-sm lg:text-base text-muted-foreground">Welcome back, {user.name}</p>
               </div>
             </div>
             
             {/* User Actions */}
-            <div className="flex items-center gap-3 flex-wrap">
-              <Badge className={`${getRoleColor(user.role)} text-white px-3 py-1 shadow-card`}>
+            <div className="flex items-center gap-3 flex-wrap animate-fade-in" style={{ animationDelay: '0.1s' }}>
+              <Badge className={`${getRoleColor(user.role)} text-white px-3 py-1 shadow-card hover:scale-105 transition-transform duration-200`}>
                 <Users className="h-3 w-3 mr-1" />
                 {user.role.toUpperCase()}
               </Badge>
-              <Button variant="outline" size="sm" onClick={onLogout} className="hover:shadow-card transition-all">
+              <Button variant="outline" size="sm" onClick={onLogout} className="hover:shadow-card hover:scale-105 transition-all duration-200">
                 Sign Out
               </Button>
             </div>
@@ -258,17 +258,18 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
           {/* Enhanced Navigation */}
           <div className="mt-6 overflow-x-auto">
             <div className="flex gap-2 min-w-max pb-2">
-              {currentTabs.map((tab) => (
+              {currentTabs.map((tab, index) => (
                 <Button 
                   key={tab.id}
                   variant={activeView === tab.id ? 'default' : 'outline'} 
                   size="sm"
                   onClick={() => setActiveView(tab.id as any)}
-                  className={`transition-all duration-300 ${
+                  className={`transition-all duration-300 hover-scale ${
                     activeView === tab.id 
                       ? 'bg-gradient-primary shadow-glow scale-105' 
-                      : 'hover:shadow-card hover:scale-105'
+                      : 'hover:shadow-card hover:scale-105 hover:border-primary/50'
                   }`}
+                  style={{ animationDelay: `${index * 0.05}s` }}
                 >
                   {tab.icon && <tab.icon className="h-4 w-4 mr-1" />}
                   <span className={tab.icon ? "hidden sm:inline" : ""}>{tab.label}</span>
@@ -284,7 +285,7 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
 
         {/* Enhanced System Status */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4">
-          <Card className="relative overflow-hidden group hover:shadow-elevated transition-all duration-300 hover:scale-105">
+          <Card className="relative overflow-hidden group hover:shadow-elevated transition-all duration-300 hover:scale-105 animate-scale-in cursor-pointer">
             <div className="absolute inset-0 bg-gradient-success opacity-10 group-hover:opacity-20 transition-opacity"></div>
             <CardContent className="relative p-4 lg:p-6 text-center">
               <div className="flex items-center justify-center mb-3">
@@ -294,11 +295,11 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
                 </div>
               </div>
               <p className="text-sm lg:text-base font-medium">Colony</p>
-              <p className="text-xs lg:text-sm text-success font-semibold">Connected</p>
+              <p className="text-xs lg:text-sm text-success font-semibold animate-pulse">Connected</p>
             </CardContent>
           </Card>
 
-          <Card className="relative overflow-hidden group hover:shadow-elevated transition-all duration-300 hover:scale-105">
+          <Card className="relative overflow-hidden group hover:shadow-elevated transition-all duration-300 hover:scale-105 animate-scale-in cursor-pointer" style={{ animationDelay: '0.1s' }}>
             <div className="absolute inset-0 bg-gradient-primary opacity-10 group-hover:opacity-20 transition-opacity"></div>
             <CardContent className="relative p-4 lg:p-6 text-center">
               <div className="flex items-center justify-center mb-3">
@@ -308,11 +309,11 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
                 </div>
               </div>
               <p className="text-sm lg:text-base font-medium">Hive</p>
-              <p className="text-xs lg:text-sm text-primary font-semibold">Synced</p>
+              <p className="text-xs lg:text-sm text-primary font-semibold animate-pulse">Synced</p>
             </CardContent>
           </Card>
 
-          <Card className="relative overflow-hidden group hover:shadow-elevated transition-all duration-300 hover:scale-105">
+          <Card className="relative overflow-hidden group hover:shadow-elevated transition-all duration-300 hover:scale-105 animate-scale-in cursor-pointer" style={{ animationDelay: '0.2s' }}>
             <div className="absolute inset-0 bg-gradient-warning opacity-10 group-hover:opacity-20 transition-opacity"></div>
             <CardContent className="relative p-4 lg:p-6 text-center">
               <div className="flex items-center justify-center mb-3">
@@ -326,7 +327,7 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
             </CardContent>
           </Card>
 
-          <Card className="relative overflow-hidden group hover:shadow-elevated transition-all duration-300 hover:scale-105">
+          <Card className="relative overflow-hidden group hover:shadow-elevated transition-all duration-300 hover:scale-105 animate-scale-in cursor-pointer" style={{ animationDelay: '0.3s' }}>
             <div className="absolute inset-0 bg-gradient-success opacity-10 group-hover:opacity-20 transition-opacity"></div>
             <CardContent className="relative p-4 lg:p-6 text-center">
               <div className="flex items-center justify-center mb-3">
@@ -343,13 +344,13 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
 
       {/* Content based on active view */}
       {activeView === 'overview' ? (
-        <>
+        <div className="animate-fade-in">
           {/* Enhanced Industry Selector */}
-          <Card className="relative overflow-hidden border-border/50 backdrop-blur-sm">
+          <Card className="relative overflow-hidden border-border/50 backdrop-blur-sm hover:shadow-elevated transition-all duration-300">
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5"></div>
             <CardHeader className="relative">
               <CardTitle className="flex items-center gap-3 text-lg lg:text-xl">
-                <div className="p-2 bg-gradient-primary rounded-lg shadow-glow">
+                <div className="p-2 bg-gradient-primary rounded-lg shadow-glow hover:scale-110 transition-transform duration-200">
                   <Package className="h-5 w-5 text-primary-foreground" />
                 </div>
                 Industry Mode
@@ -360,17 +361,18 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
             </CardHeader>
             <CardContent className="relative">
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                {(['retail', 'hospitality', 'casino', 'pharma'] as const).map((industry) => (
+                {(['retail', 'hospitality', 'casino', 'pharma'] as const).map((industry, index) => (
                   <Button
                     key={industry}
                     variant={selectedIndustry === industry ? "default" : "outline"}
                     size="sm"
                     onClick={() => handleIndustryChange(industry)}
-                    className={`transition-all duration-300 ${
+                    className={`transition-all duration-300 hover-scale ${
                       selectedIndustry === industry 
                         ? "bg-gradient-primary shadow-glow scale-105 font-semibold" 
-                        : "hover:shadow-card hover:scale-105"
+                        : "hover:shadow-card hover:scale-105 hover:border-primary/50"
                     }`}
+                    style={{ animationDelay: `${index * 0.05}s` }}
                   >
                     {industry.charAt(0).toUpperCase() + industry.slice(1)}
                   </Button>
@@ -381,7 +383,7 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
 
           {/* Enhanced KPI Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-            <Card className="relative overflow-hidden group hover:shadow-elevated transition-all duration-300 hover:scale-105">
+            <Card className="relative overflow-hidden group hover:shadow-elevated transition-all duration-300 hover:scale-105 animate-scale-in cursor-pointer">
               <div className="absolute inset-0 bg-gradient-success opacity-10 group-hover:opacity-20 transition-opacity"></div>
               <CardContent className="relative p-4 lg:p-6">
                 <div className="flex items-center justify-between">
@@ -389,59 +391,59 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
                     <p className="text-xs lg:text-sm text-muted-foreground font-medium">
                       {industryLabels[selectedIndustry].primary}
                     </p>
-                    <p className="text-xl lg:text-3xl font-bold text-success">{stats.inventoryAccuracy}%</p>
+                    <p className="text-xl lg:text-3xl font-bold text-success animate-fade-in">{stats.inventoryAccuracy}%</p>
                   </div>
                   <div className="relative">
-                    <div className="absolute -inset-2 bg-success rounded-full blur opacity-30"></div>
-                    <CheckCircle className="relative h-8 w-8 lg:h-10 lg:w-10 text-success" />
+                    <div className="absolute -inset-2 bg-success rounded-full blur opacity-30 group-hover:opacity-50 transition-opacity"></div>
+                    <CheckCircle className="relative h-8 w-8 lg:h-10 lg:w-10 text-success group-hover:scale-110 transition-transform" />
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="relative overflow-hidden group hover:shadow-elevated transition-all duration-300 hover:scale-105">
+            <Card className="relative overflow-hidden group hover:shadow-elevated transition-all duration-300 hover:scale-105 animate-scale-in cursor-pointer" style={{ animationDelay: '0.1s' }}>
               <div className="absolute inset-0 bg-gradient-danger opacity-10 group-hover:opacity-20 transition-opacity"></div>
               <CardContent className="relative p-4 lg:p-6">
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
                     <p className="text-xs lg:text-sm text-muted-foreground font-medium">Active Alerts</p>
-                    <p className="text-xl lg:text-3xl font-bold text-danger">{stats.activeAlerts}</p>
+                    <p className="text-xl lg:text-3xl font-bold text-danger animate-fade-in">{stats.activeAlerts}</p>
                   </div>
                   <div className="relative">
-                    <div className="absolute -inset-2 bg-danger rounded-full blur opacity-30 animate-pulse"></div>
-                    <AlertTriangle className="relative h-8 w-8 lg:h-10 lg:w-10 text-danger animate-status-pulse" />
+                    <div className="absolute -inset-2 bg-danger rounded-full blur opacity-30 animate-pulse group-hover:opacity-50 transition-opacity"></div>
+                    <AlertTriangle className="relative h-8 w-8 lg:h-10 lg:w-10 text-danger animate-pulse group-hover:scale-110 transition-transform" />
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="relative overflow-hidden group hover:shadow-elevated transition-all duration-300 hover:scale-105">
+            <Card className="relative overflow-hidden group hover:shadow-elevated transition-all duration-300 hover:scale-105 animate-scale-in cursor-pointer" style={{ animationDelay: '0.2s' }}>
               <div className="absolute inset-0 bg-gradient-primary opacity-10 group-hover:opacity-20 transition-opacity"></div>
               <CardContent className="relative p-4 lg:p-6">
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
                     <p className="text-xs lg:text-sm text-muted-foreground font-medium">Connected Devices</p>
-                    <p className="text-xl lg:text-3xl font-bold text-primary">{stats.connectedDevices}</p>
+                    <p className="text-xl lg:text-3xl font-bold text-primary animate-fade-in">{stats.connectedDevices}</p>
                   </div>
                   <div className="relative">
-                    <div className="absolute -inset-2 bg-primary rounded-full blur opacity-30"></div>
-                    <Smartphone className="relative h-8 w-8 lg:h-10 lg:w-10 text-primary" />
+                    <div className="absolute -inset-2 bg-primary rounded-full blur opacity-30 group-hover:opacity-50 transition-opacity"></div>
+                    <Smartphone className="relative h-8 w-8 lg:h-10 lg:w-10 text-primary group-hover:scale-110 transition-transform" />
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="relative overflow-hidden group hover:shadow-elevated transition-all duration-300 hover:scale-105">
+            <Card className="relative overflow-hidden group hover:shadow-elevated transition-all duration-300 hover:scale-105 animate-scale-in cursor-pointer" style={{ animationDelay: '0.3s' }}>
               <div className="absolute inset-0 bg-gradient-success opacity-10 group-hover:opacity-20 transition-opacity"></div>
               <CardContent className="relative p-4 lg:p-6">
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
                     <p className="text-xs lg:text-sm text-muted-foreground font-medium">Battery Health</p>
-                    <p className="text-xl lg:text-3xl font-bold text-success">{stats.batteryHealth}%</p>
+                    <p className="text-xl lg:text-3xl font-bold text-success animate-fade-in">{stats.batteryHealth}%</p>
                   </div>
                   <div className="relative">
-                    <div className="absolute -inset-2 bg-success rounded-full blur opacity-30"></div>
-                    <Battery className="relative h-8 w-8 lg:h-10 lg:w-10 text-success" />
+                    <div className="absolute -inset-2 bg-success rounded-full blur opacity-30 group-hover:opacity-50 transition-opacity"></div>
+                    <Battery className="relative h-8 w-8 lg:h-10 lg:w-10 text-success group-hover:scale-110 transition-transform" />
                   </div>
                 </div>
               </CardContent>
@@ -512,7 +514,7 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
               </div>
             </CardContent>
           </Card>
-        </>
+        </div>
       ) : activeView === 'devices' ? (
         <BLEScanner industry={selectedIndustry} />
       ) : activeView === 'floorplan' ? (
