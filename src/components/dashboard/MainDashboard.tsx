@@ -52,11 +52,12 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
   const [activeView, setActiveView] = useState<'overview' | 'devices' | 'floorplan' | 'scanner' | 'analytics' | 'notifications' | 'bar' | 'tutorial' | 'cameras' | 'security'>('overview');
   const navigate = useNavigate();
 
-  // Industry solutions for quick access
-  const industrySolutions = [
-    { id: 'retail', name: 'Retail', icon: Store, color: 'text-blue-500', route: '/solutions/retail' },
-    { id: 'enterprise', name: 'Enterprise', icon: Building2, color: 'text-purple-500', route: '/solutions/enterprise' },
-    { id: 'healthcare', name: 'Healthcare', icon: Heart, color: 'text-red-500', route: '/solutions/healthcare' },
+  // All industries available
+  const industries = [
+    { id: 'retail', name: 'Retail', icon: Store, color: 'from-blue-500 to-blue-700', textColor: 'text-blue-500', description: 'Loss prevention & inventory' },
+    { id: 'hospitality', name: 'Hospitality', icon: Wine, color: 'from-purple-500 to-purple-700', textColor: 'text-purple-500', description: 'Bar & minibar tracking' },
+    { id: 'casino', name: 'Casino', icon: Activity, color: 'from-red-500 to-red-700', textColor: 'text-red-500', description: 'Chip & table monitoring' },
+    { id: 'pharma', name: 'Pharmaceutical', icon: Heart, color: 'from-green-500 to-green-700', textColor: 'text-green-500', description: 'Drug tracking & compliance' },
   ];
 
   // Industry-specific navigation tabs
@@ -357,74 +358,55 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
 
       {/* Content based on active view */}
       {activeView === 'overview' ? (
-        <div className="animate-fade-in">
-          {/* Industry Solutions Quick Access */}
-          <Card className="relative overflow-hidden border-border/50 backdrop-blur-sm hover:shadow-elevated transition-all duration-300 mb-6">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5"></div>
+        <div className="animate-fade-in space-y-6">
+          {/* INDUSTRY SELECTOR - ALL INDUSTRIES */}
+          <Card className="relative overflow-hidden border-2 border-primary/30 shadow-2xl">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-secondary/10 to-primary/10"></div>
             <CardHeader className="relative">
-              <CardTitle className="flex items-center gap-3 text-lg lg:text-xl">
-                <div className="p-2 bg-gradient-primary rounded-lg shadow-glow hover:scale-110 transition-transform duration-200">
-                  <Navigation className="h-5 w-5 text-primary-foreground" />
+              <CardTitle className="flex items-center gap-3 text-2xl">
+                <div className="p-3 bg-gradient-primary rounded-xl shadow-glow animate-pulse-glow">
+                  <Building2 className="h-7 w-7 text-primary-foreground" />
                 </div>
-                Industry Solutions
+                Select Your Industry
               </CardTitle>
-              <CardDescription className="text-base">
-                Explore specialized solutions for different industries
+              <CardDescription className="text-lg">
+                Choose your industry to access specialized tracking solutions
               </CardDescription>
             </CardHeader>
             <CardContent className="relative">
-              <div className="grid grid-cols-3 gap-4">
-                {industrySolutions.map((solution, index) => {
-                  const Icon = solution.icon;
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {industries.map((industry, index) => {
+                  const Icon = industry.icon;
+                  const isSelected = selectedIndustry === industry.id;
                   return (
-                    <Button
-                      key={solution.id}
-                      variant="outline"
-                      onClick={() => navigate(solution.route)}
-                      className="h-24 flex-col gap-3 hover-scale group border-border/50 hover:border-primary/50 hover:shadow-glow transition-all duration-300"
+                    <Card
+                      key={industry.id}
+                      onClick={() => handleIndustryChange(industry.id as any)}
+                      className={`relative overflow-hidden cursor-pointer transition-all duration-500 hover:scale-110 hover:shadow-2xl group ${
+                        isSelected ? 'ring-4 ring-primary shadow-2xl scale-105' : 'hover:ring-2 hover:ring-primary/50'
+                      }`}
                       style={{ animationDelay: `${index * 0.1}s` }}
                     >
-                      <Icon className={`h-8 w-8 ${solution.color} group-hover:scale-125 transition-transform duration-300`} />
-                      <span className="text-sm font-semibold">{solution.name}</span>
-                    </Button>
+                      <div className={`absolute inset-0 bg-gradient-to-br ${industry.color} opacity-20 group-hover:opacity-30 transition-opacity`}></div>
+                      <CardContent className="relative p-6 text-center space-y-4">
+                        <div className="relative">
+                          <div className={`absolute -inset-3 bg-gradient-to-br ${industry.color} rounded-full blur-xl opacity-50 group-hover:opacity-75 transition-opacity`}></div>
+                          <Icon className={`relative h-16 w-16 mx-auto ${industry.textColor} group-hover:scale-125 transition-transform duration-300`} />
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-bold mb-2">{industry.name}</h3>
+                          <p className="text-sm text-muted-foreground">{industry.description}</p>
+                        </div>
+                        {isSelected && (
+                          <Badge className="bg-gradient-primary text-white animate-pulse-glow">
+                            <CheckCircle className="h-3 w-3 mr-1" />
+                            ACTIVE
+                          </Badge>
+                        )}
+                      </CardContent>
+                    </Card>
                   );
                 })}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Enhanced Industry Selector */}
-          <Card className="relative overflow-hidden border-border/50 backdrop-blur-sm hover:shadow-elevated transition-all duration-300">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5"></div>
-            <CardHeader className="relative">
-              <CardTitle className="flex items-center gap-3 text-lg lg:text-xl">
-                <div className="p-2 bg-gradient-primary rounded-lg shadow-glow hover:scale-110 transition-transform duration-200">
-                  <Package className="h-5 w-5 text-primary-foreground" />
-                </div>
-                Dashboard Mode
-              </CardTitle>
-              <CardDescription className="text-base">
-                Configure dashboard view for your industry type
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="relative">
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-                {(['retail', 'hospitality', 'casino', 'pharma'] as const).map((industry, index) => (
-                  <Button
-                    key={industry}
-                    variant={selectedIndustry === industry ? "default" : "outline"}
-                    size="sm"
-                    onClick={() => handleIndustryChange(industry)}
-                    className={`transition-all duration-300 hover-scale ${
-                      selectedIndustry === industry 
-                        ? "bg-gradient-primary shadow-glow scale-105 font-semibold" 
-                        : "hover:shadow-card hover:scale-105 hover:border-primary/50"
-                    }`}
-                    style={{ animationDelay: `${index * 0.05}s` }}
-                  >
-                    {industry.charAt(0).toUpperCase() + industry.slice(1)}
-                  </Button>
-                ))}
               </div>
             </CardContent>
           </Card>
