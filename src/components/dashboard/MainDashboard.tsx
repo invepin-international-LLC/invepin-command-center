@@ -152,10 +152,10 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
           { id: 3, type: 'low_battery', item: 'Chip Tracker #89', location: 'Poker Room', time: '20 min ago', severity: 'medium' }
         ],
         quickActions: [
-          { label: 'Security Monitor', icon: Shield, color: 'bg-gradient-primary' },
-          { label: 'Chip Tracking', icon: Package, color: 'bg-gradient-success' },
-          { label: 'Table Status', icon: MapPin, color: 'bg-gradient-warning' },
-          { label: 'Incident Report', icon: AlertTriangle, color: 'bg-gradient-danger' }
+          { label: 'Security Monitor', icon: Shield, color: 'bg-gradient-primary', action: () => setActiveView('security') },
+          { label: 'Chip Tracking', icon: Package, color: 'bg-gradient-success', action: () => setActiveView('scanner') },
+          { label: 'Table Status', icon: MapPin, color: 'bg-gradient-warning', action: () => setActiveView('floorplan') },
+          { label: 'Incident Report', icon: AlertTriangle, color: 'bg-gradient-danger', action: () => setActiveView('notifications') }
         ]
       },
       grocery: {
@@ -171,10 +171,10 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
           { id: 3, type: 'disconnect', item: 'High-Value Item', location: 'Checkout Area', time: '1 hour ago', severity: 'high' }
         ],
         quickActions: [
-          { label: 'Scan Inventory', icon: Package, color: 'bg-gradient-primary' },
-          { label: 'View Floor Plan', icon: MapPin, color: 'bg-gradient-success' },
-          { label: 'Security Check', icon: Shield, color: 'bg-gradient-warning' },
-          { label: 'Loss Report', icon: TrendingUp, color: 'bg-gradient-danger' }
+          { label: 'Scan Inventory', icon: Package, color: 'bg-gradient-primary', action: () => setActiveView('scanner') },
+          { label: 'View Floor Plan', icon: MapPin, color: 'bg-gradient-success', action: () => setActiveView('floorplan') },
+          { label: 'Security Check', icon: Shield, color: 'bg-gradient-warning', action: () => setActiveView('security') },
+          { label: 'Loss Report', icon: TrendingUp, color: 'bg-gradient-danger', action: () => setActiveView('analytics') }
         ]
       },
       hospitality: {
@@ -190,10 +190,10 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
           { id: 3, type: 'temperature', item: 'Wine Cellar', location: 'Basement', time: '45 min ago', severity: 'medium' }
         ],
         quickActions: [
-          { label: 'Room Service', icon: Bell, color: 'bg-gradient-primary' },
-          { label: 'Minibar Status', icon: Wine, color: 'bg-gradient-success' },
-          { label: 'Guest Check-in', icon: Users, color: 'bg-gradient-warning' },
-          { label: 'Revenue Report', icon: TrendingUp, color: 'bg-gradient-danger' }
+          { label: 'Room Service', icon: Bell, color: 'bg-gradient-primary', action: () => setActiveView('notifications') },
+          { label: 'Minibar Status', icon: Wine, color: 'bg-gradient-success', action: () => setActiveView('bar') },
+          { label: 'Guest Check-in', icon: Users, color: 'bg-gradient-warning', action: () => setActiveView('security') },
+          { label: 'Revenue Report', icon: TrendingUp, color: 'bg-gradient-danger', action: () => setActiveView('analytics') }
         ]
       },
       healthcare: {
@@ -209,10 +209,10 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
           { id: 3, type: 'expiry', item: 'Medical Supply Batch #447', location: 'Storage Room C', time: '25 min ago', severity: 'low' }
         ],
         quickActions: [
-          { label: 'Cold Chain Monitor', icon: Activity, color: 'bg-gradient-primary' },
-          { label: 'Supply Tracking', icon: Package, color: 'bg-gradient-success' },
-          { label: 'Compliance Check', icon: CheckCircle, color: 'bg-gradient-warning' },
-          { label: 'Audit Report', icon: TrendingUp, color: 'bg-gradient-danger' }
+          { label: 'Cold Chain Monitor', icon: Activity, color: 'bg-gradient-primary', action: () => setActiveView('analytics') },
+          { label: 'Supply Tracking', icon: Package, color: 'bg-gradient-success', action: () => setActiveView('tracker') },
+          { label: 'Compliance Check', icon: CheckCircle, color: 'bg-gradient-warning', action: () => setActiveView('security') },
+          { label: 'Audit Report', icon: TrendingUp, color: 'bg-gradient-danger', action: () => setActiveView('analytics') }
         ]
       },
       bar: {
@@ -228,10 +228,10 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
           { id: 3, type: 'temperature', item: 'Beer Cooler', location: 'Storage', time: '30 min ago', severity: 'medium' }
         ],
         quickActions: [
-          { label: 'Bottle Inventory', icon: Wine, color: 'bg-gradient-primary' },
-          { label: 'Pour Tracking', icon: Activity, color: 'bg-gradient-success' },
-          { label: 'Stock Alert', icon: Bell, color: 'bg-gradient-warning' },
-          { label: 'Sales Report', icon: TrendingUp, color: 'bg-gradient-danger' }
+          { label: 'Bottle Inventory', icon: Wine, color: 'bg-gradient-primary', action: () => setActiveView('bar') },
+          { label: 'Pour Tracking', icon: Activity, color: 'bg-gradient-success', action: () => setActiveView('tracker') },
+          { label: 'Stock Alert', icon: Bell, color: 'bg-gradient-warning', action: () => setActiveView('notifications') },
+          { label: 'Sales Report', icon: TrendingUp, color: 'bg-gradient-danger', action: () => setActiveView('analytics') }
         ]
       }
     };
@@ -538,6 +538,7 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
                   <Button
                     key={index}
                     variant="outline"
+                    onClick={action.action}
                     className="h-20 lg:h-24 flex flex-col gap-2 group hover:shadow-elevated transition-all duration-300 hover:scale-105 hover:border-primary/50"
                   >
                     <div className="relative">
