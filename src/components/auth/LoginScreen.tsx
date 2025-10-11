@@ -256,9 +256,9 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
               </div>
             </div>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
-              Invepin Command
+              Invepin App
             </h1>
-            <p className="text-muted-foreground mt-2">Smart Inventory Management System</p>
+            <p className="text-muted-foreground mt-2">Store Operations Dashboard</p>
           </div>
 
           {/* Login Form */}
@@ -348,18 +348,26 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
                       Bartender
                     </Button>
                   </div>
-                  <div className="mt-3 pt-3 border-t border-border/30">
-                    <a href="/hive" className="block">
-                      <Button
-                        variant="default"
-                        size="sm"
-                        className="w-full bg-gradient-to-r from-primary to-primary-glow hover:shadow-glow"
-                      >
-                        <Database className="h-4 w-4 mr-2" />
-                        Access Invepin HIVE Command Center
-                      </Button>
-                    </a>
-                  </div>
+                </div>
+              )}
+              
+              {/* Separate HIVE Portal Access */}
+              {demoMode && (
+                <div className="pt-4 border-t border-border/30">
+                  <p className="text-sm text-muted-foreground text-center mb-2">Separate System:</p>
+                  <a href="/hive" className="block">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full bg-gradient-to-r from-amber-500/10 to-amber-600/10 hover:from-amber-500/20 hover:to-amber-600/20 border-amber-500/30 hover:shadow-glow"
+                    >
+                      <Database className="h-4 w-4 mr-2" />
+                      Invepin HIVE Command Center
+                    </Button>
+                  </a>
+                  <p className="text-xs text-muted-foreground text-center mt-2">
+                    (Admin portal for multi-store management)
+                  </p>
                 </div>
               )}
               {!isSupabaseConfigured && (

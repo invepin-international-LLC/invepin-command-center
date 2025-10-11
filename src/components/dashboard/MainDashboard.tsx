@@ -297,9 +297,9 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
               </div>
               <div>
                 <h1 className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
-                  Invepin Command Center
+                  Invepin App
                 </h1>
-                <p className="text-sm lg:text-base text-muted-foreground">Welcome back, {user.name}</p>
+                <p className="text-sm lg:text-base text-muted-foreground">Store Operations Dashboard</p>
               </div>
             </div>
             
@@ -318,15 +318,17 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
                 <Package className="h-3 w-3 mr-1" />
                 Immediate Inventory
               </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => navigate('/hive')} 
-                className="bg-gradient-to-r from-primary/10 to-primary-glow/10 hover:from-primary/20 hover:to-primary-glow/20 border-primary/30 hover:shadow-card hover:scale-105 transition-all duration-200"
-              >
-                <Database className="h-3 w-3 mr-1" />
-                HIVE Portal
-              </Button>
+              {(user.role === 'super_admin' || user.role === 'company_admin') && (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => navigate('/hive')} 
+                  className="bg-gradient-to-r from-amber-500/10 to-amber-600/10 hover:from-amber-500/20 hover:to-amber-600/20 border-amber-500/30 hover:shadow-card hover:scale-105 transition-all duration-200"
+                >
+                  <Database className="h-3 w-3 mr-1" />
+                  Connect to HIVE
+                </Button>
+              )}
               <Button variant="outline" size="sm" onClick={onLogout} className="hover:shadow-card hover:scale-105 transition-all duration-200">
                 Sign Out
               </Button>
