@@ -22,15 +22,18 @@ const Home = () => {
               reducing shrinkage by up to 78% and saving retailers millions in losses.
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
-              <Button asChild size="lg" className="bg-primary hover:bg-primary/90">
-                <Link to="/demo">
-                  Start Free Demo <ArrowRight className="ml-2 h-4 w-4" />
+              <Button asChild size="lg" className="bg-primary hover:bg-primary/90 hover:scale-105 transition-all">
+                <Link to="/dashboard?autoLogin=company">
+                  Try Demo Now <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
               <Button variant="outline" asChild size="lg">
                 <Link to="/roi-calculator">Calculate ROI</Link>
               </Button>
             </div>
+            <p className="mt-4 text-sm text-muted-foreground">
+              No signup required • Instant access • Full features
+            </p>
           </div>
         </div>
       </section>
@@ -117,11 +120,13 @@ const Home = () => {
               Join 2,500+ stores already protected by Invepin technology
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg">
-                <Link to="/contact">Schedule Consultation</Link>
+              <Button asChild size="lg" className="bg-primary hover:bg-primary/90">
+                <Link to="/dashboard?autoLogin=company">
+                  Try Demo Now <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
               </Button>
               <Button variant="outline" asChild size="lg">
-                <Link to="/demo">Try Demo</Link>
+                <Link to="/contact">Schedule Consultation</Link>
               </Button>
             </div>
           </div>
