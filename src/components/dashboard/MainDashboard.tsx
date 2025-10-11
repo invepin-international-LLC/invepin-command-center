@@ -310,6 +310,15 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
                 {user.role.toUpperCase()}
               </Badge>
               <Button 
+                variant="default" 
+                size="sm" 
+                onClick={() => setActiveView('scanner')} 
+                className="bg-gradient-to-r from-success to-success/80 hover:shadow-glow hover:scale-105 transition-all duration-200"
+              >
+                <Package className="h-3 w-3 mr-1" />
+                Immediate Inventory
+              </Button>
+              <Button 
                 variant="outline" 
                 size="sm" 
                 onClick={() => navigate('/hive')} 
@@ -324,8 +333,37 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
             </div>
           </div>
           
+          {/* Industry Selection */}
+          <div className="mt-4 border-t border-border/30 pt-4">
+            <p className="text-xs text-muted-foreground mb-2">Select Industry:</p>
+            <div className="flex gap-2 overflow-x-auto pb-2">
+              {industries.map((industry) => {
+                const Icon = industry.icon;
+                return (
+                  <Button
+                    key={industry.id}
+                    variant={selectedIndustry === industry.id ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => handleIndustryChange(industry.id as any)}
+                    className={`flex-shrink-0 transition-all duration-300 ${
+                      selectedIndustry === industry.id
+                        ? `bg-gradient-to-r ${industry.color} shadow-glow text-white`
+                        : `hover:shadow-card hover:scale-105 hover:border-primary/50`
+                    }`}
+                  >
+                    <Icon className="h-4 w-4 mr-2" />
+                    <div className="text-left">
+                      <div className="font-semibold text-xs">{industry.name}</div>
+                      <div className="text-[10px] opacity-80 hidden sm:block">{industry.description}</div>
+                    </div>
+                  </Button>
+                );
+              })}
+            </div>
+          </div>
+
           {/* Enhanced Navigation */}
-          <div className="mt-6 overflow-x-auto">
+          <div className="mt-4 overflow-x-auto">
             <div className="flex gap-2 min-w-max pb-2">
               {currentTabs.map((tab, index) => (
                 <Button 
