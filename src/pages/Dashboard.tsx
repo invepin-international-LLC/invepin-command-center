@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { LoginScreen } from "@/components/auth/LoginScreen";
 import { MainDashboard } from "@/components/dashboard/MainDashboard";
 import { supabase } from "@/lib/supabaseClient";
@@ -12,8 +13,22 @@ interface User {
 
 const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
+  const [searchParams] = useSearchParams();
 
   useEffect(() => {
+    // Check for auto-login parameter
+    const autoLogin = searchParams.get('autoLogin');
+    if (autoLogin && !user) {
+      const demoUsers: Record<string, User> = {
+        admin: { id: 'demo-admin', email: 'admin@invepin.com', role: 'admin', name: 'Admin User' },
+        manager: { id: 'demo-manager', email: 'manager@invepin.com', role: 'manager', name: 'Manager User' },
+        staff: { id: 'demo-staff', email: 'staff@invepin.com', role: 'staff', name: 'Staff User' },
+      };
+      const demoUser = demoUsers[autoLogin as keyof typeof demoUsers] || demoUsers.admin;
+      setUser(demoUser);
+      return;
+    }
+
     let mounted = true;
 
     const mapUser = (u: any): User => ({
@@ -44,7 +59,7 @@ const Dashboard = () => {
       // @ts-ignore - optional chaining for older typing
       sub?.subscription?.unsubscribe?.();
     };
-  }, []);
+  }, [searchParams, user]);
 
   const handleLogin = (loggedInUser: User) => {
     setUser(loggedInUser);
