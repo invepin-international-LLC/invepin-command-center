@@ -8,6 +8,7 @@ import { Shield, Smartphone, Wifi, Cloud, Activity, Database, Zap, Eye, Trending
 import { useToast } from "@/hooks/use-toast";
 import { supabase, isSupabaseConfigured } from "@/lib/supabaseClient";
 import { SupabaseConfigForm } from "@/components/auth/SupabaseConfigForm";
+import { Link } from "react-router-dom";
 
 interface User {
   id: string;
@@ -23,7 +24,8 @@ interface LoginScreenProps {
 export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+const [isLoading, setIsLoading] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(false);
   const [connectedDevices, setConnectedDevices] = useState(0);
   const [inventoryValue, setInventoryValue] = useState(0);
   const [alertCount, setAlertCount] = useState(0);
@@ -120,6 +122,36 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
 
       toast({ title: "Welcome", description: `Hello, ${appUser.name}` });
       onLogin(appUser);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSignUp = async () => {
+    setIsLoading(true);
+    try {
+      if (!isSupabaseConfigured) {
+        toast({
+          title: "Sign up not configured",
+          description: "Connect backend in Lovable or enable demo with ?demo=1",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      const redirectUrl = `${window.location.origin}/dashboard`;
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { emailRedirectTo: redirectUrl }
+      });
+
+      if (error) {
+        toast({ title: "Sign up failed", description: error.message, variant: "destructive" });
+        return;
+      }
+
+      toast({ title: "Check your email", description: "Confirm your address to finish sign up." });
     } finally {
       setIsLoading(false);
     }
@@ -296,19 +328,31 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
               </div>
 
               <Button 
-                onClick={handleLogin}
+                onClick={isSignUp ? handleSignUp : handleLogin}
                 disabled={isLoading || !email || !password}
                 className="w-full bg-gradient-primary hover:shadow-glow transition-all duration-300 font-semibold"
               >
                 {isLoading ? (
                   <div className="flex items-center gap-2">
                     <Activity className="h-4 w-4 animate-spin" />
-                    Authenticating...
+                    {isSignUp ? 'Creating account...' : 'Authenticating...'}
                   </div>
                 ) : (
-                  "Access Command Center"
+                  isSignUp ? 'Create Account' : 'Access Command Center'
                 )}
               </Button>
+
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <button type="button" className="underline hover:text-foreground" onClick={() => setIsSignUp(v => !v)}>
+                  {isSignUp ? 'Have an account? Sign in' : "New here? Create an account"}
+                </button>
+                <button type="button" className="underline hover:text-foreground" onClick={() => {
+                  localStorage.setItem('invepin_demo_mode','1');
+                  window.location.search = '?demo=1';
+                }}>
+                  Try demo
+                </button>
+              </div>
 
               {/* Demo Login Options */}
               {demoMode && (
@@ -355,7 +399,7 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
               {demoMode && (
                 <div className="pt-4 border-t border-border/30">
                   <p className="text-sm text-muted-foreground text-center mb-2">Separate System:</p>
-                  <a href="/hive" className="block">
+                  <Link to="/hive" className="block">
                     <Button
                       variant="outline"
                       size="sm"
@@ -364,7 +408,7 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
                       <Database className="h-4 w-4 mr-2" />
                       Invepin HIVE Command Center
                     </Button>
-                  </a>
+                  </Link>
                   <p className="text-xs text-muted-foreground text-center mt-2">
                     (Admin portal for multi-store management)
                   </p>
