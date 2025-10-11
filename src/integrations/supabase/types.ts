@@ -14,16 +14,159 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      colony_hub_data: {
+        Row: {
+          created_at: string | null
+          data: Json | null
+          hub_id: string
+          id: string
+          last_sync: string | null
+          status: string | null
+          store_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          data?: Json | null
+          hub_id: string
+          id?: string
+          last_sync?: string | null
+          status?: string | null
+          store_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          data?: Json | null
+          hub_id?: string
+          id?: string
+          last_sync?: string | null
+          status?: string | null
+          store_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "colony_hub_data_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invepin_data: {
+        Row: {
+          battery_level: number | null
+          created_at: string | null
+          data: Json | null
+          id: string
+          invepin_id: string
+          item_name: string | null
+          last_detected: string | null
+          location: string | null
+          store_id: string | null
+        }
+        Insert: {
+          battery_level?: number | null
+          created_at?: string | null
+          data?: Json | null
+          id?: string
+          invepin_id: string
+          item_name?: string | null
+          last_detected?: string | null
+          location?: string | null
+          store_id?: string | null
+        }
+        Update: {
+          battery_level?: number | null
+          created_at?: string | null
+          data?: Json | null
+          id?: string
+          invepin_id?: string
+          item_name?: string | null
+          last_detected?: string | null
+          location?: string | null
+          store_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invepin_data_store_id_fkey"
+            columns: ["store_id"]
+            isOneToOne: false
+            referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stores: {
+        Row: {
+          app_enabled: boolean | null
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          location: string | null
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          app_enabled?: boolean | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          location?: string | null
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          app_enabled?: boolean | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          location?: string | null
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role:
+        | "super_admin"
+        | "company_admin"
+        | "manager"
+        | "bartender"
+        | "staff"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +293,14 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: [
+        "super_admin",
+        "company_admin",
+        "manager",
+        "bartender",
+        "staff",
+      ],
+    },
   },
 } as const
