@@ -12,7 +12,7 @@ import { SupabaseConfigForm } from "@/components/auth/SupabaseConfigForm";
 interface User {
   id: string;
   email: string;
-  role: 'admin' | 'manager' | 'staff';
+  role: 'super_admin' | 'company_admin' | 'manager' | 'bartender' | 'staff';
   name: string;
 }
 
@@ -62,9 +62,11 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
 
   // Mock users for demo
   const mockUsers: User[] = [
-    { id: "1", email: "admin@invepin.com", role: "admin", name: "Alex Chen" },
-    { id: "2", email: "manager@invepin.com", role: "manager", name: "Sarah Rodriguez" },
-    { id: "3", email: "staff@invepin.com", role: "staff", name: "Mike Johnson" }
+    { id: "1", email: "admin@invepin.com", role: "super_admin", name: "Alex Chen" },
+    { id: "2", email: "company@invepin.com", role: "company_admin", name: "Sarah Rodriguez" },
+    { id: "3", email: "manager@invepin.com", role: "manager", name: "Jordan Smith" },
+    { id: "4", email: "bartender@invepin.com", role: "bartender", name: "Mike Johnson" },
+    { id: "5", email: "staff@invepin.com", role: "staff", name: "Emma Davis" }
   ];
 
   const handleLogin = async () => {
@@ -123,7 +125,7 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
     }
   };
 
-  const handleDemoLogin = (role: 'admin' | 'manager' | 'staff') => {
+  const handleDemoLogin = (role: 'super_admin' | 'company_admin' | 'manager' | 'bartender' | 'staff') => {
     if (!demoMode) {
       toast({
         title: "Demo disabled",
@@ -312,14 +314,22 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
               {demoMode && (
                 <div className="pt-4 border-t border-border/30">
                   <p className="text-sm text-muted-foreground text-center mb-3">Quick Demo Access:</p>
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-2 gap-2">
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleDemoLogin('admin')}
+                      onClick={() => handleDemoLogin('super_admin')}
                       className="text-xs hover:bg-primary/10 hover:border-primary"
                     >
-                      Admin
+                      Super Admin
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleDemoLogin('company_admin')}
+                      className="text-xs hover:bg-primary/10 hover:border-primary"
+                    >
+                      Company Admin
                     </Button>
                     <Button
                       variant="outline"
@@ -332,10 +342,10 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => handleDemoLogin('staff')}
+                      onClick={() => handleDemoLogin('bartender')}
                       className="text-xs hover:bg-primary/10 hover:border-primary"
                     >
-                      Staff
+                      Bartender
                     </Button>
                   </div>
                 </div>

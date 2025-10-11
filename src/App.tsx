@@ -7,6 +7,7 @@ import { SecurityProvider } from "@/components/auth/SecurityProvider";
 import { OrganizationProvider } from "@/components/auth/OrganizationProvider";
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
+import Hive from "./pages/Hive";
 import Demo from "./pages/Demo";
 import Pricing from "./pages/Pricing";
 import ROICalculator from "./pages/ROICalculator";
@@ -34,9 +35,10 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
-              <Route path="/home" element={<Home />} />
-              <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/home" element={<Home />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/hive" element={<Hive />} />
               <Route path="/demo" element={<Demo />} />
               <Route path="/pricing" element={<Pricing />} />
               <Route path="/roi-calculator" element={<ROICalculator />} />

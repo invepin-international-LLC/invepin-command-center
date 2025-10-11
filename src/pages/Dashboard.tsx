@@ -7,7 +7,7 @@ import { supabase } from "@/lib/supabaseClient";
 interface User {
   id: string;
   email: string;
-  role: 'admin' | 'manager' | 'staff';
+  role: 'super_admin' | 'company_admin' | 'manager' | 'bartender' | 'staff';
   name: string;
 }
 
@@ -20,8 +20,10 @@ const Dashboard = () => {
     const autoLogin = searchParams.get('autoLogin');
     if (autoLogin && !user) {
       const demoUsers: Record<string, User> = {
-        admin: { id: 'demo-admin', email: 'admin@invepin.com', role: 'admin', name: 'Admin User' },
+        admin: { id: 'demo-admin', email: 'admin@invepin.com', role: 'super_admin', name: 'Admin User' },
+        company: { id: 'demo-company', email: 'company@invepin.com', role: 'company_admin', name: 'Company Admin' },
         manager: { id: 'demo-manager', email: 'manager@invepin.com', role: 'manager', name: 'Manager User' },
+        bartender: { id: 'demo-bartender', email: 'bartender@invepin.com', role: 'bartender', name: 'Bartender User' },
         staff: { id: 'demo-staff', email: 'staff@invepin.com', role: 'staff', name: 'Staff User' },
       };
       const demoUser = demoUsers[autoLogin as keyof typeof demoUsers] || demoUsers.admin;

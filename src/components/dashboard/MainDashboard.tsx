@@ -41,7 +41,7 @@ import {
 interface User {
   id: string;
   email: string;
-  role: 'admin' | 'manager' | 'staff';
+  role: 'super_admin' | 'company_admin' | 'manager' | 'bartender' | 'staff';
   name: string;
 }
 
