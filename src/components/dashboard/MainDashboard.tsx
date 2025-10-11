@@ -316,7 +316,7 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
                 className="bg-gradient-to-r from-success to-success/80 hover:shadow-glow hover:scale-105 transition-all duration-200"
               >
                 <Package className="h-3 w-3 mr-1" />
-                Immediate Inventory
+                Automatic Invepin Inventory Count
               </Button>
               {(user.role === 'super_admin' || user.role === 'company_admin') && (
                 <Button 

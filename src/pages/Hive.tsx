@@ -10,10 +10,30 @@ import { ColonyHubMonitor } from "@/components/hive/ColonyHubMonitor";
 import { InvepinTracker } from "@/components/hive/InvepinTracker";
 import { UserRoleManagement } from "@/components/hive/UserRoleManagement";
 import { HiveAnalytics } from "@/components/hive/HiveAnalytics";
+import { useOrganizationInventory } from "@/hooks/useOrganizationInventory";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Hive() {
   const [activeTab, setActiveTab] = useState("overview");
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const { refreshData, analytics } = useOrganizationInventory();
+
+  const handleAutoCount = async () => {
+    toast({ title: "Counting inventory...", description: "Running organization-wide auto-count" });
+    await refreshData();
+    setTimeout(() => {
+      if (analytics) {
+        const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(analytics.totalValue || 0);
+        toast({ 
+          title: "Auto-count complete",
+          description: `${analytics.totalItems} items counted • Total value ${currency} • Low stock ${analytics.lowStockItems}`
+        });
+      } else {
+        toast({ title: "Auto-count complete", description: "Inventory data refreshed." });
+      }
+    }, 400);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -45,6 +65,15 @@ export default function Hive() {
             
             {/* Actions */}
             <div className="flex items-center gap-3 flex-wrap">
+              <Button 
+                variant="default" 
+                size="sm" 
+                onClick={handleAutoCount} 
+                className="bg-gradient-to-r from-amber-500 to-amber-600 text-white hover:shadow-glow hover:scale-105 transition-all duration-200"
+              >
+                <BarChart3 className="h-3 w-3 mr-1" />
+                Automatic Invepin Inventory Count
+              </Button>
               <Button 
                 variant="outline" 
                 size="sm" 

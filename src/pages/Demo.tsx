@@ -96,7 +96,7 @@ const Demo = () => {
                       className="w-full" 
                       onClick={() => {
                         setActiveDemo(scenario.id);
-                        navigate('/dashboard');
+                        navigate('/dashboard?demo=1&autoLogin=company');
                       }}
                     >
                       <Play className="h-4 w-4 mr-2" />
