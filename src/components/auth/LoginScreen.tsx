@@ -348,6 +348,18 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
                       Bartender
                     </Button>
                   </div>
+                  <div className="mt-3 pt-3 border-t border-border/30">
+                    <a href="/hive" className="block">
+                      <Button
+                        variant="default"
+                        size="sm"
+                        className="w-full bg-gradient-to-r from-primary to-primary-glow hover:shadow-glow"
+                      >
+                        <Database className="h-4 w-4 mr-2" />
+                        Access Invepin HIVE Command Center
+                      </Button>
+                    </a>
+                  </div>
                 </div>
               )}
               {!isSupabaseConfigured && (

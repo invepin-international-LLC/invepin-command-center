@@ -35,7 +35,8 @@ import {
   Building2,
   Heart,
   Navigation,
-  ShieldAlert
+  ShieldAlert,
+  Database
 } from "lucide-react";
 
 interface User {
@@ -308,6 +309,15 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
                 <Users className="h-3 w-3 mr-1" />
                 {user.role.toUpperCase()}
               </Badge>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => navigate('/hive')} 
+                className="bg-gradient-to-r from-primary/10 to-primary-glow/10 hover:from-primary/20 hover:to-primary-glow/20 border-primary/30 hover:shadow-card hover:scale-105 transition-all duration-200"
+              >
+                <Database className="h-3 w-3 mr-1" />
+                HIVE Portal
+              </Button>
               <Button variant="outline" size="sm" onClick={onLogout} className="hover:shadow-card hover:scale-105 transition-all duration-200">
                 Sign Out
               </Button>

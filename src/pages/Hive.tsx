@@ -17,10 +17,10 @@ export default function Hive() {
         {/* Header */}
         <div className="space-y-2">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
-            HIVE Command Center
+            Invepin HIVE Command Center
           </h1>
           <p className="text-muted-foreground">
-            Centralized management for all Invepin stores and devices
+            Centralized cloud management for all Invepin stores and devices
           </p>
         </div>
 
