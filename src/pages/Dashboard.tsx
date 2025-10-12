@@ -61,7 +61,7 @@ const Dashboard = () => {
       // @ts-ignore - optional chaining for older typing
       sub?.subscription?.unsubscribe?.();
     };
-  }, [searchParams, user]);
+  }, [searchParams]);
 
   const handleLogin = (loggedInUser: User) => {
     setUser(loggedInUser);
