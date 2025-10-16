@@ -24,10 +24,10 @@ interface LoginScreenProps {
 export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
-  const [connectedDevices, setConnectedDevices] = useState(0);
-  const [inventoryValue, setInventoryValue] = useState(0);
+  const [connectedDevices, setConnectedDevices] = useState(18); // Start with realistic number
+  const [inventoryValue, setInventoryValue] = useState(847230); // Start with realistic value
   const [alertCount, setAlertCount] = useState(0);
   const { toast } = useToast();
   const [showConfig, setShowConfig] = useState(false);
@@ -414,7 +414,8 @@ const [isLoading, setIsLoading] = useState(false);
                   </p>
                 </div>
               )}
-              {!isSupabaseConfigured && (
+              {/* Supabase config hidden for production client experience */}
+              {false && !isSupabaseConfigured && (
                 <div className="pt-4 border-t border-border/30">
                   <Button
                     variant="outline"
