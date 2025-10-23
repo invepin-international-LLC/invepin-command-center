@@ -2,10 +2,6 @@
   "appId": "com.invepin.barmanagement",
   "appName": "Invepin",
   "webDir": "dist",
-  "server": {
-    "url": "https://39d95d1c-a185-4374-9ad9-7aad10032895.lovableproject.com?forceHideBadge=true",
-    "cleartext": false
-  },
   "ios": {
     "scheme": "Invepin",
     "contentInset": "automatic",
@@ -32,9 +28,5 @@
     }
   },
   "bundledWebRuntime": false,
-  "cordova": {},
-  "server": {
-    "url": "https://39d95d1c-a185-4374-9ad9-7aad10032895.lovableproject.com?forceHideBadge=true",
-    "cleartext": false
-  }
+  "cordova": {}
 }
