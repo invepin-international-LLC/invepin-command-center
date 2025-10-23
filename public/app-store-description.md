@@ -1,57 +1,60 @@
 # Invepin - Professional Bar Management
 
 ## App Store Short Description (30 characters)
-Smart bar inventory control
+Professional inventory control
 
 ## App Store Description
 
-Transform your bar operations with Invepin, the professional-grade management system designed for modern bars and restaurants.
+Eliminate theft, reduce shrinkage, and automate real-time inventory tracking across retail, hospitality, healthcare, and grocery operations.
 
-**🔥 KEY FEATURES**
+**KEY FEATURES**
 
 **Smart Inventory Management**
-• Real-time stock tracking with barcode scanning
-• Automated reorder alerts and low-stock notifications  
-• Comprehensive product database with pricing
-• Loss prevention analytics and variance reporting
+• Real-time stock tracking with barcode/SKU scanning
+• Automated reorder alerts and low-stock notifications
+• Track stock movements (in, out, adjustments)
+• Multi-location inventory management
+• Expiry date tracking and alerts
 
-**Advanced Staff Management**
+**Loss Prevention & Security**
+• IoT micro-pin tracking for high-value items
+• Multi-camera security monitoring system
+• Real-time movement detection and instant alerts
+• Face recognition for staff authentication
+• Security audit logs and panic button
+
+**Analytics & Reporting**
+• Real-time dashboard with inventory trends
+• Stock variance and shrinkage reporting
+• Loss prevention analytics to identify patterns
+• Performance metrics and KPI tracking
+• Export reports for compliance
+
+**Staff Management**
+• Role-based access control (Admin, Manager, Staff, Bartender)
 • Face recognition clock-in/out system
-• Shift scheduling and performance tracking
-• Role-based access control and permissions
-• Staff communication and chat system
+• Shift scheduling and approvals
+• Staff communication and team chat
+• Activity logs for accountability
 
-**Pour Detection & Analytics**
-• Smart pour tracking technology
-• Revenue optimization insights
-• Detailed reporting and analytics
-• Real-time dashboard monitoring
+**Multi-Tenant Organization Support**
+• Manage multiple locations from one dashboard
+• Organization-level security and data isolation
+• Customizable settings per location
+• Centralized inventory across all stores
 
-**Security & Compliance**
-• Organization-level data isolation
-• Encrypted data storage and transmission
-• Multi-level user authentication
-• Comprehensive audit trails
+**Industry-Specific Features**
 
-**Mobile-First Design**
-• Native iOS experience optimized for tablets and phones
-• Offline capability for uninterrupted service
-• Intuitive interface designed for busy bar environments
-• Real-time synchronization across all devices
+Bars & Restaurants: Bottle tracking with pour detection, bartender performance monitoring
 
-**Why Choose Invepin?**
-• Reduce inventory losses by up to 15%
-• Streamline staff management processes
-• Get actionable insights to increase profitability
-• Ensure compliance with industry standards
-• Scale from single location to multi-venue operations
+Retail: Colony Hub system managing up to 10,000 micro-pins, high-value item protection
 
-Perfect for bars, nightclubs, restaurants, hotels, and any establishment serving alcoholic beverages.
+Healthcare: Medical supply tracking, controlled substance monitoring, compliance reporting
 
-**Professional Support**
-Our dedicated support team ensures smooth implementation and ongoing success.
+**Perfect For**
+Retail stores, bars, restaurants, nightclubs, hotels, grocery stores, healthcare facilities, and multi-location enterprises.
 
-Download Invepin today and take control of your bar operations!
+Prevent inventory shrinkage, improve accountability, and gain complete visibility with Invepin's professional-grade management system.
 
 ## App Store Keywords
 bar management, inventory control, pour tracking, loss prevention, restaurant software, bartender management, pos system, staff scheduling, face recognition, barcode scanner
