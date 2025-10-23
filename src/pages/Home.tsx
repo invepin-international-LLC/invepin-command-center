@@ -13,26 +13,31 @@ const Home = () => {
       <section className="relative px-6 lg:px-8 pt-24 pb-16">
         <div className="mx-auto max-w-7xl">
           <div className="text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-6xl lg:text-7xl mb-6">
-              <span className="block">PINPOINT PRECISION</span>
-              <span className="block text-primary mt-2">INFINITE PROTECTION.</span>
-            </h1>
-            <div className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-primary/10 text-foreground text-lg font-bold mb-6 border border-primary/20">
-              BUILT FOR THE BOLD, TRUSTED BY THE SMART.
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
+              <Shield className="h-4 w-4" />
+              Preventing $100B+ in Annual Retail Losses
             </div>
+            <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-6xl lg:text-7xl">
+              <span className="block">PINPOINT PRECISION</span>
+              <span className="block text-primary mt-2">INFINITE PROTECTION</span>
+            </h1>
             <p className="mt-6 text-xl leading-8 text-muted-foreground max-w-3xl mx-auto">
-              Invepin is built to prevent inventory shrinkage, improve accountability, and automate real-time tracking across any enterprise operation.
+              Invepin's Colony and Hive system provides real-time inventory protection with micro-pin technology, 
+              reducing shrinkage by up to <span className="text-primary font-bold">94.7%</span> and saving retailers millions in losses.
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <Button asChild size="lg" className="bg-primary hover:bg-primary/90 hover:scale-105 transition-all">
-                <Link to="/contact">
-                  Schedule a Demo <ArrowRight className="ml-2 h-4 w-4" />
+                <Link to="/demo">
+                  See Live Demo <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
               <Button variant="outline" asChild size="lg">
-                <Link to="/demo">Watch Explainer Video</Link>
+                <Link to="/roi-calculator">Calculate Your Savings</Link>
               </Button>
             </div>
+            <p className="mt-4 text-sm text-muted-foreground">
+              No signup required • Instant access • Full features
+            </p>
             
             {/* Trust Badges */}
             <div className="mt-12 flex items-center justify-center gap-8 flex-wrap opacity-70">
@@ -83,8 +88,8 @@ const Home = () => {
       <section className="py-16">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl uppercase">
-              How Invepin Works
+            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+              Complete Loss Prevention Solution
             </h2>
             <p className="mt-4 text-lg text-muted-foreground">
               From micro-pins to facial recognition, protect your inventory with cutting-edge technology
