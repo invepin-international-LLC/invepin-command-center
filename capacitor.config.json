@@ -27,6 +27,5 @@
       "spinnerColor": "#3B82F6"
     }
   },
-  "bundledWebRuntime": false,
-  "cordova": {}
+  "bundledWebRuntime": false
 }
