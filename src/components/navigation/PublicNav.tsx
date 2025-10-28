@@ -42,9 +42,9 @@ export function PublicNav() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 max-w-screen-2xl items-center">
-        <Link to="/" className="flex items-center space-x-2">
+        <Link to="/" className="flex items-center space-x-2 flex-shrink-0">
           <Shield className="h-6 w-6 text-primary" />
-          <span className="font-bold text-xl">Invepin</span>
+          <span className="font-bold text-xl whitespace-nowrap">Invepin</span>
         </Link>
 
         {/* Desktop Navigation */}
@@ -77,17 +77,17 @@ export function PublicNav() {
           </NavigationMenuList>
         </NavigationMenu>
 
-        <div className="ml-auto flex items-center space-x-2">
-          <Button variant="ghost" asChild className="hidden md:inline-flex">
+        <div className="ml-auto flex items-center gap-2 flex-wrap">
+          <Button variant="ghost" asChild className="hidden md:inline-flex whitespace-nowrap">
             <Link to="/pricing">Pricing</Link>
           </Button>
-          <Button variant="ghost" asChild>
+          <Button variant="ghost" asChild className="whitespace-nowrap">
             <Link to="/hive">Hive</Link>
           </Button>
-          <Button variant="ghost" asChild className="hidden md:inline-flex">
+          <Button variant="ghost" asChild className="hidden md:inline-flex whitespace-nowrap">
             <Link to="/dashboard">Login</Link>
           </Button>
-          <Button asChild>
+          <Button asChild className="whitespace-nowrap">
             <Link to="/demo">Start Demo</Link>
           </Button>
 

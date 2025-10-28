@@ -53,16 +53,16 @@ export default function Hive() {
                 </div>
               </div>
               <div>
-                <div className="flex items-center gap-2">
-                  <h1 className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-amber-500 to-amber-600 bg-clip-text text-transparent">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h1 className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-amber-500 to-amber-600 bg-clip-text text-transparent break-words">
                     Invepin HIVE Command Center
                   </h1>
-                  <Badge className="bg-gradient-to-r from-amber-500 to-amber-600 text-white">
+                  <Badge className="bg-gradient-to-r from-amber-500 to-amber-600 text-white whitespace-nowrap flex-shrink-0">
                     <Shield className="h-3 w-3 mr-1" />
                     Admin Portal
                   </Badge>
                 </div>
-                <p className="text-sm lg:text-base text-muted-foreground">Multi-store cloud management system</p>
+                <p className="text-sm lg:text-base text-muted-foreground break-words">Multi-store cloud management system</p>
               </div>
             </div>
             
@@ -72,16 +72,16 @@ export default function Hive() {
                 variant="default" 
                 size="sm" 
                 onClick={handleAutoCount} 
-                className="bg-gradient-to-r from-amber-500 to-amber-600 text-white hover:shadow-glow hover:scale-105 transition-all duration-200"
+                className="bg-gradient-to-r from-amber-500 to-amber-600 text-white hover:shadow-glow hover:scale-105 transition-all duration-200 whitespace-normal"
               >
-                <BarChart3 className="h-3 w-3 mr-1" />
-                Automatic Invepin Inventory Count
+                <BarChart3 className="h-3 w-3 mr-1 flex-shrink-0" />
+                <span className="break-words">Automatic Invepin Inventory Count</span>
               </Button>
               <Button 
                 variant="outline" 
                 size="sm" 
                 onClick={() => navigate('/dashboard')} 
-                className="hover:shadow-card hover:scale-105 transition-all duration-200"
+                className="hover:shadow-card hover:scale-105 transition-all duration-200 whitespace-nowrap"
               >
                 <ArrowLeft className="h-3 w-3 mr-1" />
                 Back to Invepin App
