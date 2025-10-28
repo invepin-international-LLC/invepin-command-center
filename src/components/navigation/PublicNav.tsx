@@ -82,6 +82,9 @@ export function PublicNav() {
             <Link to="/pricing">Pricing</Link>
           </Button>
           <Button variant="ghost" asChild className="hidden md:inline-flex">
+            <Link to="/hive">Hive</Link>
+          </Button>
+          <Button variant="ghost" asChild className="hidden md:inline-flex">
             <Link to="/dashboard">Login</Link>
           </Button>
           <Button asChild>
@@ -120,6 +123,9 @@ export function PublicNav() {
                 <div className="border-t pt-4 space-y-2">
                   <Button variant="ghost" asChild className="w-full justify-start">
                     <Link to="/pricing" onClick={() => setIsOpen(false)}>Pricing</Link>
+                  </Button>
+                  <Button variant="ghost" asChild className="w-full justify-start">
+                    <Link to="/hive" onClick={() => setIsOpen(false)}>Hive</Link>
                   </Button>
                   <Button variant="ghost" asChild className="w-full justify-start">
                     <Link to="/dashboard" onClick={() => setIsOpen(false)}>Login</Link>

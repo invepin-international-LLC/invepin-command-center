@@ -226,6 +226,11 @@ const Home = () => {
                   Try Demo Now <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
+              <Button asChild size="lg" variant="outline">
+                <Link to="/hive">
+                  Hive Command Center <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
               <Button variant="outline" asChild size="lg">
                 <Link to="/contact">Schedule Consultation</Link>
               </Button>
