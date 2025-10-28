@@ -13,6 +13,7 @@ import { HiveAnalytics } from "@/components/hive/HiveAnalytics";
 import { SmartShelfScanner } from "@/components/hive/SmartShelfScanner";
 import { useOrganizationInventory } from "@/hooks/useOrganizationInventory";
 import { useToast } from "@/hooks/use-toast";
+import { PublicNav } from "@/components/navigation/PublicNav";
 
 export default function Hive() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -38,8 +39,9 @@ export default function Hive() {
 
   return (
     <div className="min-h-screen bg-background">
+      <PublicNav />
       {/* Header Bar */}
-      <div className="sticky top-0 z-50 backdrop-blur-xl border-b border-amber-500/30 bg-gradient-to-r from-amber-500/10 to-amber-600/10 animate-slide-in-from-top">
+      <div className="sticky top-16 z-40 backdrop-blur-xl border-b border-amber-500/30 bg-gradient-to-r from-amber-500/10 to-amber-600/10 animate-slide-in-from-top">
         <div className="container mx-auto p-4">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             {/* Logo and Title */}
