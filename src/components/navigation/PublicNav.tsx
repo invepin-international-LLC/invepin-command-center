@@ -81,7 +81,7 @@ export function PublicNav() {
           <Button variant="ghost" asChild className="hidden md:inline-flex">
             <Link to="/pricing">Pricing</Link>
           </Button>
-          <Button variant="ghost" asChild className="hidden md:inline-flex">
+          <Button variant="ghost" asChild>
             <Link to="/hive">Hive</Link>
           </Button>
           <Button variant="ghost" asChild className="hidden md:inline-flex">
