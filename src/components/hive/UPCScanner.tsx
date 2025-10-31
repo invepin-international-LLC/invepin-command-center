@@ -20,20 +20,32 @@ interface ScannedProduct {
   created_at: string;
 }
 
+interface LinkedInvepin {
+  invepin_id: string;
+  product_name: string;
+  upc: string;
+  linked_at: string;
+}
+
+type ScanStep = 'upc' | 'invepin';
+
 export function UPCScanner() {
   const [isScanning, setIsScanning] = useState(false);
+  const [scanStep, setScanStep] = useState<ScanStep>('upc');
+  const [currentProduct, setCurrentProduct] = useState<ScannedProduct | null>(null);
   const [manualUPC, setManualUPC] = useState("");
+  const [manualInvepinId, setManualInvepinId] = useState("");
   const [productName, setProductName] = useState("");
   const [category, setCategory] = useState("");
   const [manufacturer, setManufacturer] = useState("");
-  const [recentScans, setRecentScans] = useState<ScannedProduct[]>([]);
+  const [recentLinks, setRecentLinks] = useState<LinkedInvepin[]>([]);
   const [selectedCamera, setSelectedCamera] = useState<string>("");
   const [availableCameras, setAvailableCameras] = useState<MediaDeviceInfo[]>([]);
   const videoRef = useRef<HTMLVideoElement>(null);
   const codeReaderRef = useRef<BrowserMultiFormatReader | null>(null);
 
   useEffect(() => {
-    loadRecentScans();
+    loadRecentLinks();
     getCameras();
     return () => {
       stopScanning();
@@ -54,18 +66,24 @@ export function UPCScanner() {
     }
   };
 
-  const loadRecentScans = async () => {
+  const loadRecentLinks = async () => {
     try {
       const { data, error } = await supabase
-        .from('products')
-        .select('*')
+        .from('invepin_data')
+        .select('invepin_id, item_name, upc, created_at')
+        .not('upc', 'is', null)
         .order('created_at', { ascending: false })
         .limit(10);
 
       if (error) throw error;
-      setRecentScans(data || []);
+      setRecentLinks(data?.map(d => ({
+        invepin_id: d.invepin_id,
+        product_name: d.item_name || 'Unknown',
+        upc: d.upc || '',
+        linked_at: d.created_at || ''
+      })) || []);
     } catch (error) {
-      console.error("Error loading recent scans:", error);
+      console.error("Error loading recent links:", error);
     }
   };
 
@@ -103,77 +121,132 @@ export function UPCScanner() {
     toast.info("Scanner stopped");
   };
 
-  const handleScanResult = async (upc: string) => {
-    setManualUPC(upc);
+  const handleScanResult = async (code: string) => {
     stopScanning();
     
-    // Check if product already exists
-    const { data: existing } = await supabase
-      .from('products')
-      .select('*')
-      .eq('upc', upc)
-      .single();
+    if (scanStep === 'upc') {
+      // Step 1: Scan UPC
+      setManualUPC(code);
+      
+      // Check if product exists
+      const { data: existing } = await supabase
+        .from('products')
+        .select('*')
+        .eq('upc', code)
+        .maybeSingle();
 
-    if (existing) {
-      toast.info(`Product "${existing.name}" already in database`, {
-        description: `UPC: ${upc}`
-      });
-      loadRecentScans();
+      if (existing) {
+        setCurrentProduct(existing);
+        setProductName(existing.name);
+        setCategory(existing.category || '');
+        setManufacturer(existing.manufacturer || '');
+        toast.success(`Product found: ${existing.name}`, {
+          description: `Now scan the Invepin sticker code`
+        });
+        setScanStep('invepin');
+      } else {
+        toast.success(`UPC ${code} scanned! Enter product details, then scan Invepin code.`);
+      }
     } else {
-      toast.success(`UPC ${upc} scanned! Please enter product details.`);
+      // Step 2: Scan Invepin ID
+      setManualInvepinId(code);
+      toast.success(`Invepin code ${code} scanned! Click "Link Product & Invepin" to save.`);
     }
   };
 
-  const handleManualEntry = async () => {
+  const linkProductToInvepin = async () => {
     if (!manualUPC.trim()) {
-      toast.error("Please enter a UPC code");
+      toast.error("Please scan or enter a UPC code first");
       return;
     }
 
-    await saveProduct(manualUPC);
-  };
-
-  const saveProduct = async (upc: string) => {
     if (!productName.trim()) {
       toast.error("Please enter a product name");
       return;
     }
 
-    try {
-      const { data, error } = await supabase
-        .from('products')
-        .insert({
-          upc: upc.trim(),
-          name: productName.trim(),
-          category: category.trim() || null,
-          manufacturer: manufacturer.trim() || null,
-        })
-        .select()
-        .single();
+    if (!manualInvepinId.trim()) {
+      toast.error("Please scan or enter an Invepin sticker code");
+      return;
+    }
 
-      if (error) {
-        if (error.code === '23505') {
-          toast.error("This UPC is already in the database");
+    try {
+      // First, ensure product exists in products table
+      let productId = currentProduct?.id;
+      
+      if (!productId) {
+        const { data: newProduct, error: productError } = await supabase
+          .from('products')
+          .insert({
+            upc: manualUPC.trim(),
+            name: productName.trim(),
+            category: category.trim() || null,
+            manufacturer: manufacturer.trim() || null,
+          })
+          .select()
+          .single();
+
+        if (productError) {
+          if (productError.code === '23505') {
+            // Product exists, fetch it
+            const { data: existing } = await supabase
+              .from('products')
+              .select('*')
+              .eq('upc', manualUPC.trim())
+              .single();
+            productId = existing?.id;
+          } else {
+            throw productError;
+          }
         } else {
-          throw error;
+          productId = newProduct.id;
         }
-        return;
       }
 
-      toast.success("Product added to database!", {
-        description: `${productName} (UPC: ${upc})`
+      // Now link to invepin_data
+      const { error: invepinError } = await supabase
+        .from('invepin_data')
+        .upsert({
+          invepin_id: manualInvepinId.trim(),
+          item_name: productName.trim(),
+          upc: manualUPC.trim(),
+          product_id: productId,
+          location: 'Newly Tagged',
+          last_detected: new Date().toISOString(),
+        }, {
+          onConflict: 'invepin_id'
+        });
+
+      if (invepinError) throw invepinError;
+
+      toast.success("Product linked to Invepin successfully!", {
+        description: `${productName} ↔ Invepin ${manualInvepinId}`
       });
 
       // Reset form
       setManualUPC("");
+      setManualInvepinId("");
       setProductName("");
       setCategory("");
       setManufacturer("");
-      loadRecentScans();
+      setCurrentProduct(null);
+      setScanStep('upc');
+      loadRecentLinks();
     } catch (error) {
-      console.error("Error saving product:", error);
-      toast.error("Failed to save product to database");
+      console.error("Error linking product:", error);
+      toast.error("Failed to link product to Invepin");
     }
+  };
+
+  const resetScanning = () => {
+    setManualUPC("");
+    setManualInvepinId("");
+    setProductName("");
+    setCategory("");
+    setManufacturer("");
+    setCurrentProduct(null);
+    setScanStep('upc');
+    stopScanning();
   };
 
   return (
@@ -183,10 +256,12 @@ export function UPCScanner() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Camera className="h-5 w-5" />
-            UPC Scanner
+            Product & Invepin Linking
           </CardTitle>
           <CardDescription>
-            Scan barcodes to add products to your database
+            {scanStep === 'upc' 
+              ? 'Step 1: Scan product UPC barcode' 
+              : 'Step 2: Scan Invepin sticker code'}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -241,14 +316,26 @@ export function UPCScanner() {
 
           <Separator />
 
+          {/* Step Indicator */}
+          <div className="flex items-center justify-center gap-4">
+            <Badge variant={scanStep === 'upc' ? 'default' : 'secondary'}>
+              1. UPC
+            </Badge>
+            <div className="h-px w-8 bg-border" />
+            <Badge variant={scanStep === 'invepin' ? 'default' : 'secondary'}>
+              2. Invepin
+            </Badge>
+          </div>
+
           {/* Manual Entry */}
           <div className="space-y-3">
             <Label>Manual Entry</Label>
             <div className="space-y-2">
               <Input
-                placeholder="Enter UPC code"
+                placeholder="Product UPC *"
                 value={manualUPC}
                 onChange={(e) => setManualUPC(e.target.value)}
+                disabled={scanStep === 'invepin' && !!currentProduct}
               />
               <Input
                 placeholder="Product name *"
@@ -265,62 +352,65 @@ export function UPCScanner() {
                 value={manufacturer}
                 onChange={(e) => setManufacturer(e.target.value)}
               />
-              <Button onClick={handleManualEntry} className="w-full">
-                <Database className="h-4 w-4 mr-2" />
-                Add to Database
-              </Button>
+              <Input
+                placeholder="Invepin Sticker Code *"
+                value={manualInvepinId}
+                onChange={(e) => setManualInvepinId(e.target.value)}
+              />
+              <div className="flex gap-2">
+                <Button onClick={linkProductToInvepin} className="flex-1">
+                  <Database className="h-4 w-4 mr-2" />
+                  Link Product & Invepin
+                </Button>
+                <Button onClick={resetScanning} variant="outline">
+                  Reset
+                </Button>
+              </div>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Recent Scans */}
+      {/* Recent Links */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Package className="h-5 w-5" />
-            Recent Products
+            Recent Links
           </CardTitle>
           <CardDescription>
-            Recently added UPC codes
+            Recently linked products & Invepins
           </CardDescription>
         </CardHeader>
         <CardContent>
           <ScrollArea className="h-[500px] pr-4">
-            {recentScans.length === 0 ? (
+            {recentLinks.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-32 text-muted-foreground">
                 <AlertCircle className="h-8 w-8 mb-2" />
-                <p className="text-sm">No products scanned yet</p>
+                <p className="text-sm">No products linked yet</p>
               </div>
             ) : (
               <div className="space-y-3">
-                {recentScans.map((product) => (
-                  <Card key={product.id} className="p-3">
+                {recentLinks.map((link, idx) => (
+                  <Card key={idx} className="p-3">
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
                           <CheckCircle2 className="h-4 w-4 text-green-500 flex-shrink-0" />
-                          <h4 className="font-medium truncate">{product.name}</h4>
+                          <h4 className="font-medium truncate">{link.product_name}</h4>
                         </div>
-                        <p className="text-xs text-muted-foreground mb-2">
-                          UPC: {product.upc}
-                        </p>
-                        <div className="flex flex-wrap gap-1">
-                          {product.category && (
-                            <Badge variant="secondary" className="text-xs">
-                              {product.category}
-                            </Badge>
-                          )}
-                          {product.manufacturer && (
-                            <Badge variant="outline" className="text-xs">
-                              {product.manufacturer}
-                            </Badge>
-                          )}
+                        <div className="space-y-1 mb-2">
+                          <p className="text-xs text-muted-foreground">
+                            UPC: {link.upc}
+                          </p>
+                          <p className="text-xs font-mono text-primary">
+                            Invepin: {link.invepin_id}
+                          </p>
                         </div>
                       </div>
                     </div>
                     <p className="text-xs text-muted-foreground mt-2">
-                      Added: {new Date(product.created_at).toLocaleString()}
+                      Linked: {new Date(link.linked_at).toLocaleString()}
                     </p>
                   </Card>
                 ))}
