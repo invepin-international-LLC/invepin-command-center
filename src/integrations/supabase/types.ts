@@ -62,7 +62,9 @@ export type Database = {
           item_name: string | null
           last_detected: string | null
           location: string | null
+          product_id: string | null
           store_id: string | null
+          upc: string | null
         }
         Insert: {
           battery_level?: number | null
@@ -73,7 +75,9 @@ export type Database = {
           item_name?: string | null
           last_detected?: string | null
           location?: string | null
+          product_id?: string | null
           store_id?: string | null
+          upc?: string | null
         }
         Update: {
           battery_level?: number | null
@@ -84,9 +88,18 @@ export type Database = {
           item_name?: string | null
           last_detected?: string | null
           location?: string | null
+          product_id?: string | null
           store_id?: string | null
+          upc?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "invepin_data_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "invepin_data_store_id_fkey"
             columns: ["store_id"]
@@ -95,6 +108,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      products: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          manufacturer: string | null
+          name: string
+          upc: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          manufacturer?: string | null
+          name: string
+          upc: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          manufacturer?: string | null
+          name?: string
+          upc?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       stores: {
         Row: {
