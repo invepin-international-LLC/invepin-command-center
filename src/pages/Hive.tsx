@@ -11,6 +11,7 @@ import { InvepinTracker } from "@/components/hive/InvepinTracker";
 import { UserRoleManagement } from "@/components/hive/UserRoleManagement";
 import { HiveAnalytics } from "@/components/hive/HiveAnalytics";
 import { SmartShelfScanner } from "@/components/hive/SmartShelfScanner";
+import { UPCScanner } from "@/components/hive/UPCScanner";
 import { useOrganizationInventory } from "@/hooks/useOrganizationInventory";
 import { useToast } from "@/hooks/use-toast";
 import { PublicNav } from "@/components/navigation/PublicNav";
@@ -151,9 +152,10 @@ export default function Hive() {
 
         {/* Main Content Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6 lg:w-auto">
+          <TabsList className="grid w-full grid-cols-7 lg:w-auto">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="scanner">Smart Scanner</TabsTrigger>
+            <TabsTrigger value="upc">UPC Scanner</TabsTrigger>
             <TabsTrigger value="stores">Stores</TabsTrigger>
             <TabsTrigger value="colony">Colony Hubs</TabsTrigger>
             <TabsTrigger value="invepins">Invepins</TabsTrigger>
@@ -166,6 +168,10 @@ export default function Hive() {
 
           <TabsContent value="scanner" className="space-y-6">
             <SmartShelfScanner />
+          </TabsContent>
+
+          <TabsContent value="upc" className="space-y-6">
+            <UPCScanner />
           </TabsContent>
 
           <TabsContent value="stores">
