@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { useOrganization } from './OrganizationProvider';
 
@@ -27,6 +27,8 @@ interface SecurityContextType {
 const SecurityContext = createContext<SecurityContextType | null>(null);
 
 const ROLE_PERMISSIONS = {
+  super_admin: ['all'],
+  company_admin: ['all'],
   admin: ['all'],
   manager: ['view_cameras', 'manage_inventory', 'view_reports', 'manage_staff', 'chat_access'],
   staff: ['view_cameras', 'basic_inventory', 'chat_access'],
@@ -41,18 +43,11 @@ export function SecurityProvider({ children }: { children: React.ReactNode }) {
   const { memberRole, organization } = useOrganization();
 
   useEffect(() => {
-    // Get initial user
+    // Get initial user and load role
     supabase.auth.getUser().then(({ data: { user } }) => {
       setUser(user);
-      // Use organization role if available, otherwise fall back to user metadata
-      const role = memberRole || user?.user_metadata?.role;
-      if (role) {
-        setUserRole(role);
-        setPermissions(ROLE_PERMISSIONS[role as keyof typeof ROLE_PERMISSIONS] || []);
-      }
-      
-      // Load user security settings
       if (user) {
+        loadUserRole(user.id);
         loadUserSecurity(user.id);
       }
     });
@@ -60,42 +55,68 @@ export function SecurityProvider({ children }: { children: React.ReactNode }) {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user || null);
-      const role = memberRole || session?.user?.user_metadata?.role;
-      if (role) {
-        setUserRole(role);
-        setPermissions(ROLE_PERMISSIONS[role as keyof typeof ROLE_PERMISSIONS] || []);
+      if (session?.user) {
+        loadUserRole(session.user.id);
+        loadUserSecurity(session.user.id);
       } else {
         setUserRole(null);
         setPermissions([]);
-      }
-      
-      // Load user security settings
-      if (session?.user) {
-        loadUserSecurity(session.user.id);
-      } else {
         setUserSecurity(null);
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [memberRole]);
+  }, []);
 
   // Update role when organization member role changes
   useEffect(() => {
     if (memberRole && user) {
       setUserRole(memberRole);
       setPermissions(ROLE_PERMISSIONS[memberRole as keyof typeof ROLE_PERMISSIONS] || []);
+    } else if (user) {
+      // Reload role from database if organization role is lost
+      loadUserRole(user.id);
     }
   }, [memberRole, user]);
+
+  const loadUserRole = async (userId: string) => {
+    try {
+      // First check organization role
+      if (memberRole) {
+        setUserRole(memberRole);
+        setPermissions(ROLE_PERMISSIONS[memberRole as keyof typeof ROLE_PERMISSIONS] || []);
+        return;
+      }
+
+      // Otherwise load from user_roles table
+      const { data, error } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      if (error) {
+        console.error('Error loading user role:', error);
+        return;
+      }
+
+      if (data) {
+        setUserRole(data.role);
+        setPermissions(ROLE_PERMISSIONS[data.role as keyof typeof ROLE_PERMISSIONS] || []);
+      }
+    } catch (error) {
+      console.error('Error loading user role:', error);
+    }
+  };
 
   const hasPermission = (permission: string): boolean => {
     return permissions.includes('all') || permissions.includes(permission);
   };
 
   const isAuthorized = (requiredRoles: string[]): boolean => {
-    // Check if user has valid organization membership
-    if (!organization || !memberRole) return false;
-    return requiredRoles.includes(memberRole);
+    // Check against current user role (from organization or user_roles table)
+    if (!userRole) return false;
+    return requiredRoles.includes(userRole);
   };
 
   const updatePhoneNumber = async (phone: string): Promise<void> => {

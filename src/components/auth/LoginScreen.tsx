@@ -6,8 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Shield, Smartphone, Wifi, Cloud, Activity, Database, Zap, Eye, TrendingUp, BarChart3 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase, isSupabaseConfigured } from "@/lib/supabaseClient";
-import { SupabaseConfigForm } from "@/components/auth/SupabaseConfigForm";
+import { supabase } from '@/integrations/supabase/client';
 import { Link } from "react-router-dom";
 
 interface User {
@@ -26,13 +25,12 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
-  const [connectedDevices, setConnectedDevices] = useState(18); // Start with realistic number
-  const [inventoryValue, setInventoryValue] = useState(847230); // Start with realistic value
+  const [connectedDevices, setConnectedDevices] = useState(18);
+  const [inventoryValue, setInventoryValue] = useState(847230);
   const [alertCount, setAlertCount] = useState(0);
   const { toast } = useToast();
-  const [showConfig, setShowConfig] = useState(false);
-  // Demo mode is enabled by default when Supabase is not configured. You can also enable via ?demo=1 or localStorage flag.
-  const demoMode = !isSupabaseConfigured || new URLSearchParams(window.location.search).get('demo') === '1' || localStorage.getItem('invepin_demo_mode') === '1';
+  // Demo mode for testing
+  const demoMode = new URLSearchParams(window.location.search).get('demo') === '1';
 
   // Simulate real-time data updates
   useEffect(() => {
@@ -94,15 +92,6 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
         return;
       }
 
-      if (!isSupabaseConfigured) {
-        toast({
-          title: "Authentication not configured",
-          description: "Connect Supabase in Lovable or enable demo with ?demo=1",
-          variant: "destructive",
-        });
-        return;
-      }
-
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error || !data.user) {
         toast({
@@ -130,15 +119,6 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
   const handleSignUp = async () => {
     setIsLoading(true);
     try {
-      if (!isSupabaseConfigured) {
-        toast({
-          title: "Sign up not configured",
-          description: "Connect backend in Lovable or enable demo with ?demo=1",
-          variant: "destructive",
-        });
-        return;
-      }
-
       const redirectUrl = `${window.location.origin}/dashboard`;
       const { error } = await supabase.auth.signUp({
         email,
@@ -151,7 +131,11 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
         return;
       }
 
-      toast({ title: "Check your email", description: "Confirm your address to finish sign up." });
+      toast({ 
+        title: "Account created!", 
+        description: "You can now sign in with your credentials." 
+      });
+      setIsSignUp(false);
     } finally {
       setIsLoading(false);
     }
@@ -412,24 +396,6 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
                   <p className="text-xs text-muted-foreground text-center mt-2">
                     (Admin portal for multi-store management)
                   </p>
-                </div>
-              )}
-              {/* Supabase config hidden for production client experience */}
-              {false && !isSupabaseConfigured && (
-                <div className="pt-4 border-t border-border/30">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowConfig((v) => !v)}
-                    className="w-full hover:bg-primary/10 hover:border-primary"
-                  >
-                    {showConfig ? "Hide Supabase Configuration" : "Configure Supabase"}
-                  </Button>
-                  {showConfig && (
-                    <div className="mt-3">
-                      <SupabaseConfigForm />
-                    </div>
-                  )}
                 </div>
               )}
             </CardContent>
