@@ -196,6 +196,51 @@ export type Database = {
         }
         Relationships: []
       }
+      user_security: {
+        Row: {
+          account_locked_until: string | null
+          created_at: string | null
+          failed_login_attempts: number | null
+          id: string
+          last_mfa_verification: string | null
+          mfa_enabled: boolean | null
+          mfa_phone: string | null
+          mfa_phone_verified: boolean | null
+          password_expires_at: string | null
+          password_last_changed: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          account_locked_until?: string | null
+          created_at?: string | null
+          failed_login_attempts?: number | null
+          id?: string
+          last_mfa_verification?: string | null
+          mfa_enabled?: boolean | null
+          mfa_phone?: string | null
+          mfa_phone_verified?: boolean | null
+          password_expires_at?: string | null
+          password_last_changed?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          account_locked_until?: string | null
+          created_at?: string | null
+          failed_login_attempts?: number | null
+          id?: string
+          last_mfa_verification?: string | null
+          mfa_enabled?: boolean | null
+          mfa_phone?: string | null
+          mfa_phone_verified?: boolean | null
+          password_expires_at?: string | null
+          password_last_changed?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -208,6 +253,9 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_password_expired: { Args: { _user_id: string }; Returns: boolean }
+      record_failed_login: { Args: { _user_id: string }; Returns: undefined }
+      reset_failed_logins: { Args: { _user_id: string }; Returns: undefined }
     }
     Enums: {
       app_role:

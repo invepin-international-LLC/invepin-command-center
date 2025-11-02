@@ -3,14 +3,25 @@ import { supabase } from '@/lib/supabaseClient';
 import { toast } from '@/hooks/use-toast';
 import { useOrganization } from './OrganizationProvider';
 
+interface UserSecurity {
+  mfa_enabled: boolean;
+  mfa_phone_verified: boolean;
+  password_expires_at: string;
+  account_locked_until: string | null;
+  failed_login_attempts: number;
+}
+
 interface SecurityContextType {
   user: any | null;
   userRole: string | null;
   permissions: string[];
+  userSecurity: UserSecurity | null;
   hasPermission: (permission: string) => boolean;
   isAuthorized: (requiredRoles: string[]) => boolean;
   updatePhoneNumber: (phone: string) => Promise<void>;
   updateEmailNotifications: (enabled: boolean) => Promise<void>;
+  checkPasswordExpiry: () => boolean;
+  isAccountLocked: () => boolean;
 }
 
 const SecurityContext = createContext<SecurityContextType | null>(null);
@@ -26,6 +37,7 @@ export function SecurityProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<any | null>(null);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [permissions, setPermissions] = useState<string[]>([]);
+  const [userSecurity, setUserSecurity] = useState<UserSecurity | null>(null);
   const { memberRole, organization } = useOrganization();
 
   useEffect(() => {
@@ -37,6 +49,11 @@ export function SecurityProvider({ children }: { children: React.ReactNode }) {
       if (role) {
         setUserRole(role);
         setPermissions(ROLE_PERMISSIONS[role as keyof typeof ROLE_PERMISSIONS] || []);
+      }
+      
+      // Load user security settings
+      if (user) {
+        loadUserSecurity(user.id);
       }
     });
 
@@ -50,6 +67,13 @@ export function SecurityProvider({ children }: { children: React.ReactNode }) {
       } else {
         setUserRole(null);
         setPermissions([]);
+      }
+      
+      // Load user security settings
+      if (session?.user) {
+        loadUserSecurity(session.user.id);
+      } else {
+        setUserSecurity(null);
       }
     });
 
@@ -117,15 +141,45 @@ export function SecurityProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const loadUserSecurity = async (userId: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('user_security')
+        .select('mfa_enabled, mfa_phone_verified, password_expires_at, account_locked_until, failed_login_attempts')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+      if (error) throw error;
+      if (data) setUserSecurity(data);
+    } catch (error) {
+      console.error('Error loading user security:', error);
+    }
+  };
+
+  const checkPasswordExpiry = (): boolean => {
+    if (!userSecurity) return false;
+    const expiryDate = new Date(userSecurity.password_expires_at);
+    return expiryDate < new Date();
+  };
+
+  const isAccountLocked = (): boolean => {
+    if (!userSecurity?.account_locked_until) return false;
+    const lockoutDate = new Date(userSecurity.account_locked_until);
+    return lockoutDate > new Date();
+  };
+
   return (
     <SecurityContext.Provider value={{
       user,
       userRole,
       permissions,
+      userSecurity,
       hasPermission,
       isAuthorized,
       updatePhoneNumber,
       updateEmailNotifications,
+      checkPasswordExpiry,
+      isAccountLocked,
     }}>
       {children}
     </SecurityContext.Provider>
