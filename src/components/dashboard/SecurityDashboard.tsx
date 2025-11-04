@@ -2,6 +2,7 @@ import React from 'react';
 import { AccessControl } from '@/components/auth/AccessControl';
 import { StaffChat } from '@/components/communication/StaffChat';
 import { ContactSettings } from '@/components/communication/ContactSettings';
+import { WalkieTalkie } from '@/components/communication/WalkieTalkie';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -118,56 +119,7 @@ export function SecurityDashboard() {
         <TabsContent value="communication" className="space-y-4">
           <div className="grid gap-6 lg:grid-cols-2">
             <StaffChat className="h-[600px]" />
-            
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Phone className="h-5 w-5 text-primary" />
-                  Emergency Communications
-                </CardTitle>
-                <CardDescription>
-                  Quick access to emergency communication tools
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <AccessControl requiredRoles={['admin', 'manager']}>
-                  <div className="grid gap-3">
-                    <Button variant="outline" className="justify-start" size="lg">
-                      <Phone className="h-4 w-4 mr-2" />
-                      Call All Staff
-                    </Button>
-                    <Button variant="outline" className="justify-start" size="lg">
-                      <MessageSquare className="h-4 w-4 mr-2" />
-                      Send Emergency Alert
-                    </Button>
-                    <Button variant="outline" className="justify-start" size="lg">
-                      <AlertTriangle className="h-4 w-4 mr-2" />
-                      Trigger Security Alert
-                    </Button>
-                  </div>
-                </AccessControl>
-                
-                <div className="p-4 rounded-lg bg-muted/50 border">
-                  <h4 className="font-medium mb-2">Recent Activity</h4>
-                  <div className="space-y-2 text-sm">
-                    <p className="flex justify-between">
-                      <span>Last emergency drill:</span>
-                      <span className="text-muted-foreground">3 days ago</span>
-                    </p>
-                    <p className="flex justify-between">
-                      <span>Staff response time:</span>
-                      <span className="text-success">2.3 minutes</span>
-                    </p>
-                    <p className="flex justify-between">
-                      <span>System status:</span>
-                      <Badge variant="outline" className="text-success border-success/20">
-                        Operational
-                      </Badge>
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <WalkieTalkie />
           </div>
         </TabsContent>
 
