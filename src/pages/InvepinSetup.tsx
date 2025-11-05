@@ -22,9 +22,10 @@ const InvepinSetup = () => {
           </div>
 
           <Tabs defaultValue="overview" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="overview">Overview</TabsTrigger>
               <TabsTrigger value="specs">Specifications</TabsTrigger>
+              <TabsTrigger value="esp32">ESP32-S3</TabsTrigger>
               <TabsTrigger value="setup">Setup</TabsTrigger>
               <TabsTrigger value="api">API</TabsTrigger>
             </TabsList>
@@ -154,6 +155,218 @@ const InvepinSetup = () => {
                       <div className="bg-muted p-3 rounded-lg">
                         <code className="text-sm">Custom: 6E400001-B5A3-F393-E0A9-E50E24DCCA9E</code>
                         <p className="text-sm text-muted-foreground mt-1">Invepin configuration service (write product SKU, location data)</p>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="esp32" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>ESP32-S3 Programming Guide</CardTitle>
+                  <CardDescription>Complete guide to program your ESP32-S3 as an Invepin-compatible BLE tag</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div>
+                    <h3 className="font-semibold mb-3">Hardware Requirements</h3>
+                    <ul className="space-y-2 text-sm text-muted-foreground list-disc list-inside">
+                      <li>ESP32-S3 development board with BLE support</li>
+                      <li>USB-C cable for programming and power</li>
+                      <li>Optional: CR2032 battery holder for portable deployment</li>
+                      <li>Optional: Custom PCB with antenna for production units</li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h3 className="font-semibold mb-3">Development Environment Setup</h3>
+                    <div className="space-y-4">
+                      <div>
+                        <h4 className="text-sm font-semibold mb-2">Option 1: Arduino IDE (Recommended for beginners)</h4>
+                        <ol className="space-y-2 text-sm text-muted-foreground list-decimal list-inside ml-4">
+                          <li>Install Arduino IDE 2.0+</li>
+                          <li>Add ESP32 board support: File → Preferences → Additional Board Manager URLs:
+                            <div className="bg-muted p-2 rounded mt-1 font-mono text-xs break-all">
+                              https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+                            </div>
+                          </li>
+                          <li>Install ESP32 boards: Tools → Board → Boards Manager → "esp32" → Install</li>
+                          <li>Select board: Tools → Board → ESP32 Arduino → ESP32S3 Dev Module</li>
+                        </ol>
+                      </div>
+
+                      <div>
+                        <h4 className="text-sm font-semibold mb-2">Option 2: PlatformIO (Recommended for production)</h4>
+                        <div className="bg-muted p-3 rounded-lg font-mono text-xs space-y-1">
+                          <div>[env:esp32-s3-devkitc-1]</div>
+                          <div>platform = espressif32</div>
+                          <div>board = esp32-s3-devkitc-1</div>
+                          <div>framework = arduino</div>
+                          <div>monitor_speed = 115200</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="font-semibold mb-3">Required Libraries</h3>
+                    <div className="space-y-2">
+                      <div className="bg-muted p-3 rounded-lg">
+                        <code className="text-sm">NimBLE-Arduino</code>
+                        <p className="text-sm text-muted-foreground mt-1">Install via Arduino Library Manager or add to platformio.ini</p>
+                      </div>
+                      <div className="bg-muted p-3 rounded-lg">
+                        <code className="text-sm">Preferences (built-in)</code>
+                        <p className="text-sm text-muted-foreground mt-1">For storing Invepin ID in flash memory</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="font-semibold mb-3">Complete Arduino Code Example</h3>
+                    <div className="bg-muted p-4 rounded-lg font-mono text-xs space-y-1 overflow-x-auto">
+                      <div className="text-primary">#include &lt;NimBLEDevice.h&gt;</div>
+                      <div className="text-primary">#include &lt;Preferences.h&gt;</div>
+                      <div></div>
+                      <div>Preferences preferences;</div>
+                      <div>NimBLEAdvertising *pAdvertising;</div>
+                      <div></div>
+                      <div className="text-muted-foreground">// Configuration</div>
+                      <div>const char* INVEPIN_ID = "INV-ESP32-0001-ABCD"; // Unique 16-char ID</div>
+                      <div>const uint16_t COMPANY_ID = 0x4956; // Invepin manufacturer ID</div>
+                      <div>const int ADVERTISING_INTERVAL = 500; // milliseconds</div>
+                      <div></div>
+                      <div>void setup() {'{'}</div>
+                      <div className="ml-4">Serial.begin(115200);</div>
+                      <div className="ml-4">Serial.println("Invepin ESP32-S3 Starting...");</div>
+                      <div></div>
+                      <div className="ml-4 text-muted-foreground">// Initialize BLE</div>
+                      <div className="ml-4">NimBLEDevice::init("Invepin");</div>
+                      <div className="ml-4">NimBLEDevice::setPower(ESP_PWR_LVL_P9); // Max power</div>
+                      <div></div>
+                      <div className="ml-4 text-muted-foreground">// Create advertising</div>
+                      <div className="ml-4">pAdvertising = NimBLEDevice::getAdvertising();</div>
+                      <div></div>
+                      <div className="ml-4 text-muted-foreground">// Build manufacturer data packet</div>
+                      <div className="ml-4">std::string manufacturerData;</div>
+                      <div className="ml-4">manufacturerData += (char)(COMPANY_ID & 0xFF);</div>
+                      <div className="ml-4">manufacturerData += (char)(COMPANY_ID {'>'} 8);</div>
+                      <div className="ml-4">manufacturerData += INVEPIN_ID; // 16 bytes</div>
+                      <div className="ml-4">manufacturerData += (char)getBatteryLevel(); // 1 byte</div>
+                      <div className="ml-4">manufacturerData += (char)0x01; // Tag type: BLE</div>
+                      <div className="ml-4">manufacturerData += (char)0x01; // Firmware v1.0</div>
+                      <div className="ml-4">manufacturerData += (char)0x00;</div>
+                      <div></div>
+                      <div className="ml-4">pAdvertising-&gt;setManufacturerData(manufacturerData);</div>
+                      <div className="ml-4">pAdvertising-&gt;setAdvertisementType(BLE_GAP_CONN_MODE_NON);</div>
+                      <div className="ml-4">pAdvertising-&gt;setMinInterval(ADVERTISING_INTERVAL);</div>
+                      <div className="ml-4">pAdvertising-&gt;setMaxInterval(ADVERTISING_INTERVAL);</div>
+                      <div></div>
+                      <div className="ml-4 text-muted-foreground">// Start advertising</div>
+                      <div className="ml-4">pAdvertising-&gt;start();</div>
+                      <div className="ml-4">Serial.println("Invepin broadcasting!");</div>
+                      <div>{'}'}</div>
+                      <div></div>
+                      <div>void loop() {'{'}</div>
+                      <div className="ml-4 text-muted-foreground">// Update battery level every 60 seconds</div>
+                      <div className="ml-4">delay(60000);</div>
+                      <div className="ml-4">updateAdvertisement();</div>
+                      <div>{'}'}</div>
+                      <div></div>
+                      <div>uint8_t getBatteryLevel() {'{'}</div>
+                      <div className="ml-4 text-muted-foreground">// Read battery voltage (ESP32-S3 ADC)</div>
+                      <div className="ml-4">int rawValue = analogRead(4); // GPIO4 for battery</div>
+                      <div className="ml-4">int percentage = map(rawValue, 0, 4095, 0, 100);</div>
+                      <div className="ml-4">return constrain(percentage, 0, 100);</div>
+                      <div>{'}'}</div>
+                      <div></div>
+                      <div>void updateAdvertisement() {'{'}</div>
+                      <div className="ml-4">pAdvertising-&gt;stop();</div>
+                      <div className="ml-4 text-muted-foreground">// Rebuild packet with new battery level</div>
+                      <div className="ml-4">std::string manufacturerData;</div>
+                      <div className="ml-4">manufacturerData += (char)(COMPANY_ID & 0xFF);</div>
+                      <div className="ml-4">manufacturerData += (char)(COMPANY_ID {'>'} 8);</div>
+                      <div className="ml-4">manufacturerData += INVEPIN_ID;</div>
+                      <div className="ml-4">manufacturerData += (char)getBatteryLevel();</div>
+                      <div className="ml-4">manufacturerData += (char)0x01;</div>
+                      <div className="ml-4">manufacturerData += (char)0x01;</div>
+                      <div className="ml-4">manufacturerData += (char)0x00;</div>
+                      <div className="ml-4">pAdvertising-&gt;setManufacturerData(manufacturerData);</div>
+                      <div className="ml-4">pAdvertising-&gt;start();</div>
+                      <div>{'}'}</div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="font-semibold mb-3">Pin Configuration</h3>
+                    <div className="bg-muted p-4 rounded-lg space-y-2 text-sm">
+                      <div><strong>GPIO 4:</strong> Battery voltage monitoring (ADC)</div>
+                      <div><strong>GPIO 5:</strong> Optional status LED</div>
+                      <div><strong>GPIO 0:</strong> Boot button (for programming mode)</div>
+                      <div><strong>3.3V / GND:</strong> Power supply (CR2032 holder or USB)</div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="font-semibold mb-3">Flashing Instructions</h3>
+                    <ol className="space-y-3 text-sm">
+                      <li className="flex gap-3">
+                        <span className="font-semibold">1.</span>
+                        <div>
+                          <strong>Connect ESP32-S3:</strong> Use USB-C cable to connect to computer
+                          <div className="text-muted-foreground mt-1">Board should appear as COM port (Windows) or /dev/ttyUSB* (Linux/Mac)</div>
+                        </div>
+                      </li>
+                      <li className="flex gap-3">
+                        <span className="font-semibold">2.</span>
+                        <div>
+                          <strong>Select Port:</strong> Tools → Port → Select your ESP32-S3
+                        </div>
+                      </li>
+                      <li className="flex gap-3">
+                        <span className="font-semibold">3.</span>
+                        <div>
+                          <strong>Upload Code:</strong> Click Upload button (→) or use Ctrl+U
+                          <div className="text-muted-foreground mt-1">If upload fails, hold BOOT button while connecting USB</div>
+                        </div>
+                      </li>
+                      <li className="flex gap-3">
+                        <span className="font-semibold">4.</span>
+                        <div>
+                          <strong>Verify:</strong> Open Serial Monitor (115200 baud) to see "Invepin broadcasting!"
+                        </div>
+                      </li>
+                    </ol>
+                  </div>
+
+                  <Alert>
+                    <AlertDescription>
+                      <strong>Important:</strong> Each Invepin must have a unique ID. Change the <code>INVEPIN_ID</code> constant 
+                      for each device you program. After programming, register the device in HIVE Command Center using the same ID.
+                    </AlertDescription>
+                  </Alert>
+
+                  <div>
+                    <h3 className="font-semibold mb-3">Troubleshooting</h3>
+                    <div className="space-y-2 text-sm">
+                      <div className="bg-muted p-3 rounded-lg">
+                        <strong>Issue:</strong> "Upload failed" or "Serial port not found"
+                        <p className="text-muted-foreground mt-1">
+                          Solution: Install CH340/CP2102 USB drivers. Hold BOOT button while connecting USB to enter download mode.
+                        </p>
+                      </div>
+                      <div className="bg-muted p-3 rounded-lg">
+                        <strong>Issue:</strong> Not detected by mobile app
+                        <p className="text-muted-foreground mt-1">
+                          Solution: Verify advertising is active (check Serial Monitor). Ensure COMPANY_ID is 0x4956. Check that Bluetooth is enabled on phone.
+                        </p>
+                      </div>
+                      <div className="bg-muted p-3 rounded-lg">
+                        <strong>Issue:</strong> Battery drains quickly
+                        <p className="text-muted-foreground mt-1">
+                          Solution: Increase advertising interval to 1000ms or higher. Reduce TX power if range isn't critical.
+                        </p>
                       </div>
                     </div>
                   </div>
