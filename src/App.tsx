@@ -23,6 +23,7 @@ import ColonyHub from "./pages/products/ColonyHub";
 import CaseStudies from "./pages/resources/CaseStudies";
 import Docs from "./pages/resources/Docs";
 import Support from "./pages/resources/Support";
+import InvepinSetup from "./pages/InvepinSetup";
 
 const queryClient = new QueryClient();
 
@@ -53,6 +54,7 @@ const App = () => (
               <Route path="/case-studies" element={<CaseStudies />} />
               <Route path="/docs" element={<Docs />} />
               <Route path="/support" element={<Support />} />
+              <Route path="/invepin-setup" element={<InvepinSetup />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
