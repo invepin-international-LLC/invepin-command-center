@@ -117,25 +117,52 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
   };
 
   const handleSignUp = async () => {
+    // Validate password length
+    if (password.length < 6) {
+      toast({ 
+        title: "Invalid Password", 
+        description: "Password must be at least 6 characters long.", 
+        variant: "destructive" 
+      });
+      return;
+    }
+
     setIsLoading(true);
     try {
+      console.log('Starting signup process for:', email);
       const redirectUrl = `${window.location.origin}/dashboard`;
-      const { error } = await supabase.auth.signUp({
+      
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: { emailRedirectTo: redirectUrl }
       });
 
       if (error) {
-        toast({ title: "Sign up failed", description: error.message, variant: "destructive" });
+        console.error('Signup error:', error);
+        toast({ 
+          title: "Sign up failed", 
+          description: error.message || "Unable to create account. Please try again.", 
+          variant: "destructive" 
+        });
         return;
       }
 
+      console.log('Signup successful:', data);
       toast({ 
         title: "Account created!", 
         description: "You can now sign in with your credentials." 
       });
       setIsSignUp(false);
+      setEmail("");
+      setPassword("");
+    } catch (err: any) {
+      console.error('Unexpected signup error:', err);
+      toast({ 
+        title: "Unexpected Error", 
+        description: err.message || "An unexpected error occurred during signup.", 
+        variant: "destructive" 
+      });
     } finally {
       setIsLoading(false);
     }
