@@ -11,12 +11,17 @@ import {
   TrendingUp,
   DollarSign,
   Users,
-  Shield
+  Shield,
+  Brain,
+  Link2
 } from "lucide-react";
 import { useManagerData } from "@/hooks/useManagerData";
 import { FinancialMetricsComponent } from "./FinancialMetrics";
 import { PerformanceInsights } from "./PerformanceInsights";
 import { SystemHealthComponent } from "./SystemHealth";
+import { BlockchainAuditViewer } from "@/components/blockchain/BlockchainAuditViewer";
+import { SmartContractDashboard } from "@/components/blockchain/SmartContractDashboard";
+import { AIPredictiveAnalytics } from "@/components/ai/AIPredictiveAnalytics";
 
 export const ManagerDashboard = () => {
   const { insights, loading, refreshData } = useManagerData();
@@ -158,10 +163,18 @@ export const ManagerDashboard = () => {
 
       {/* Main Dashboard Tabs */}
       <Tabs defaultValue="financial" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="financial">Financial Analytics</TabsTrigger>
-          <TabsTrigger value="performance">Performance & Staff</TabsTrigger>
-          <TabsTrigger value="system">System Health</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-5">
+          <TabsTrigger value="financial">Financial</TabsTrigger>
+          <TabsTrigger value="performance">Performance</TabsTrigger>
+          <TabsTrigger value="system">System</TabsTrigger>
+          <TabsTrigger value="blockchain">
+            <Link2 className="h-4 w-4 mr-2" />
+            Blockchain
+          </TabsTrigger>
+          <TabsTrigger value="ai">
+            <Brain className="h-4 w-4 mr-2" />
+            AI Analytics
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="financial">
@@ -181,6 +194,17 @@ export const ManagerDashboard = () => {
             alerts={insights.alerts}
             recommendations={insights.recommendations}
           />
+        </TabsContent>
+
+        <TabsContent value="blockchain" className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <BlockchainAuditViewer />
+            <SmartContractDashboard />
+          </div>
+        </TabsContent>
+
+        <TabsContent value="ai">
+          <AIPredictiveAnalytics />
         </TabsContent>
       </Tabs>
     </div>

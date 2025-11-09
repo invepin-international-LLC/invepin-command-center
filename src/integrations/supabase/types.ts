@@ -14,6 +14,100 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_learning_data: {
+        Row: {
+          confidence_score: number | null
+          created_at: string
+          data_type: string
+          features: Json
+          id: string
+          label: string | null
+          model_version: string | null
+          organization_id: string | null
+          processed_at: string | null
+        }
+        Insert: {
+          confidence_score?: number | null
+          created_at?: string
+          data_type: string
+          features: Json
+          id?: string
+          label?: string | null
+          model_version?: string | null
+          organization_id?: string | null
+          processed_at?: string | null
+        }
+        Update: {
+          confidence_score?: number | null
+          created_at?: string
+          data_type?: string
+          features?: Json
+          id?: string
+          label?: string | null
+          model_version?: string | null
+          organization_id?: string | null
+          processed_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_learning_data_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      blockchain_audit_logs: {
+        Row: {
+          block_number: number
+          blockchain_tx_id: string | null
+          created_at: string
+          data_hash: string
+          event_data: Json
+          event_type: string
+          id: string
+          is_synced_to_chain: boolean | null
+          organization_id: string | null
+          previous_hash: string | null
+          user_id: string | null
+        }
+        Insert: {
+          block_number?: never
+          blockchain_tx_id?: string | null
+          created_at?: string
+          data_hash: string
+          event_data: Json
+          event_type: string
+          id?: string
+          is_synced_to_chain?: boolean | null
+          organization_id?: string | null
+          previous_hash?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          block_number?: never
+          blockchain_tx_id?: string | null
+          created_at?: string
+          data_hash?: string
+          event_data?: Json
+          event_type?: string
+          id?: string
+          is_synced_to_chain?: boolean | null
+          organization_id?: string | null
+          previous_hash?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "blockchain_audit_logs_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       colony_hub_data: {
         Row: {
           created_at: string | null
@@ -245,6 +339,47 @@ export type Database = {
           },
         ]
       }
+      predictive_analytics: {
+        Row: {
+          confidence_score: number | null
+          created_at: string
+          id: string
+          organization_id: string | null
+          prediction_type: string
+          predictions: Json
+          target_date: string
+          valid_until: string
+        }
+        Insert: {
+          confidence_score?: number | null
+          created_at?: string
+          id?: string
+          organization_id?: string | null
+          prediction_type: string
+          predictions: Json
+          target_date: string
+          valid_until: string
+        }
+        Update: {
+          confidence_score?: number | null
+          created_at?: string
+          id?: string
+          organization_id?: string | null
+          prediction_type?: string
+          predictions?: Json
+          target_date?: string
+          valid_until?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "predictive_analytics_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           category: string | null
@@ -336,6 +471,50 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "profiles_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      smart_contract_logs: {
+        Row: {
+          contract_data: Json
+          contract_type: string
+          created_at: string
+          executed_at: string | null
+          executed_by: string | null
+          gas_equivalent: number | null
+          id: string
+          organization_id: string | null
+          status: string
+        }
+        Insert: {
+          contract_data: Json
+          contract_type: string
+          created_at?: string
+          executed_at?: string | null
+          executed_by?: string | null
+          gas_equivalent?: number | null
+          id?: string
+          organization_id?: string | null
+          status?: string
+        }
+        Update: {
+          contract_data?: Json
+          contract_type?: string
+          created_at?: string
+          executed_at?: string | null
+          executed_by?: string | null
+          gas_equivalent?: number | null
+          id?: string
+          organization_id?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "smart_contract_logs_organization_id_fkey"
             columns: ["organization_id"]
             isOneToOne: false
             referencedRelation: "organizations"
@@ -477,6 +656,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calculate_audit_hash: {
+        Args: { event_data: Json; previous_hash: string }
+        Returns: string
+      }
       generate_company_code: { Args: { company_name: string }; Returns: string }
       has_role: {
         Args: {

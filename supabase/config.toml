@@ -1,1 +1,13 @@
 project_id = "dvqikpzjqycktlqwjkeq"
+
+[functions.send-approval-email]
+verify_jwt = false
+
+[functions.send-welcome-email]
+verify_jwt = false
+
+[functions.ai-loss-prevention]
+verify_jwt = true
+
+[functions.smart-contract-execute]
+verify_jwt = true
