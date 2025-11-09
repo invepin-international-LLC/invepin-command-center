@@ -11,6 +11,7 @@ import { Notifications } from "@/components/notifications/Notifications";
 import { BarManagement } from "@/components/bar/BarManagement";
 import { CameraManager } from "@/components/cameras/CameraManager";
 import { SecurityDashboard } from "@/components/dashboard/SecurityDashboard";
+import { ManagerDashboard } from "@/components/manager/ManagerDashboard";
 import TutorialSystem from "@/components/tutorial/TutorialSystem";
 import { InvepinTracker } from "@/components/tracking/InvepinTracker";
 import { PanicButton } from "@/components/security/PanicButton";
@@ -36,7 +37,8 @@ import {
   Heart,
   Navigation,
   ShieldAlert,
-  Database
+  Database,
+  Crown
 } from "lucide-react";
 
 interface User {
@@ -53,7 +55,7 @@ interface MainDashboardProps {
 
 export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
   const [selectedIndustry, setSelectedIndustry] = useState<'casino' | 'grocery' | 'hospitality' | 'healthcare' | 'bar'>('grocery');
-  const [activeView, setActiveView] = useState<'overview' | 'devices' | 'floorplan' | 'scanner' | 'analytics' | 'notifications' | 'bar' | 'tutorial' | 'cameras' | 'security' | 'tracker' | 'panic'>('overview');
+  const [activeView, setActiveView] = useState<'overview' | 'devices' | 'floorplan' | 'scanner' | 'analytics' | 'notifications' | 'bar' | 'tutorial' | 'cameras' | 'security' | 'tracker' | 'panic' | 'manager'>('overview');
   const navigate = useNavigate();
 
   // All industries available
@@ -79,6 +81,7 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
         { id: 'notifications', label: 'Security Alerts', icon: Bell },
         { id: 'cameras', label: 'Cameras', icon: Camera },
         { id: 'security', label: 'Security Center', icon: Shield },
+        { id: 'manager', label: 'Manager Hub', icon: Crown },
         { id: 'tutorial', label: 'Tutorial', icon: BookOpen }
       ],
       grocery: [
@@ -92,6 +95,7 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
         { id: 'notifications', label: 'Security Alerts', icon: Bell },
         { id: 'cameras', label: 'Cameras', icon: Camera },
         { id: 'security', label: 'Security Center', icon: Shield },
+        { id: 'manager', label: 'Manager Hub', icon: Crown },
         { id: 'tutorial', label: 'Tutorial', icon: BookOpen }
       ],
       hospitality: [
@@ -105,6 +109,7 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
         { id: 'notifications', label: 'Guest Alerts', icon: Bell },
         { id: 'cameras', label: 'Cameras', icon: Camera },
         { id: 'security', label: 'Security Center', icon: Shield },
+        { id: 'manager', label: 'Manager Hub', icon: Crown },
         { id: 'tutorial', label: 'Tutorial', icon: BookOpen }
       ],
       healthcare: [
@@ -118,6 +123,7 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
         { id: 'notifications', label: 'Supply Alerts', icon: Bell },
         { id: 'cameras', label: 'Cameras', icon: Camera },
         { id: 'security', label: 'Security Center', icon: Shield },
+        { id: 'manager', label: 'Manager Hub', icon: Crown },
         { id: 'tutorial', label: 'Tutorial', icon: BookOpen }
       ],
       bar: [
@@ -131,6 +137,7 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
         { id: 'notifications', label: 'Inventory Alerts', icon: Bell },
         { id: 'cameras', label: 'Cameras', icon: Camera },
         { id: 'security', label: 'Security Center', icon: Shield },
+        { id: 'manager', label: 'Manager Hub', icon: Crown },
         { id: 'tutorial', label: 'Tutorial', icon: BookOpen }
       ]
     };
@@ -694,6 +701,8 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
         <CameraManager />
       ) : activeView === 'security' ? (
         <SecurityDashboard />
+      ) : activeView === 'manager' ? (
+        <ManagerDashboard />
       ) : activeView === 'tutorial' ? (
         <TutorialSystem />
       ) : (
