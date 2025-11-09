@@ -289,6 +289,8 @@ export type Database = {
           created_at: string | null
           department: string | null
           employee_id: string | null
+          facial_recognition_consent_date: string | null
+          facial_recognition_consent_signed: boolean | null
           full_name: string
           id: string
           is_approved: boolean | null
@@ -304,6 +306,8 @@ export type Database = {
           created_at?: string | null
           department?: string | null
           employee_id?: string | null
+          facial_recognition_consent_date?: string | null
+          facial_recognition_consent_signed?: boolean | null
           full_name: string
           id: string
           is_approved?: boolean | null
@@ -319,6 +323,8 @@ export type Database = {
           created_at?: string | null
           department?: string | null
           employee_id?: string | null
+          facial_recognition_consent_date?: string | null
+          facial_recognition_consent_signed?: boolean | null
           full_name?: string
           id?: string
           is_approved?: boolean | null
@@ -364,6 +370,39 @@ export type Database = {
           location?: string | null
           name?: string
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      user_consents: {
+        Row: {
+          consent_text: string
+          consent_type: string
+          consented_at: string
+          id: string
+          ip_address: string | null
+          user_agent: string | null
+          user_id: string
+          version: string
+        }
+        Insert: {
+          consent_text: string
+          consent_type: string
+          consented_at?: string
+          id?: string
+          ip_address?: string | null
+          user_agent?: string | null
+          user_id: string
+          version?: string
+        }
+        Update: {
+          consent_text?: string
+          consent_type?: string
+          consented_at?: string
+          id?: string
+          ip_address?: string | null
+          user_agent?: string | null
+          user_id?: string
+          version?: string
         }
         Relationships: []
       }

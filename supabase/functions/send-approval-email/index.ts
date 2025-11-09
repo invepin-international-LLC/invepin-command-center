@@ -95,9 +95,60 @@ const handler = async (req: Request): Promise<Response> => {
               <ol>
                 <li>Visit the Invepin app</li>
                 <li>Log in with your email and password</li>
+                <li><strong>Review and sign the facial recognition consent</strong> (REQUIRED)</li>
                 <li>Complete your profile setup</li>
                 <li>Start tracking inventory and accessing your assigned features</li>
               </ol>
+
+              <!-- Facial Recognition Consent Notice -->
+              <div style="background: #fff3cd; border: 2px solid #ffc107; border-radius: 8px; padding: 25px; margin: 30px 0;">
+                <h3 style="color: #856404; margin-top: 0;">⚠️ MANDATORY: Facial Recognition Consent Required</h3>
+                <p style="color: #856404; font-weight: bold; margin: 10px 0;">
+                  Before accessing facial recognition features, you MUST review and sign the consent agreement.
+                </p>
+                
+                <p style="color: #333; font-weight: bold; margin: 15px 0 10px 0;">Facial Recognition Technology Notice:</p>
+                <ul style="color: #333; line-height: 1.8; margin: 0; padding-left: 25px;">
+                  <li><strong>Data Collection:</strong> Your facial biometric data will be captured, processed, and stored</li>
+                  <li><strong>Purpose:</strong> Employee authentication, time tracking, and security monitoring</li>
+                  <li><strong>Storage:</strong> All data is encrypted using industry-standard security protocols</li>
+                  <li><strong>Access:</strong> Limited to authorized personnel only - never sold or shared with third parties</li>
+                  <li><strong>Retention:</strong> Data retained during employment; deletion available upon request after termination</li>
+                  <li><strong>Your Rights:</strong> Access, correct, or request deletion at any time</li>
+                </ul>
+                
+                <div style="background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 5px; padding: 15px; margin: 20px 0;">
+                  <p style="color: #721c24; font-weight: bold; margin: 0 0 10px 0;">🚨 CRITICAL WARNING - Responsible Use Required:</p>
+                  <ul style="color: #721c24; line-height: 1.8; margin: 0; padding-left: 25px;">
+                    <li>Do NOT share access credentials with others</li>
+                    <li>Do NOT attempt to bypass, manipulate, or interfere with the system</li>
+                    <li>Do NOT use another person's biometric data or allow others to use yours</li>
+                    <li>Do NOT engage in any form of system misuse or data manipulation</li>
+                    <li>REPORT any suspicious activity, system errors, or security concerns immediately</li>
+                  </ul>
+                  <p style="color: #721c24; margin: 15px 0 0 0; font-weight: bold;">
+                    ⚠️ CONSEQUENCES: Misuse may result in immediate termination, legal action, and potential criminal liability.
+                  </p>
+                </div>
+                
+                <div style="background: white; border: 1px solid #d1d5db; border-radius: 5px; padding: 15px; margin: 20px 0;">
+                  <p style="color: #333; margin: 0; line-height: 1.6;">
+                    <strong>System Limitations:</strong> No facial recognition system is 100% accurate. False positives or negatives 
+                    may occasionally occur. Report any errors to management. Alternative authentication methods are available if needed.
+                  </p>
+                </div>
+                
+                <p style="color: #333; margin: 15px 0; line-height: 1.6;">
+                  <strong>Privacy Rights:</strong> You have the right to access, correct, or request deletion of your biometric data. 
+                  Contact <a href="mailto:privacy@invepin.com" style="color: #3b82f6;">privacy@invepin.com</a> for data privacy requests 
+                  or to exercise your rights.
+                </p>
+                
+                <p style="color: #856404; font-weight: bold; margin: 20px 0 0 0; padding: 15px; background: #fef3c7; border-radius: 5px;">
+                  📝 Upon first login, you will be prompted to review the complete consent agreement and provide your formal signature. 
+                  This consent is REQUIRED to access facial recognition features and cannot be bypassed.
+                </p>
+              </div>
 
               <div style="text-align: center;">
                 <a href="${Deno.env.get('SUPABASE_URL') || 'https://your-app-url.com'}" class="button">
@@ -106,6 +157,11 @@ const handler = async (req: Request): Promise<Response> => {
               </div>
 
               <p style="margin-top: 30px;">If you have any questions about using the system, please reach out to your manager or administrator.</p>
+              
+              <p style="font-size: 12px; color: #6b7280; margin-top: 25px;">
+                For complete privacy policy and consent agreement details, contact 
+                <a href="mailto:privacy@invepin.com" style="color: #3b82f6;">privacy@invepin.com</a>
+              </p>
 
               <p>Best regards,<br><strong>The Invepin Team</strong></p>
             </div>

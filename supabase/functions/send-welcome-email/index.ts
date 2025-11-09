@@ -119,7 +119,49 @@ const handler = async (req: Request): Promise<Response> => {
                 Your account access is temporarily limited until a manager approves your registration. This typically takes 24-48 hours.
               </div>
 
+              <!-- Facial Recognition Disclaimer -->
+              <div style="background: #fff3cd; border: 2px solid #ffc107; border-radius: 8px; padding: 25px; margin: 30px 0;">
+                <h3 style="color: #856404; margin-top: 0;">⚠️ IMPORTANT: Facial Recognition Technology Notice</h3>
+                <p style="color: #856404; font-weight: bold; margin: 10px 0;">
+                  This platform utilizes facial recognition technology for employee authentication and security purposes.
+                </p>
+                
+                <p style="color: #333; font-weight: bold; margin: 15px 0 10px 0;">What You Need to Know:</p>
+                <ul style="color: #333; line-height: 1.8; margin: 0; padding-left: 25px;">
+                  <li>Your <strong>facial biometric data</strong> will be captured, processed, and securely stored</li>
+                  <li>This technology is used <strong>only</strong> for authorized business purposes (time tracking, authentication)</li>
+                  <li>All biometric data is <strong>encrypted</strong> and protected by industry-standard security measures</li>
+                  <li>You have the <strong>right to request deletion</strong> of your biometric data upon employment termination</li>
+                </ul>
+                
+                <div style="background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 5px; padding: 15px; margin: 20px 0;">
+                  <p style="color: #721c24; font-weight: bold; margin: 0 0 10px 0;">🚨 CRITICAL WARNING - Use With Caution:</p>
+                  <ul style="color: #721c24; line-height: 1.8; margin: 0; padding-left: 25px;">
+                    <li>Do NOT share your access credentials</li>
+                    <li>Do NOT attempt to bypass or manipulate the system</li>
+                    <li>Do NOT use another person's biometric data</li>
+                    <li>Report any suspicious activity immediately</li>
+                  </ul>
+                  <p style="color: #721c24; margin: 15px 0 0 0; font-weight: bold;">
+                    ⚠️ Violations may result in immediate termination and legal action.
+                  </p>
+                </div>
+                
+                <p style="color: #333; margin: 15px 0; line-height: 1.6;">
+                  <strong>Your Rights:</strong> You may access, correct, or request deletion of your biometric data by contacting 
+                  <a href="mailto:privacy@invepin.com" style="color: #3b82f6;">privacy@invepin.com</a>
+                </p>
+                
+                <p style="color: #856404; font-weight: bold; margin: 15px 0 0 0;">
+                  📝 You will be required to provide formal written consent before accessing facial recognition features.
+                </p>
+              </div>
+
               <p>If you have any questions or if your registration wasn't initiated by you, please contact your company administrator immediately.</p>
+              
+              <p style="font-size: 12px; color: #6b7280; margin-top: 25px;">
+                For complete privacy policy details, visit our website or contact <a href="mailto:privacy@invepin.com" style="color: #3b82f6;">privacy@invepin.com</a>
+              </p>
 
               <p style="margin-top: 30px;">Best regards,<br><strong>The Invepin Team</strong></p>
             </div>
