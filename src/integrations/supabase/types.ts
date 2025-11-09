@@ -109,6 +109,142 @@ export type Database = {
           },
         ]
       }
+      organization_members: {
+        Row: {
+          created_at: string | null
+          id: string
+          organization_id: string | null
+          role: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          organization_id?: string | null
+          role: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          organization_id?: string | null
+          role?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_members_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organizations: {
+        Row: {
+          company_code: string
+          company_size: string
+          created_at: string | null
+          id: string
+          industry: string
+          is_active: boolean | null
+          location: string
+          logo_url: string | null
+          name: string
+          primary_color: string | null
+          settings: Json | null
+          slug: string
+          updated_at: string | null
+        }
+        Insert: {
+          company_code: string
+          company_size: string
+          created_at?: string | null
+          id?: string
+          industry: string
+          is_active?: boolean | null
+          location: string
+          logo_url?: string | null
+          name: string
+          primary_color?: string | null
+          settings?: Json | null
+          slug: string
+          updated_at?: string | null
+        }
+        Update: {
+          company_code?: string
+          company_size?: string
+          created_at?: string | null
+          id?: string
+          industry?: string
+          is_active?: boolean | null
+          location?: string
+          logo_url?: string | null
+          name?: string
+          primary_color?: string | null
+          settings?: Json | null
+          slug?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      pending_approvals: {
+        Row: {
+          created_at: string | null
+          department: string
+          email: string
+          employee_id: string
+          full_name: string
+          id: string
+          organization_id: string | null
+          phone: string | null
+          position: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          department: string
+          email: string
+          employee_id: string
+          full_name: string
+          id?: string
+          organization_id?: string | null
+          phone?: string | null
+          position: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          department?: string
+          email?: string
+          employee_id?: string
+          full_name?: string
+          id?: string
+          organization_id?: string | null
+          phone?: string | null
+          position?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pending_approvals_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           category: string | null
@@ -144,6 +280,62 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      profiles: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          avatar_url: string | null
+          created_at: string | null
+          department: string | null
+          employee_id: string | null
+          full_name: string
+          id: string
+          is_approved: boolean | null
+          organization_id: string | null
+          phone: string | null
+          position: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          avatar_url?: string | null
+          created_at?: string | null
+          department?: string | null
+          employee_id?: string | null
+          full_name: string
+          id: string
+          is_approved?: boolean | null
+          organization_id?: string | null
+          phone?: string | null
+          position?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          avatar_url?: string | null
+          created_at?: string | null
+          department?: string | null
+          employee_id?: string | null
+          full_name?: string
+          id?: string
+          is_approved?: boolean | null
+          organization_id?: string | null
+          phone?: string | null
+          position?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       stores: {
         Row: {
@@ -246,6 +438,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_company_code: { Args: { company_name: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
