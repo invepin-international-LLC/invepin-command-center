@@ -12,6 +12,9 @@ import { BarManagement } from "@/components/bar/BarManagement";
 import { CameraManager } from "@/components/cameras/CameraManager";
 import { SecurityDashboard } from "@/components/dashboard/SecurityDashboard";
 import { ManagerDashboard } from "@/components/manager/ManagerDashboard";
+import { TeamCommunication } from "@/components/communication/TeamCommunication";
+import { FloatingWalkieTalkie } from "@/components/communication/FloatingWalkieTalkie";
+import { WalkieTalkie } from "@/components/communication/WalkieTalkie";
 import TutorialSystem from "@/components/tutorial/TutorialSystem";
 import { InvepinTracker } from "@/components/tracking/InvepinTracker";
 import { PanicButton } from "@/components/security/PanicButton";
@@ -38,7 +41,8 @@ import {
   Navigation,
   ShieldAlert,
   Database,
-  Crown
+  Crown,
+  Radio
 } from "lucide-react";
 
 interface User {
@@ -55,7 +59,7 @@ interface MainDashboardProps {
 
 export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
   const [selectedIndustry, setSelectedIndustry] = useState<'casino' | 'grocery' | 'hospitality' | 'healthcare' | 'bar'>('grocery');
-  const [activeView, setActiveView] = useState<'overview' | 'devices' | 'floorplan' | 'scanner' | 'analytics' | 'notifications' | 'bar' | 'tutorial' | 'cameras' | 'security' | 'tracker' | 'panic' | 'manager'>('overview');
+  const [activeView, setActiveView] = useState<'overview' | 'devices' | 'floorplan' | 'scanner' | 'analytics' | 'notifications' | 'bar' | 'tutorial' | 'cameras' | 'security' | 'tracker' | 'panic' | 'manager' | 'communication'>('overview');
   const navigate = useNavigate();
 
   // All industries available
@@ -81,6 +85,7 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
         { id: 'notifications', label: 'Security Alerts', icon: Bell },
         { id: 'cameras', label: 'Cameras', icon: Camera },
         { id: 'security', label: 'Security Center', icon: Shield },
+        { id: 'communication', label: 'Team Communication', icon: Radio },
         { id: 'manager', label: 'Manager Hub', icon: Crown },
         { id: 'tutorial', label: 'Tutorial', icon: BookOpen }
       ],
@@ -95,6 +100,7 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
         { id: 'notifications', label: 'Security Alerts', icon: Bell },
         { id: 'cameras', label: 'Cameras', icon: Camera },
         { id: 'security', label: 'Security Center', icon: Shield },
+        { id: 'communication', label: 'Team Communication', icon: Radio },
         { id: 'manager', label: 'Manager Hub', icon: Crown },
         { id: 'tutorial', label: 'Tutorial', icon: BookOpen }
       ],
@@ -109,6 +115,7 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
         { id: 'notifications', label: 'Guest Alerts', icon: Bell },
         { id: 'cameras', label: 'Cameras', icon: Camera },
         { id: 'security', label: 'Security Center', icon: Shield },
+        { id: 'communication', label: 'Team Communication', icon: Radio },
         { id: 'manager', label: 'Manager Hub', icon: Crown },
         { id: 'tutorial', label: 'Tutorial', icon: BookOpen }
       ],
@@ -123,6 +130,7 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
         { id: 'notifications', label: 'Supply Alerts', icon: Bell },
         { id: 'cameras', label: 'Cameras', icon: Camera },
         { id: 'security', label: 'Security Center', icon: Shield },
+        { id: 'communication', label: 'Team Communication', icon: Radio },
         { id: 'manager', label: 'Manager Hub', icon: Crown },
         { id: 'tutorial', label: 'Tutorial', icon: BookOpen }
       ],
@@ -137,6 +145,7 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
         { id: 'notifications', label: 'Inventory Alerts', icon: Bell },
         { id: 'cameras', label: 'Cameras', icon: Camera },
         { id: 'security', label: 'Security Center', icon: Shield },
+        { id: 'communication', label: 'Team Communication', icon: Radio },
         { id: 'manager', label: 'Manager Hub', icon: Crown },
         { id: 'tutorial', label: 'Tutorial', icon: BookOpen }
       ]
@@ -162,6 +171,7 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
         quickActions: [
           { label: 'Security Monitor', icon: Shield, color: 'bg-gradient-primary', action: () => setActiveView('security') },
           { label: 'Chip Tracking', icon: Package, color: 'bg-gradient-success', action: () => setActiveView('scanner') },
+          { label: 'Team Radio', icon: Radio, color: 'bg-gradient-primary', action: () => setActiveView('communication') },
           { label: 'Table Status', icon: MapPin, color: 'bg-gradient-warning', action: () => setActiveView('floorplan') },
           { label: 'Incident Report', icon: AlertTriangle, color: 'bg-gradient-danger', action: () => setActiveView('notifications') }
         ]
@@ -182,6 +192,7 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
           { label: 'Scan Inventory', icon: Package, color: 'bg-gradient-primary', action: () => setActiveView('scanner') },
           { label: 'View Floor Plan', icon: MapPin, color: 'bg-gradient-success', action: () => setActiveView('floorplan') },
           { label: 'Security Check', icon: Shield, color: 'bg-gradient-warning', action: () => setActiveView('security') },
+          { label: 'Team Radio', icon: Radio, color: 'bg-gradient-primary', action: () => setActiveView('communication') },
           { label: 'Loss Report', icon: TrendingUp, color: 'bg-gradient-danger', action: () => setActiveView('analytics') }
         ]
       },
@@ -201,6 +212,7 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
           { label: 'Room Service', icon: Bell, color: 'bg-gradient-primary', action: () => setActiveView('notifications') },
           { label: 'Minibar Status', icon: Wine, color: 'bg-gradient-success', action: () => setActiveView('bar') },
           { label: 'Guest Check-in', icon: Users, color: 'bg-gradient-warning', action: () => setActiveView('security') },
+          { label: 'Team Radio', icon: Radio, color: 'bg-gradient-primary', action: () => setActiveView('communication') },
           { label: 'Revenue Report', icon: TrendingUp, color: 'bg-gradient-danger', action: () => setActiveView('analytics') }
         ]
       },
@@ -219,6 +231,7 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
         quickActions: [
           { label: 'Cold Chain Monitor', icon: Activity, color: 'bg-gradient-primary', action: () => setActiveView('analytics') },
           { label: 'Supply Tracking', icon: Package, color: 'bg-gradient-success', action: () => setActiveView('tracker') },
+          { label: 'Team Radio', icon: Radio, color: 'bg-gradient-primary', action: () => setActiveView('communication') },
           { label: 'Compliance Check', icon: CheckCircle, color: 'bg-gradient-warning', action: () => setActiveView('security') },
           { label: 'Audit Report', icon: TrendingUp, color: 'bg-gradient-danger', action: () => setActiveView('analytics') }
         ]
@@ -238,6 +251,7 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
         quickActions: [
           { label: 'Bottle Inventory', icon: Wine, color: 'bg-gradient-primary', action: () => setActiveView('bar') },
           { label: 'Pour Tracking', icon: Activity, color: 'bg-gradient-success', action: () => setActiveView('tracker') },
+          { label: 'Team Radio', icon: Radio, color: 'bg-gradient-primary', action: () => setActiveView('communication') },
           { label: 'Stock Alert', icon: Bell, color: 'bg-gradient-warning', action: () => setActiveView('notifications') },
           { label: 'Sales Report', icon: TrendingUp, color: 'bg-gradient-danger', action: () => setActiveView('analytics') }
         ]
@@ -701,6 +715,8 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
         <CameraManager />
       ) : activeView === 'security' ? (
         <SecurityDashboard />
+      ) : activeView === 'communication' ? (
+        <TeamCommunication />
       ) : activeView === 'manager' ? (
         <ManagerDashboard />
       ) : activeView === 'tutorial' ? (
@@ -708,6 +724,9 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
       ) : (
         <Notifications industry={selectedIndustry} />
       )}
+      
+      {/* Floating Walkie-Talkie - Quick Access from Anywhere */}
+      <FloatingWalkieTalkie />
       </div>
     </div>
   );

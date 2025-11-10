@@ -14,6 +14,7 @@ import { MobileBartenderInterface } from "@/components/mobile/MobileBartenderInt
 import { InventoryManagementDashboard } from "@/components/inventory/InventoryManagementDashboard";
 import { ShiftManagementDashboard } from "@/components/shifts/ShiftManagementDashboard";
 import { Analytics } from "@/components/analytics/Analytics";
+import { WalkieTalkie } from "@/components/communication/WalkieTalkie";
 import { Bartender, Bottle, PourEvent } from "@/types/bar";
 import { useLossPrevention } from "@/hooks/useLossPrevention";
 import { useInventoryManagement } from "@/hooks/useInventoryManagement";
@@ -205,6 +206,7 @@ export const BarManagement = ({ industry = 'retail' }: BarManagementProps = {}) 
         <TabsTrigger value="mobile" className="flex-shrink-0 text-xs sm:text-sm px-3 py-2 whitespace-nowrap">Mobile Staff</TabsTrigger>
         <TabsTrigger value="manager" className="flex-shrink-0 text-xs sm:text-sm px-3 py-2 whitespace-nowrap">Manager</TabsTrigger>
         <TabsTrigger value="analytics" className="flex-shrink-0 text-xs sm:text-sm px-3 py-2 whitespace-nowrap">Analytics</TabsTrigger>
+        <TabsTrigger value="walkie-talkie" className="flex-shrink-0 text-xs sm:text-sm px-3 py-2 whitespace-nowrap">Walkie-Talkie</TabsTrigger>
       </TabsList>
 
       <TabsContent value="overview" className="space-y-6">
@@ -262,6 +264,10 @@ export const BarManagement = ({ industry = 'retail' }: BarManagementProps = {}) 
 
       <TabsContent value="analytics">
         <Analytics />
+      </TabsContent>
+
+      <TabsContent value="walkie-talkie">
+        <WalkieTalkie />
       </TabsContent>
     </Tabs>
   );
