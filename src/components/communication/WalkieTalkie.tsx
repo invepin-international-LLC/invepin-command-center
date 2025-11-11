@@ -101,6 +101,11 @@ export const WalkieTalkie = ({ className }: { className?: string }) => {
 
   const startRecording = async () => {
     try {
+      // Check if microphone is available
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Microphone access not supported on this device');
+      }
+
       const stream = await navigator.mediaDevices.getUserMedia({ 
         audio: {
           echoCancellation: true,
@@ -109,8 +114,18 @@ export const WalkieTalkie = ({ className }: { className?: string }) => {
         } 
       });
 
+      // Check for supported MIME types
+      let mimeType = 'audio/webm';
+      if (!MediaRecorder.isTypeSupported('audio/webm')) {
+        if (MediaRecorder.isTypeSupported('audio/mp4')) {
+          mimeType = 'audio/mp4';
+        } else if (MediaRecorder.isTypeSupported('audio/wav')) {
+          mimeType = 'audio/wav';
+        }
+      }
+
       const mediaRecorder = new MediaRecorder(stream, {
-        mimeType: 'audio/webm'
+        mimeType
       });
 
       audioChunksRef.current = [];
@@ -135,11 +150,21 @@ export const WalkieTalkie = ({ className }: { className?: string }) => {
         title: '🎙️ Recording',
         description: 'Release to send voice message',
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error starting recording:', error);
+      
+      let errorMessage = 'Could not access microphone';
+      if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
+        errorMessage = 'Microphone permission denied. Please enable in device settings.';
+      } else if (error.name === 'NotFoundError') {
+        errorMessage = 'No microphone found on this device';
+      } else if (error.name === 'NotSupportedError') {
+        errorMessage = 'Audio recording not supported on this device';
+      }
+      
       toast({
-        title: 'Error',
-        description: 'Could not access microphone',
+        title: 'Microphone Error',
+        description: errorMessage,
         variant: 'destructive',
       });
     }
