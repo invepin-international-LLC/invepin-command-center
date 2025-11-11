@@ -168,6 +168,40 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
     }
   };
 
+  const handlePasswordReset = async () => {
+    if (!email) {
+      toast({
+        title: "Email Required",
+        description: "Please enter your email address to reset your password.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/dashboard`,
+      });
+
+      if (error) {
+        toast({
+          title: "Password Reset Failed",
+          description: error.message,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Password Reset Email Sent",
+        description: "Check your email for a password reset link.",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleDemoLogin = (role: 'super_admin' | 'company_admin' | 'manager' | 'bartender' | 'staff') => {
     if (!demoMode) {
       toast({
@@ -353,16 +387,30 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
                 )}
               </Button>
 
-              <div className="flex items-center justify-between text-xs text-muted-foreground">
-                <button type="button" className="underline hover:text-foreground" onClick={() => setIsSignUp(v => !v)}>
-                  {isSignUp ? 'Have an account? Sign in' : "New here? Create an account"}
-                </button>
-                <button type="button" className="underline hover:text-foreground" onClick={() => {
-                  localStorage.setItem('invepin_demo_mode','1');
-                  window.location.search = '?demo=1';
-                }}>
-                  Try demo
-                </button>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <button type="button" className="underline hover:text-foreground" onClick={() => setIsSignUp(v => !v)}>
+                    {isSignUp ? 'Have an account? Sign in' : "New here? Create an account"}
+                  </button>
+                  <button type="button" className="underline hover:text-foreground" onClick={() => {
+                    localStorage.setItem('invepin_demo_mode','1');
+                    window.location.search = '?demo=1';
+                  }}>
+                    Try demo
+                  </button>
+                </div>
+                {!isSignUp && (
+                  <div className="text-center">
+                    <button 
+                      type="button" 
+                      className="text-xs underline hover:text-foreground text-muted-foreground"
+                      onClick={handlePasswordReset}
+                      disabled={isLoading}
+                    >
+                      Forgot password?
+                    </button>
+                  </div>
+                )}
               </div>
 
               {/* Demo Login Options */}
