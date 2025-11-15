@@ -36,13 +36,7 @@ export const WalkieTalkie = ({ className }: { className?: string }) => {
       const { data: { user: currentUser }, error: userError } = await supabase.auth.getUser();
       
       if (userError) {
-        console.error('[Walkie-Talkie] Error getting user:', userError);
-        toast({
-          title: 'Authentication Error',
-          description: 'Please log in to use walkie-talkie',
-          variant: 'destructive',
-        });
-        return;
+        console.warn('[Walkie-Talkie] getUser error, continuing as guest:', userError);
       }
       
       const presenceKey = currentUser?.id || `guest-${crypto.randomUUID()}`;
@@ -508,12 +502,12 @@ export const WalkieTalkie = ({ className }: { className?: string }) => {
           <label className="text-sm font-medium">Voice Communication</label>
           <Button
             size="lg"
-            className="w-full"
+            className="w-full select-none"
             variant={isRecording ? 'destructive' : 'default'}
-            onMouseDown={startRecording}
-            onMouseUp={stopRecording}
-            onTouchStart={startRecording}
-            onTouchEnd={stopRecording}
+            onPointerDown={startRecording}
+            onPointerUp={stopRecording}
+            onPointerCancel={stopRecording}
+            onContextMenu={(e) => e.preventDefault()}
             disabled={isPlaying}
           >
             {isRecording ? (
