@@ -47,7 +47,22 @@ Deno.serve(async (req) => {
 
     // Issue a new command
     if (req.method === 'POST' && path === 'device-command') {
-      const { device_id, command_type, payload, priority, expires_in }: CommandRequest = await req.json();
+      // Validate input
+      const rawBody = await req.json();
+      const validation = DeviceCommandSchema.safeParse(rawBody);
+      
+      if (!validation.success) {
+        console.error('Command validation failed:', validation.error.format());
+        return new Response(
+          JSON.stringify({ 
+            error: 'Invalid command payload', 
+            details: validation.error.issues 
+          }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      const { device_id, command_type, payload, priority, expires_in } = validation.data;
 
       console.log(`Issuing command to device: ${device_id}`, { command_type, payload });
 
@@ -119,7 +134,18 @@ Deno.serve(async (req) => {
 
     // Acknowledge command execution (from device)
     if (req.method === 'POST' && path === 'acknowledge') {
-      const { command_id, status, result }: CommandAcknowledge = await req.json();
+      const rawBody = await req.json();
+      
+      // Validate command_id is UUID
+      const commandIdValidation = UUIDSchema.safeParse(rawBody.command_id);
+      if (!commandIdValidation.success) {
+        return new Response(
+          JSON.stringify({ error: 'Invalid command_id format' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      const { command_id, status, result }: CommandAcknowledge = rawBody;
 
       console.log(`Acknowledging command: ${command_id}`, { status, result });
 

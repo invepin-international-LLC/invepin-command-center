@@ -46,11 +46,26 @@ Deno.serve(async (req) => {
     if (!profile?.organization_id) {
       return new Response(
         JSON.stringify({ error: 'User not associated with an organization' }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Parse and validate request body
+    const rawBody = await req.json();
+    const validation = PairingSchema.safeParse(rawBody);
+    
+    if (!validation.success) {
+      console.error('Pairing validation failed:', validation.error.format());
+      return new Response(
+        JSON.stringify({ 
+          error: 'Invalid pairing payload', 
+          details: validation.error.issues 
+        }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    const { device_id, device_type, name, mac_address, serial_number, metadata }: PairingRequest = await req.json();
+    const { device_id, device_type, name, mac_address, serial_number, metadata } = validation.data;
 
     console.log(`Pairing device: ${device_id}`, { device_type, name });
 
