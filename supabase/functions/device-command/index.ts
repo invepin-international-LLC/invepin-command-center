@@ -25,14 +25,28 @@ Deno.serve(async (req) => {
   }
 
   try {
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: 'Authorization required' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? ''
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      {
+        global: { headers: { Authorization: authHeader } }
+      }
     );
 
-    const authHeader = req.headers.get('Authorization');
-    if (authHeader) {
-      supabase.auth.setSession({ access_token: authHeader.replace('Bearer ', ''), refresh_token: '' });
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid authorization' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     const url = new URL(req.url);
@@ -58,7 +72,20 @@ Deno.serve(async (req) => {
         );
       }
 
-      const { data: { user } } = await supabase.auth.getUser();
+      // Verify user has permission for device's organization
+      const { data: membership } = await supabase
+        .from('organization_members')
+        .select('role')
+        .eq('organization_id', device.organization_id)
+        .eq('user_id', user.id)
+        .single();
+
+      if (!membership || !['owner', 'admin', 'manager'].includes(membership.role)) {
+        return new Response(
+          JSON.stringify({ error: 'Insufficient permissions' }),
+          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
 
       const expiresAt = expires_in 
         ? new Date(Date.now() + expires_in * 1000).toISOString()
