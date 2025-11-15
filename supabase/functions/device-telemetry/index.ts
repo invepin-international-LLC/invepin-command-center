@@ -1,28 +1,10 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { TelemetrySchema } from '../_shared/validation.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-device-api-key',
 };
-
-interface TelemetryPayload {
-  device_id: string;
-  data_type: string;
-  payload: {
-    battery?: number;
-    rssi?: number;
-    temperature?: number;
-    gps?: {
-      lat: number;
-      lng: number;
-      accuracy: number;
-      altitude?: number;
-      speed?: number;
-    };
-    [key: string]: any;
-  };
-  timestamp?: string;
-}
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -30,19 +12,42 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // Parse and validate request body
+    const rawBody = await req.json();
+    const validation = TelemetrySchema.safeParse(rawBody);
+    
+    if (!validation.success) {
+      console.error('Telemetry validation failed:', validation.error.format());
+      return new Response(
+        JSON.stringify({ 
+          error: 'Invalid telemetry payload', 
+          details: validation.error.issues 
+        }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const { device_id, data_type, payload, timestamp } = validation.data;
+
+    // Verify device API key
+    const apiKey = req.headers.get('X-Device-API-Key');
+    if (!apiKey) {
+      console.error('Missing device API key for:', device_id);
+      return new Response(
+        JSON.stringify({ error: 'Device authentication required' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { device_id, data_type, payload, timestamp }: TelemetryPayload = await req.json();
-
-    console.log(`Received telemetry from device: ${device_id}`, { data_type, payload });
-
-    // Verify device exists
+    // Verify device exists and validate API key
     const { data: device, error: deviceError } = await supabase
       .from('devices')
-      .select('id, status')
+      .select('id, status, organization_id, metadata')
       .eq('device_id', device_id)
       .single();
 
@@ -53,6 +58,18 @@ Deno.serve(async (req) => {
         { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    // Verify API key matches device
+    const expectedApiKey = device.metadata?.api_key || Deno.env.get('DEVICE_API_KEY');
+    if (apiKey !== expectedApiKey) {
+      console.error('Invalid API key for device:', device_id);
+      return new Response(
+        JSON.stringify({ error: 'Invalid device credentials' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    console.log(`Authenticated telemetry from device: ${device_id}`, { data_type });
 
     // Insert telemetry data
     const { error: insertError } = await supabase
