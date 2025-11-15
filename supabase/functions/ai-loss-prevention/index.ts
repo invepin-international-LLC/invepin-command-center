@@ -19,6 +19,23 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY not configured');
     }
 
+    // Validate request body
+    const rawBody = await req.json();
+    const validation = AIAnalysisSchema.safeParse(rawBody);
+    
+    if (!validation.success) {
+      console.error('AI analysis validation failed:', validation.error.format());
+      return new Response(
+        JSON.stringify({ 
+          error: 'Invalid analysis request', 
+          details: validation.error.issues 
+        }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const { analysisType, data, organizationId } = validation.data;
+
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
       return new Response(

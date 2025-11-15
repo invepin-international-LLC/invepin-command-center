@@ -1,18 +1,10 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { PairingSchema } from '../_shared/validation.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
-
-interface PairingRequest {
-  device_id: string;
-  device_type: 'tag' | 'gateway';
-  name?: string;
-  mac_address?: string;
-  serial_number?: string;
-  metadata?: Record<string, any>;
-}
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {

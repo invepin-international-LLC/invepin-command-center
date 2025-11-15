@@ -1,22 +1,15 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { DeviceCommandSchema, UUIDSchema } from '../_shared/validation.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-interface CommandRequest {
-  device_id: string;
-  command_type: string;
-  payload?: Record<string, any>;
-  priority?: number;
-  expires_in?: number; // seconds
-}
-
 interface CommandAcknowledge {
   command_id: string;
-  status: 'acknowledged' | 'failed';
-  result?: Record<string, any>;
+  status: 'sent' | 'completed' | 'failed';
+  result?: any;
 }
 
 Deno.serve(async (req) => {
