@@ -27,66 +27,168 @@ export const WalkieTalkie = ({ className }: { className?: string }) => {
   const { toast } = useToast();
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => setUser(user));
-    
-    // Set up Realtime channel for audio
-    const channel = supabase.channel('walkie-talkie');
-    
-    channel
-      .on('broadcast', { event: 'audio-message' }, ({ payload }: { payload: AudioMessage }) => {
-        if (payload.user_id !== user?.id) {
-          playAudioMessage(payload);
-        }
-      })
-      .on('presence', { event: 'sync' }, () => {
-        const state = channel.presenceState();
-        setOnlineUsers(Object.keys(state).length);
-      })
-      .subscribe(async (status) => {
-        if (status === 'SUBSCRIBED') {
-          await channel.track({
-            user_id: user?.id,
-            online_at: new Date().toISOString(),
-          });
+    const setupWalkieTalkie = async () => {
+      console.log('[Walkie-Talkie] Setting up...');
+      
+      // Get user first
+      const { data: { user: currentUser }, error: userError } = await supabase.auth.getUser();
+      
+      if (userError) {
+        console.error('[Walkie-Talkie] Error getting user:', userError);
+        toast({
+          title: 'Authentication Error',
+          description: 'Please log in to use walkie-talkie',
+          variant: 'destructive',
+        });
+        return;
+      }
+      
+      if (!currentUser) {
+        console.log('[Walkie-Talkie] No user logged in');
+        return;
+      }
+      
+      console.log('[Walkie-Talkie] User authenticated:', currentUser.id);
+      setUser(currentUser);
+      
+      // Set up Realtime channel for audio with unique name
+      const channelName = `walkie-talkie-${Date.now()}`;
+      const channel = supabase.channel(channelName, {
+        config: {
+          broadcast: { self: true },
+          presence: { key: currentUser.id }
         }
       });
+      
+      console.log('[Walkie-Talkie] Setting up channel:', channelName);
+      
+      channel
+        .on('broadcast', { event: 'audio-message' }, ({ payload }: { payload: AudioMessage }) => {
+          console.log('[Walkie-Talkie] Received audio message from:', payload.user_id);
+          if (payload.user_id !== currentUser.id) {
+            playAudioMessage(payload);
+          }
+        })
+        .on('presence', { event: 'sync' }, () => {
+          const state = channel.presenceState();
+          const userCount = Object.keys(state).length;
+          console.log('[Walkie-Talkie] Online users:', userCount, state);
+          setOnlineUsers(userCount);
+        })
+        .on('presence', { event: 'join' }, ({ key, newPresences }) => {
+          console.log('[Walkie-Talkie] User joined:', key, newPresences);
+        })
+        .on('presence', { event: 'leave' }, ({ key, leftPresences }) => {
+          console.log('[Walkie-Talkie] User left:', key, leftPresences);
+        })
+        .subscribe(async (status) => {
+          console.log('[Walkie-Talkie] Channel status:', status);
+          
+          if (status === 'SUBSCRIBED') {
+            console.log('[Walkie-Talkie] Channel subscribed, tracking presence...');
+            const trackStatus = await channel.track({
+              user_id: currentUser.id,
+              user_name: currentUser.email?.split('@')[0] || 'Unknown',
+              online_at: new Date().toISOString(),
+            });
+            console.log('[Walkie-Talkie] Presence track status:', trackStatus);
+            
+            toast({
+              title: '📻 Walkie-Talkie Active',
+              description: 'Connected to team channel',
+            });
+          } else if (status === 'CHANNEL_ERROR') {
+            console.error('[Walkie-Talkie] Channel error');
+            toast({
+              title: 'Connection Error',
+              description: 'Could not connect to walkie-talkie channel',
+              variant: 'destructive',
+            });
+          } else if (status === 'TIMED_OUT') {
+            console.error('[Walkie-Talkie] Channel timed out');
+            toast({
+              title: 'Connection Timeout',
+              description: 'Failed to connect - please try again',
+              variant: 'destructive',
+            });
+          }
+        });
 
-    channelRef.current = channel;
+      channelRef.current = channel;
+    };
+    
+    setupWalkieTalkie();
 
     return () => {
-      supabase.removeChannel(channel);
+      console.log('[Walkie-Talkie] Cleaning up channel');
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+      }
+      // Clean up audio context
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
+        audioContextRef.current = null;
+      }
     };
-  }, [user?.id]);
+  }, []); // Run once on mount
 
   const playAudioMessage = async (message: AudioMessage) => {
     try {
+      console.log('[Walkie-Talkie] Playing audio message, type:', message.type);
       setIsPlaying(true);
       
       if (message.type === 'alarm') {
+        console.log('[Walkie-Talkie] Playing alarm sound');
         // Play alarm sound
         const audio = new Audio();
         audio.src = 'data:audio/wav;base64,' + message.audio_data;
+        
+        audio.onended = () => {
+          console.log('[Walkie-Talkie] Alarm finished playing');
+          setIsPlaying(false);
+        };
+        
+        audio.onerror = (e) => {
+          console.error('[Walkie-Talkie] Alarm playback error:', e);
+          setIsPlaying(false);
+        };
+        
         await audio.play();
-        audio.onended = () => setIsPlaying(false);
       } else {
+        console.log('[Walkie-Talkie] Playing voice message');
         // Play voice message
-        const audioData = atob(message.audio_data);
-        const arrayBuffer = new ArrayBuffer(audioData.length);
-        const view = new Uint8Array(arrayBuffer);
-        for (let i = 0; i < audioData.length; i++) {
-          view[i] = audioData.charCodeAt(i);
-        }
+        try {
+          const audioData = atob(message.audio_data);
+          const arrayBuffer = new ArrayBuffer(audioData.length);
+          const view = new Uint8Array(arrayBuffer);
+          for (let i = 0; i < audioData.length; i++) {
+            view[i] = audioData.charCodeAt(i);
+          }
 
-        if (!audioContextRef.current) {
-          audioContextRef.current = new AudioContext();
-        }
+          if (!audioContextRef.current) {
+            console.log('[Walkie-Talkie] Creating new AudioContext');
+            audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+          }
 
-        const audioBuffer = await audioContextRef.current.decodeAudioData(arrayBuffer);
-        const source = audioContextRef.current.createBufferSource();
-        source.buffer = audioBuffer;
-        source.connect(audioContextRef.current.destination);
-        source.onended = () => setIsPlaying(false);
-        source.start(0);
+          console.log('[Walkie-Talkie] Decoding audio data, size:', arrayBuffer.byteLength);
+          const audioBuffer = await audioContextRef.current.decodeAudioData(arrayBuffer);
+          
+          console.log('[Walkie-Talkie] Audio decoded successfully, duration:', audioBuffer.duration);
+          const source = audioContextRef.current.createBufferSource();
+          source.buffer = audioBuffer;
+          source.connect(audioContextRef.current.destination);
+          
+          source.onended = () => {
+            console.log('[Walkie-Talkie] Voice message finished playing');
+            setIsPlaying(false);
+          };
+          
+          source.start(0);
+        } catch (decodeError) {
+          console.error('[Walkie-Talkie] Error decoding audio:', decodeError);
+          setIsPlaying(false);
+          throw decodeError;
+        }
       }
 
       toast({
@@ -94,13 +196,20 @@ export const WalkieTalkie = ({ className }: { className?: string }) => {
         description: `From ${message.user_name}`,
       });
     } catch (error) {
-      console.error('Error playing audio:', error);
+      console.error('[Walkie-Talkie] Error playing audio:', error);
       setIsPlaying(false);
+      toast({
+        title: 'Playback Error',
+        description: 'Could not play audio message',
+        variant: 'destructive',
+      });
     }
   };
 
   const startRecording = async () => {
     try {
+      console.log('[Walkie-Talkie] Starting recording...');
+      
       // Check if microphone is available
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         throw new Error('Microphone access not supported on this device');
@@ -110,9 +219,12 @@ export const WalkieTalkie = ({ className }: { className?: string }) => {
         audio: {
           echoCancellation: true,
           noiseSuppression: true,
-          autoGainControl: true
+          autoGainControl: true,
+          sampleRate: 44100
         } 
       });
+      
+      console.log('[Walkie-Talkie] Microphone stream obtained');
 
       // Check for supported MIME types
       let mimeType = 'audio/webm';
@@ -121,37 +233,56 @@ export const WalkieTalkie = ({ className }: { className?: string }) => {
           mimeType = 'audio/mp4';
         } else if (MediaRecorder.isTypeSupported('audio/wav')) {
           mimeType = 'audio/wav';
+        } else if (MediaRecorder.isTypeSupported('audio/ogg')) {
+          mimeType = 'audio/ogg';
         }
       }
+      
+      console.log('[Walkie-Talkie] Using MIME type:', mimeType);
 
       const mediaRecorder = new MediaRecorder(stream, {
-        mimeType
+        mimeType,
+        audioBitsPerSecond: 128000
       });
 
       audioChunksRef.current = [];
 
       mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
+          console.log('[Walkie-Talkie] Audio chunk received, size:', event.data.size);
           audioChunksRef.current.push(event.data);
         }
       };
 
       mediaRecorder.onstop = async () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        console.log('[Walkie-Talkie] Recording stopped, chunks:', audioChunksRef.current.length);
+        const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
+        console.log('[Walkie-Talkie] Created audio blob, size:', audioBlob.size);
         await sendAudioMessage(audioBlob, 'voice');
-        stream.getTracks().forEach(track => track.stop());
+        stream.getTracks().forEach(track => {
+          track.stop();
+          console.log('[Walkie-Talkie] Track stopped:', track.kind);
+        });
       };
 
-      mediaRecorder.start();
+      mediaRecorder.onerror = (event: any) => {
+        console.error('[Walkie-Talkie] MediaRecorder error:', event.error);
+        stream.getTracks().forEach(track => track.stop());
+        setIsRecording(false);
+      };
+
+      mediaRecorder.start(1000); // Collect data every second
       mediaRecorderRef.current = mediaRecorder;
       setIsRecording(true);
+      
+      console.log('[Walkie-Talkie] Recording started');
 
       toast({
         title: '🎙️ Recording',
         description: 'Release to send voice message',
       });
     } catch (error: any) {
-      console.error('Error starting recording:', error);
+      console.error('[Walkie-Talkie] Error starting recording:', error);
       
       let errorMessage = 'Could not access microphone';
       if (error.name === 'NotAllowedError' || error.name === 'PermissionDeniedError') {
@@ -160,6 +291,8 @@ export const WalkieTalkie = ({ className }: { className?: string }) => {
         errorMessage = 'No microphone found on this device';
       } else if (error.name === 'NotSupportedError') {
         errorMessage = 'Audio recording not supported on this device';
+      } else if (error.name === 'NotReadableError') {
+        errorMessage = 'Microphone is being used by another application';
       }
       
       toast({
@@ -171,41 +304,72 @@ export const WalkieTalkie = ({ className }: { className?: string }) => {
   };
 
   const stopRecording = () => {
+    console.log('[Walkie-Talkie] Stopping recording, isRecording:', isRecording);
     if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
+      if (mediaRecorderRef.current.state !== 'inactive') {
+        mediaRecorderRef.current.stop();
+        console.log('[Walkie-Talkie] MediaRecorder stopped');
+      }
       setIsRecording(false);
     }
   };
 
   const sendAudioMessage = async (audioBlob: Blob, type: 'voice' | 'alarm') => {
     try {
+      console.log('[Walkie-Talkie] Sending audio message, type:', type, 'size:', audioBlob.size);
+      
+      if (!channelRef.current) {
+        console.error('[Walkie-Talkie] Channel not initialized');
+        throw new Error('Channel not initialized');
+      }
+      
       const reader = new FileReader();
-      reader.readAsDataURL(audioBlob);
-      reader.onloadend = async () => {
-        const base64Audio = (reader.result as string).split(',')[1];
-
-        const message: AudioMessage = {
-          id: crypto.randomUUID(),
-          user_id: user?.id || 'unknown',
-          user_name: user?.email?.split('@')[0] || 'Unknown User',
-          audio_data: base64Audio,
-          timestamp: new Date().toISOString(),
-          type,
-        };
-
-        await channelRef.current?.send({
-          type: 'broadcast',
-          event: 'audio-message',
-          payload: message,
-        });
-
+      
+      reader.onerror = () => {
+        console.error('[Walkie-Talkie] FileReader error');
         toast({
-          title: type === 'alarm' ? '🚨 Alarm Sent' : '📻 Message Sent',
-          description: `Broadcast to ${onlineUsers} users`,
+          title: 'Error',
+          description: 'Failed to read audio data',
+          variant: 'destructive',
         });
       };
+      
+      reader.onloadend = async () => {
+        try {
+          const base64Audio = (reader.result as string).split(',')[1];
+          console.log('[Walkie-Talkie] Audio converted to base64, length:', base64Audio.length);
+
+          const message: AudioMessage = {
+            id: crypto.randomUUID(),
+            user_id: user?.id || 'unknown',
+            user_name: user?.email?.split('@')[0] || 'Unknown User',
+            audio_data: base64Audio,
+            timestamp: new Date().toISOString(),
+            type,
+          };
+
+          console.log('[Walkie-Talkie] Broadcasting message...');
+          const sendResult = await channelRef.current?.send({
+            type: 'broadcast',
+            event: 'audio-message',
+            payload: message,
+          });
+          
+          console.log('[Walkie-Talkie] Broadcast result:', sendResult);
+
+          toast({
+            title: type === 'alarm' ? '🚨 Alarm Sent' : '📻 Message Sent',
+            description: `Broadcast to ${onlineUsers} users`,
+          });
+        } catch (broadcastError) {
+          console.error('[Walkie-Talkie] Error broadcasting:', broadcastError);
+          throw broadcastError;
+        }
+      };
+      
+      reader.readAsDataURL(audioBlob);
     } catch (error) {
-      console.error('Error sending audio:', error);
+      console.error('[Walkie-Talkie] Error sending audio:', error);
       toast({
         title: 'Error',
         description: 'Failed to send audio message',
