@@ -43,16 +43,16 @@ export const WalkieTalkie = ({ className }: { className?: string }) => {
         return;
       }
       
+      const presenceKey = currentUser?.id || `guest-${crypto.randomUUID()}`;
       if (!currentUser) {
-        console.log('[Walkie-Talkie] No user logged in');
-        return;
+        console.log('[Walkie-Talkie] No user logged in, proceeding as guest');
+      } else {
+        console.log('[Walkie-Talkie] User authenticated:', currentUser.id);
+        setUser(currentUser);
       }
       
-      console.log('[Walkie-Talkie] User authenticated:', currentUser.id);
-      setUser(currentUser);
-      
       // Set up Realtime channel for audio with unique name
-      const channelName = `walkie-talkie-${Date.now()}`;
+      const channelName = 'walkie-talkie';
       const channel = supabase.channel(channelName, {
         config: {
           broadcast: { self: true },
