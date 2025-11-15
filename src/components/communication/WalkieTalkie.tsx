@@ -13,6 +13,7 @@ interface AudioMessage {
   audio_data: string;
   timestamp: string;
   type: 'voice' | 'alarm';
+  mime_type?: string;
 }
 
 export const WalkieTalkie = ({ className }: { className?: string }) => {
@@ -24,6 +25,7 @@ export const WalkieTalkie = ({ className }: { className?: string }) => {
   const audioChunksRef = useRef<Blob[]>([]);
   const audioContextRef = useRef<AudioContext | null>(null);
   const channelRef = useRef<any>(null);
+  const presenceKeyRef = useRef<string>('');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -44,6 +46,7 @@ export const WalkieTalkie = ({ className }: { className?: string }) => {
       }
       
       const presenceKey = currentUser?.id || `guest-${crypto.randomUUID()}`;
+      presenceKeyRef.current = presenceKey;
       if (!currentUser) {
         console.log('[Walkie-Talkie] No user logged in, proceeding as guest');
       } else {
@@ -56,7 +59,7 @@ export const WalkieTalkie = ({ className }: { className?: string }) => {
       const channel = supabase.channel(channelName, {
         config: {
           broadcast: { self: true },
-          presence: { key: currentUser.id }
+          presence: { key: presenceKey }
         }
       });
       
@@ -65,7 +68,7 @@ export const WalkieTalkie = ({ className }: { className?: string }) => {
       channel
         .on('broadcast', { event: 'audio-message' }, ({ payload }: { payload: AudioMessage }) => {
           console.log('[Walkie-Talkie] Received audio message from:', payload.user_id);
-          if (payload.user_id !== currentUser.id) {
+          if (payload.user_id !== presenceKeyRef.current) {
             playAudioMessage(payload);
           }
         })
@@ -84,14 +87,14 @@ export const WalkieTalkie = ({ className }: { className?: string }) => {
         .subscribe(async (status) => {
           console.log('[Walkie-Talkie] Channel status:', status);
           
-          if (status === 'SUBSCRIBED') {
-            console.log('[Walkie-Talkie] Channel subscribed, tracking presence...');
-            const trackStatus = await channel.track({
-              user_id: currentUser.id,
-              user_name: currentUser.email?.split('@')[0] || 'Unknown',
-              online_at: new Date().toISOString(),
-            });
-            console.log('[Walkie-Talkie] Presence track status:', trackStatus);
+            if (status === 'SUBSCRIBED') {
+              console.log('[Walkie-Talkie] Channel subscribed, tracking presence...');
+              const trackStatus = await channel.track({
+                user_id: presenceKeyRef.current,
+                user_name: user?.email?.split('@')[0] || 'Guest',
+                online_at: new Date().toISOString(),
+              });
+              console.log('[Walkie-Talkie] Presence track status:', trackStatus);
             
             toast({
               title: '📻 Walkie-Talkie Active',
@@ -341,11 +344,12 @@ export const WalkieTalkie = ({ className }: { className?: string }) => {
 
           const message: AudioMessage = {
             id: crypto.randomUUID(),
-            user_id: user?.id || 'unknown',
-            user_name: user?.email?.split('@')[0] || 'Unknown User',
+            user_id: presenceKeyRef.current || 'unknown',
+            user_name: user?.email?.split('@')[0] || 'Guest',
             audio_data: base64Audio,
             timestamp: new Date().toISOString(),
             type,
+            mime_type: audioBlob.type || undefined,
           };
 
           console.log('[Walkie-Talkie] Broadcasting message...');
@@ -479,7 +483,7 @@ export const WalkieTalkie = ({ className }: { className?: string }) => {
     return result;
   };
 
-  if (!user) return null;
+  
 
   return (
     <Card className={cn('p-6', className)}>
