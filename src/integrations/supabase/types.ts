@@ -146,6 +146,56 @@ export type Database = {
           },
         ]
       }
+      device_auth: {
+        Row: {
+          auth_method: string
+          created_at: string | null
+          device_id: string
+          device_uuid: string
+          failed_auth_attempts: number | null
+          id: string
+          is_locked: boolean | null
+          last_auth_at: string | null
+          public_key: string | null
+          secret_key_hash: string
+          updated_at: string | null
+        }
+        Insert: {
+          auth_method?: string
+          created_at?: string | null
+          device_id: string
+          device_uuid: string
+          failed_auth_attempts?: number | null
+          id?: string
+          is_locked?: boolean | null
+          last_auth_at?: string | null
+          public_key?: string | null
+          secret_key_hash: string
+          updated_at?: string | null
+        }
+        Update: {
+          auth_method?: string
+          created_at?: string | null
+          device_id?: string
+          device_uuid?: string
+          failed_auth_attempts?: number | null
+          id?: string
+          is_locked?: boolean | null
+          last_auth_at?: string | null
+          public_key?: string | null
+          secret_key_hash?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "device_auth_device_id_fkey"
+            columns: ["device_id"]
+            isOneToOne: true
+            referencedRelation: "devices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       device_commands: {
         Row: {
           acknowledged_at: string | null
@@ -239,6 +289,44 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "device_data_device_id_fkey"
+            columns: ["device_id"]
+            isOneToOne: false
+            referencedRelation: "devices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      device_diagnostics: {
+        Row: {
+          device_id: string
+          diagnostic_type: string
+          id: string
+          metrics: Json
+          recommendations: string[] | null
+          status: string
+          timestamp: string
+        }
+        Insert: {
+          device_id: string
+          diagnostic_type: string
+          id?: string
+          metrics: Json
+          recommendations?: string[] | null
+          status: string
+          timestamp?: string
+        }
+        Update: {
+          device_id?: string
+          diagnostic_type?: string
+          id?: string
+          metrics?: Json
+          recommendations?: string[] | null
+          status?: string
+          timestamp?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "device_diagnostics_device_id_fkey"
             columns: ["device_id"]
             isOneToOne: false
             referencedRelation: "devices"
@@ -416,6 +504,74 @@ export type Database = {
           },
         ]
       }
+      firmware_versions: {
+        Row: {
+          build_number: number
+          changelog: string | null
+          created_at: string | null
+          deprecated_at: string | null
+          device_type_id: string
+          file_hash: string
+          file_size_bytes: number
+          file_url: string
+          id: string
+          is_mandatory: boolean | null
+          min_battery_level: number | null
+          release_channel: string
+          released_at: string | null
+          requires_backup: boolean | null
+          rollback_version: string | null
+          signature: string
+          version: string
+        }
+        Insert: {
+          build_number: number
+          changelog?: string | null
+          created_at?: string | null
+          deprecated_at?: string | null
+          device_type_id: string
+          file_hash: string
+          file_size_bytes: number
+          file_url: string
+          id?: string
+          is_mandatory?: boolean | null
+          min_battery_level?: number | null
+          release_channel?: string
+          released_at?: string | null
+          requires_backup?: boolean | null
+          rollback_version?: string | null
+          signature: string
+          version: string
+        }
+        Update: {
+          build_number?: number
+          changelog?: string | null
+          created_at?: string | null
+          deprecated_at?: string | null
+          device_type_id?: string
+          file_hash?: string
+          file_size_bytes?: number
+          file_url?: string
+          id?: string
+          is_mandatory?: boolean | null
+          min_battery_level?: number | null
+          release_channel?: string
+          released_at?: string | null
+          requires_backup?: boolean | null
+          rollback_version?: string | null
+          signature?: string
+          version?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "firmware_versions_device_type_id_fkey"
+            columns: ["device_type_id"]
+            isOneToOne: false
+            referencedRelation: "device_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       invepin_data: {
         Row: {
           battery_level: number | null
@@ -553,6 +709,78 @@ export type Database = {
         }
         Relationships: []
       }
+      ota_updates: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          device_id: string
+          error_message: string | null
+          firmware_version_id: string
+          id: string
+          initiated_by: string | null
+          max_retries: number | null
+          priority: number | null
+          progress_percent: number | null
+          retry_count: number | null
+          rollback_version: string | null
+          scheduled_at: string | null
+          started_at: string | null
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
+          device_id: string
+          error_message?: string | null
+          firmware_version_id: string
+          id?: string
+          initiated_by?: string | null
+          max_retries?: number | null
+          priority?: number | null
+          progress_percent?: number | null
+          retry_count?: number | null
+          rollback_version?: string | null
+          scheduled_at?: string | null
+          started_at?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          device_id?: string
+          error_message?: string | null
+          firmware_version_id?: string
+          id?: string
+          initiated_by?: string | null
+          max_retries?: number | null
+          priority?: number | null
+          progress_percent?: number | null
+          retry_count?: number | null
+          rollback_version?: string | null
+          scheduled_at?: string | null
+          started_at?: string | null
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ota_updates_device_id_fkey"
+            columns: ["device_id"]
+            isOneToOne: false
+            referencedRelation: "devices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ota_updates_firmware_version_id_fkey"
+            columns: ["firmware_version_id"]
+            isOneToOne: false
+            referencedRelation: "firmware_versions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pending_approvals: {
         Row: {
           created_at: string | null
@@ -602,6 +830,66 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "pending_approvals_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pour_events: {
+        Row: {
+          authorized_method: string | null
+          device_id: string
+          duration_seconds: number | null
+          flow_rate: number | null
+          id: string
+          metadata: Json | null
+          organization_id: string
+          product_name: string | null
+          tamper_detected: boolean | null
+          timestamp: string
+          user_id: string | null
+          volume_ml: number
+        }
+        Insert: {
+          authorized_method?: string | null
+          device_id: string
+          duration_seconds?: number | null
+          flow_rate?: number | null
+          id?: string
+          metadata?: Json | null
+          organization_id: string
+          product_name?: string | null
+          tamper_detected?: boolean | null
+          timestamp?: string
+          user_id?: string | null
+          volume_ml: number
+        }
+        Update: {
+          authorized_method?: string | null
+          device_id?: string
+          duration_seconds?: number | null
+          flow_rate?: number | null
+          id?: string
+          metadata?: Json | null
+          organization_id?: string
+          product_name?: string | null
+          tamper_detected?: boolean | null
+          timestamp?: string
+          user_id?: string | null
+          volume_ml?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pour_events_device_id_fkey"
+            columns: ["device_id"]
+            isOneToOne: false
+            referencedRelation: "devices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pour_events_organization_id_fkey"
             columns: ["organization_id"]
             isOneToOne: false
             referencedRelation: "organizations"
@@ -821,6 +1109,60 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      tamper_events: {
+        Row: {
+          details: Json | null
+          device_id: string
+          event_type: string
+          id: string
+          organization_id: string
+          resolved: boolean | null
+          resolved_at: string | null
+          resolved_by: string | null
+          severity: string
+          timestamp: string
+        }
+        Insert: {
+          details?: Json | null
+          device_id: string
+          event_type: string
+          id?: string
+          organization_id: string
+          resolved?: boolean | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity: string
+          timestamp?: string
+        }
+        Update: {
+          details?: Json | null
+          device_id?: string
+          event_type?: string
+          id?: string
+          organization_id?: string
+          resolved?: boolean | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          timestamp?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tamper_events_device_id_fkey"
+            columns: ["device_id"]
+            isOneToOne: false
+            referencedRelation: "devices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tamper_events_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_consents: {
         Row: {
