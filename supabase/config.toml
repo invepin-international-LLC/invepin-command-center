@@ -11,3 +11,27 @@ verify_jwt = true
 
 [functions.smart-contract-execute]
 verify_jwt = true
+
+[functions.device-telemetry]
+verify_jwt = false
+
+[functions.device-pairing]
+verify_jwt = true
+
+[functions.device-command]
+verify_jwt = true
+
+[functions.ota-firmware-check]
+verify_jwt = false
+
+[functions.ota-firmware-download]
+verify_jwt = false
+
+[functions.barmate-pour-event]
+verify_jwt = false
+
+[functions.tamper-alert]
+verify_jwt = false
+
+[functions.device-diagnostics]
+verify_jwt = false
