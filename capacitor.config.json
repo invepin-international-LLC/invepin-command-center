@@ -8,7 +8,11 @@
     "allowsLinkPreview": false,
     "scrollEnabled": true,
     "backgroundColor": "#0F172A",
-    "preferredContentMode": "mobile"
+    "preferredContentMode": "mobile",
+    "permissions": [
+      "NSMicrophoneUsageDescription",
+      "NSCameraUsageDescription"
+    ]
   },
   "android": {
     "allowMixedContent": true,
