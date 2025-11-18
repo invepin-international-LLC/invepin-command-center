@@ -74,6 +74,7 @@ const MobilePage = () => {
   return (
     <MobileBartenderInterface 
       bartenders={bartenders}
+      organizationId="default-org-id"
       onClockIn={handleClockIn}
       onClockOut={handleClockOut}
     />

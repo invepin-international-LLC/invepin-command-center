@@ -108,6 +108,56 @@ export type Database = {
           },
         ]
       }
+      clock_events: {
+        Row: {
+          confidence: number | null
+          created_at: string
+          device_id: string | null
+          event_type: string
+          id: string
+          location: Json | null
+          method: string
+          notes: string | null
+          organization_id: string
+          timestamp: string
+          user_id: string
+        }
+        Insert: {
+          confidence?: number | null
+          created_at?: string
+          device_id?: string | null
+          event_type: string
+          id?: string
+          location?: Json | null
+          method: string
+          notes?: string | null
+          organization_id: string
+          timestamp?: string
+          user_id: string
+        }
+        Update: {
+          confidence?: number | null
+          created_at?: string
+          device_id?: string | null
+          event_type?: string
+          id?: string
+          location?: Json | null
+          method?: string
+          notes?: string | null
+          organization_id?: string
+          timestamp?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clock_events_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       colony_hub_data: {
         Row: {
           created_at: string | null
@@ -497,6 +547,47 @@ export type Database = {
           },
           {
             foreignKeyName: "devices_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      face_embeddings: {
+        Row: {
+          created_at: string
+          embedding: Json
+          enrollment_confidence: number | null
+          id: string
+          is_active: boolean | null
+          organization_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          embedding: Json
+          enrollment_confidence?: number | null
+          id?: string
+          is_active?: boolean | null
+          organization_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          embedding?: Json
+          enrollment_confidence?: number | null
+          id?: string
+          is_active?: boolean | null
+          organization_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "face_embeddings_organization_id_fkey"
             columns: ["organization_id"]
             isOneToOne: false
             referencedRelation: "organizations"
@@ -1029,6 +1120,76 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "profiles_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      shift_records: {
+        Row: {
+          break_duration_minutes: number | null
+          clock_in_id: string | null
+          clock_in_time: string
+          clock_out_id: string | null
+          clock_out_time: string | null
+          created_at: string
+          duration_minutes: number | null
+          id: string
+          is_active: boolean | null
+          notes: string | null
+          organization_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          break_duration_minutes?: number | null
+          clock_in_id?: string | null
+          clock_in_time: string
+          clock_out_id?: string | null
+          clock_out_time?: string | null
+          created_at?: string
+          duration_minutes?: number | null
+          id?: string
+          is_active?: boolean | null
+          notes?: string | null
+          organization_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          break_duration_minutes?: number | null
+          clock_in_id?: string | null
+          clock_in_time?: string
+          clock_out_id?: string | null
+          clock_out_time?: string | null
+          created_at?: string
+          duration_minutes?: number | null
+          id?: string
+          is_active?: boolean | null
+          notes?: string | null
+          organization_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shift_records_clock_in_id_fkey"
+            columns: ["clock_in_id"]
+            isOneToOne: false
+            referencedRelation: "clock_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shift_records_clock_out_id_fkey"
+            columns: ["clock_out_id"]
+            isOneToOne: false
+            referencedRelation: "clock_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shift_records_organization_id_fkey"
             columns: ["organization_id"]
             isOneToOne: false
             referencedRelation: "organizations"

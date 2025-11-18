@@ -6,17 +6,21 @@ import { faceRecognitionService } from "@/services/faceRecognition";
 import { useState, useEffect } from "react";
 import { Camera, UserCheck, Loader2, CheckCircle, XCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useFaceEmbeddings } from "@/hooks/useFaceEmbeddings";
+import { useClockEvents } from "@/hooks/useClockEvents";
+import { supabase } from "@/integrations/supabase/client";
 
 interface FaceClockInProps {
-  onClockIn: (bartenderId: string, method: 'face_recognition', confidence: number) => void;
-  onClockOut: (bartenderId: string, method: 'face_recognition', confidence: number) => void;
-  knownFaces: { bartenderId: string, name: string, embedding: number[] }[];
-  currentlyActive: { bartenderId: string, name: string }[];
+  organizationId: string;
+  onClockIn?: (userId: string, method: 'face_recognition', confidence: number) => void;
+  onClockOut?: (userId: string, method: 'face_recognition', confidence: number) => void;
 }
 
-export const FaceClockIn = ({ onClockIn, onClockOut, knownFaces, currentlyActive }: FaceClockInProps) => {
+export const FaceClockIn = ({ organizationId, onClockIn, onClockOut }: FaceClockInProps) => {
   const { videoRef, isActive, error, startCamera, stopCamera, capturePhoto } = useCamera();
   const { toast } = useToast();
+  const { getOrganizationFaces } = useFaceEmbeddings();
+  const { createClockEvent, getUserActiveShift } = useClockEvents(organizationId);
   
   const [isProcessing, setIsProcessing] = useState(false);
   const [lastRecognition, setLastRecognition] = useState<{
@@ -25,25 +29,52 @@ export const FaceClockIn = ({ onClockIn, onClockOut, knownFaces, currentlyActive
     isActive: boolean;
   } | null>(null);
   const [scanningMode, setScanningMode] = useState<'idle' | 'scanning' | 'recognized'>('idle');
+  const [knownFaces, setKnownFaces] = useState<Array<{ userId: string; name: string; embedding: number[] }>>([]);
 
   useEffect(() => {
-    // Auto-start camera when component mounts
     startCamera();
     return () => stopCamera();
   }, [startCamera, stopCamera]);
 
+  useEffect(() => {
+    const loadKnownFaces = async () => {
+      const faces = await getOrganizationFaces(organizationId);
+      setKnownFaces(faces);
+    };
+    loadKnownFaces();
+  }, [organizationId, getOrganizationFaces]);
+
   const performRecognition = async () => {
-    if (!isActive || isProcessing) return;
+    if (!isActive || isProcessing || knownFaces.length === 0) return;
 
     setIsProcessing(true);
     setScanningMode('scanning');
 
     try {
       const photo = await capturePhoto();
-      const result = await faceRecognitionService.recognizeFace(photo, knownFaces);
+      const result = await faceRecognitionService.recognizeFace(
+        photo,
+        knownFaces.map(f => ({
+          bartenderId: f.userId,
+          name: f.name,
+          embedding: f.embedding,
+        }))
+      );
 
       if (result.recognized && result.bartenderId && result.name) {
-        const isCurrentlyActive = currentlyActive.some(active => active.bartenderId === result.bartenderId);
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          toast({
+            title: 'Error',
+            description: 'Please log in to use facial recognition',
+            variant: 'destructive',
+          });
+          setScanningMode('idle');
+          return;
+        }
+
+        const activeShift = await getUserActiveShift(result.bartenderId);
+        const isCurrentlyActive = !!activeShift;
         
         setLastRecognition({
           name: result.name,
@@ -52,26 +83,30 @@ export const FaceClockIn = ({ onClockIn, onClockOut, knownFaces, currentlyActive
         });
         setScanningMode('recognized');
 
-        // Show recognition toast
         toast({
           title: `Hello, ${result.name}!`,
           description: `Recognized with ${(result.confidence * 100).toFixed(1)}% confidence`,
         });
 
-        // Auto clock in/out after 2 seconds
-        setTimeout(() => {
+        setTimeout(async () => {
           if (isCurrentlyActive) {
-            onClockOut(result.bartenderId!, 'face_recognition', result.confidence);
-            toast({
-              title: "Clocked Out",
-              description: `${result.name} has been clocked out`,
+            await createClockEvent({
+              userId: result.bartenderId!,
+              organizationId,
+              eventType: 'clock_out',
+              method: 'face_recognition',
+              confidence: result.confidence,
             });
+            onClockOut?.(result.bartenderId!, 'face_recognition', result.confidence);
           } else {
-            onClockIn(result.bartenderId!, 'face_recognition', result.confidence);
-            toast({
-              title: "Clocked In",
-              description: `${result.name} has been clocked in`,
+            await createClockEvent({
+              userId: result.bartenderId!,
+              organizationId,
+              eventType: 'clock_in',
+              method: 'face_recognition',
+              confidence: result.confidence,
             });
+            onClockIn?.(result.bartenderId!, 'face_recognition', result.confidence);
           }
           
           setScanningMode('idle');
@@ -101,101 +136,96 @@ export const FaceClockIn = ({ onClockIn, onClockOut, knownFaces, currentlyActive
 
   if (error) {
     return (
-      <Card className="bg-gradient-card border-border">
-        <CardContent className="p-6 text-center">
-          <XCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-          <h3 className="text-lg font-medium mb-2">Camera Access Required</h3>
-          <p className="text-muted-foreground mb-4">{error}</p>
-          <Button onClick={startCamera} className="bg-gradient-primary">
-            <Camera className="h-4 w-4 mr-2" />
-            Enable Camera
-          </Button>
+      <Card className="w-full max-w-md mx-auto">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Camera className="h-5 w-5" />
+            Face Recognition Clock In/Out
+          </CardTitle>
+          <CardDescription>Camera access required</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="text-center py-8">
+            <XCircle className="h-12 w-12 mx-auto mb-4 text-destructive" />
+            <p className="text-sm text-muted-foreground mb-4">{error}</p>
+            <Button onClick={startCamera} size="sm">
+              Try Again
+            </Button>
+          </div>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card className="bg-gradient-card border-border">
-      <CardHeader className="text-center">
-        <CardTitle className="flex items-center justify-center gap-2">
-          <UserCheck className="h-6 w-6" />
+    <Card className="w-full max-w-md mx-auto">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <UserCheck className="h-5 w-5" />
           Face Recognition Clock In/Out
         </CardTitle>
         <CardDescription>
-          Look at the camera to clock in or out automatically
+          Position your face in the camera frame
         </CardDescription>
       </CardHeader>
-      
-      <CardContent className="space-y-6">
-        {/* Camera Feed */}
-        <div className="relative">
-          <div className="aspect-video bg-black rounded-lg overflow-hidden relative">
-            <video
-              ref={videoRef}
-              autoPlay
-              playsInline
-              muted
-              className="w-full h-full object-cover"
-            />
-            
-            {/* Overlay indicators */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              {scanningMode === 'scanning' && (
-                <div className="bg-blue-500/20 border-2 border-blue-500 rounded-full p-4">
-                  <Loader2 className="h-8 w-8 text-blue-500 animate-spin" />
-                </div>
-              )}
-              
-              {scanningMode === 'recognized' && lastRecognition && (
-                <div className="bg-success/20 border-2 border-success rounded-lg p-4 text-center">
-                  <CheckCircle className="h-8 w-8 text-success mx-auto mb-2" />
-                  <p className="text-success font-medium">{lastRecognition.name}</p>
-                  <p className="text-xs text-success/80">
-                    {(lastRecognition.confidence * 100).toFixed(1)}% confidence
-                  </p>
-                  <Badge variant={lastRecognition.isActive ? "destructive" : "default"} className="mt-2">
-                    {lastRecognition.isActive ? "Clocking Out..." : "Clocking In..."}
-                  </Badge>
-                </div>
-              )}
+      <CardContent className="space-y-4">
+        <div className="relative aspect-video bg-muted rounded-lg overflow-hidden">
+          <video
+            ref={videoRef}
+            autoPlay
+            playsInline
+            muted
+            className="w-full h-full object-cover"
+          />
+          
+          {scanningMode === 'scanning' && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+              <div className="text-center">
+                <Loader2 className="h-12 w-12 animate-spin text-white mx-auto mb-2" />
+                <p className="text-white text-sm">Scanning face...</p>
+              </div>
             </div>
+          )}
 
-            {/* Face detection frame */}
-            <div className="absolute inset-4 border-2 border-primary/50 rounded-lg pointer-events-none">
-              <div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-primary"></div>
-              <div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-primary"></div>
-              <div className="absolute bottom-0 left-0 w-6 h-6 border-b-2 border-l-2 border-primary"></div>
-              <div className="absolute bottom-0 right-0 w-6 h-6 border-b-2 border-r-2 border-primary"></div>
+          {scanningMode === 'recognized' && lastRecognition && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+              <div className="text-center">
+                <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-2" />
+                <p className="text-white font-semibold">{lastRecognition.name}</p>
+                <p className="text-white text-sm">
+                  {(lastRecognition.confidence * 100).toFixed(1)}% match
+                </p>
+                <Badge className="mt-2" variant={lastRecognition.isActive ? "destructive" : "default"}>
+                  {lastRecognition.isActive ? "Clocking Out..." : "Clocking In..."}
+                </Badge>
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
-        {/* Recognition Button */}
-        <div className="text-center">
-          <Button
-            onClick={performRecognition}
-            disabled={!isActive || isProcessing || scanningMode !== 'idle'}
-            size="lg"
-            className="bg-gradient-primary w-full"
-          >
-            {isProcessing ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Recognizing...
-              </>
-            ) : (
-              <>
-                <Camera className="h-4 w-4 mr-2" />
-                Scan Face to Clock In/Out
-              </>
-            )}
-          </Button>
-        </div>
+        <Button
+          onClick={performRecognition}
+          disabled={!isActive || isProcessing || knownFaces.length === 0}
+          className="w-full"
+          size="lg"
+        >
+          {isProcessing ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Processing...
+            </>
+          ) : (
+            <>
+              <Camera className="mr-2 h-4 w-4" />
+              Scan Face
+            </>
+          )}
+        </Button>
 
-        {/* Status */}
-        <div className="text-center text-sm text-muted-foreground">
-          {knownFaces.length} enrolled faces • {currentlyActive.length} staff currently active
+        <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+          <Badge variant="secondary">
+            {knownFaces.length} faces enrolled
+          </Badge>
         </div>
       </CardContent>
     </Card>
