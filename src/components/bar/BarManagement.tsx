@@ -252,6 +252,7 @@ export const BarManagement = ({ industry = 'retail' }: BarManagementProps = {}) 
         <div className="max-w-md mx-auto">
           <MobileBartenderInterface 
             bartenders={bartenders}
+            organizationId="default-org-id"
             onClockIn={handleClockIn}
             onClockOut={handleClockOut}
           />

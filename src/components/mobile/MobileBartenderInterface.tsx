@@ -19,32 +19,20 @@ import { Bartender } from "@/types/bar";
 
 interface MobileBartenderInterfaceProps {
   bartenders: Bartender[];
+  organizationId: string;
   onClockIn: (bartenderId: string, method: 'face_recognition' | 'manual', confidence?: number) => void;
   onClockOut: (bartenderId: string, method: 'face_recognition' | 'manual', confidence?: number) => void;
 }
 
 export const MobileBartenderInterface = ({ 
-  bartenders, 
+  bartenders,
+  organizationId,
   onClockIn, 
   onClockOut 
 }: MobileBartenderInterfaceProps) => {
   const { toast } = useToast();
   const [currentSession, setCurrentSession] = useState<MobileBartenderSession | null>(null);
   const [selectedBartender, setSelectedBartender] = useState<string>("");
-  
-  // Mock face embeddings - in production these would be stored in your database
-  const [knownFaces] = useState([
-    {
-      bartenderId: '1',
-      name: 'Alex Rodriguez',
-      embedding: Array.from({ length: 128 }, () => Math.random() * 2 - 1) // Mock embedding
-    },
-    {
-      bartenderId: '2', 
-      name: 'Sarah Chen',
-      embedding: Array.from({ length: 128 }, () => Math.random() * 2 - 1) // Mock embedding
-    }
-  ]);
 
   const currentlyActive = bartenders
     .filter(b => b.isOnShift)
@@ -159,10 +147,9 @@ export const MobileBartenderInterface = ({
 
           <TabsContent value="face">
             <FaceClockIn
+              organizationId={organizationId}
               onClockIn={handleFaceClockIn}
               onClockOut={handleFaceClockOut}
-              knownFaces={knownFaces}
-              currentlyActive={currentlyActive}
             />
           </TabsContent>
 
