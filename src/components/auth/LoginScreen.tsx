@@ -71,6 +71,27 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
 
   const handleLogin = async () => {
     setIsLoading(true);
+    
+    // Validate environment variables
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+    
+    if (!supabaseUrl || !supabaseKey) {
+      toast({
+        title: "Configuration Error",
+        description: "Supabase configuration is missing. Please contact support.",
+        variant: "destructive"
+      });
+      setIsLoading(false);
+      return;
+    }
+    
+    console.log('Environment check:', {
+      url: supabaseUrl,
+      keyExists: !!supabaseKey,
+      origin: window.location.origin
+    });
+    
     try {
       if (demoMode) {
         // Demo flow
@@ -123,12 +144,49 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
         toast({ title: "Welcome", description: `Hello, ${appUser.name}` });
         onLogin(appUser);
       }
+    } catch (err: any) {
+      console.error('Unexpected login error:', {
+        message: err.message,
+        name: err.name,
+        stack: err.stack,
+        type: err.constructor.name
+      });
+      
+      let errorMessage = "An unexpected error occurred during login.";
+      if (err.message === "Failed to fetch" || err.name === "TypeError") {
+        errorMessage = "Network error. Please check your internet connection and try again.";
+      }
+      
+      toast({ 
+        title: "Login Error", 
+        description: errorMessage, 
+        variant: "destructive" 
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleSignUp = async () => {
+    // Validate environment variables first
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+    
+    if (!supabaseUrl || !supabaseKey) {
+      toast({
+        title: "Configuration Error",
+        description: "Backend configuration is missing. Please refresh the page and try again.",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    console.log('Signup environment check:', {
+      url: supabaseUrl,
+      keyExists: !!supabaseKey,
+      origin: window.location.origin
+    });
+    
     // Validate password length
     if (password.length < 6) {
       toast({ 
@@ -141,6 +199,8 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
 
     setIsLoading(true);
     try {
+      console.log('Attempting signup for:', email);
+      
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -149,9 +209,19 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
         }
       });
 
+      console.log('Signup response:', { 
+        hasData: !!data, 
+        hasError: !!error,
+        errorDetails: error 
+      });
+
       if (error) {
-        console.error('Signup error:', error);
-        toast({ 
+        console.error('Signup error details:', {
+          message: error.message,
+          status: error.status,
+          name: error.name
+        });
+        toast({
           title: "Sign up failed", 
           description: error.message || "Unable to create account. Please try again.", 
           variant: "destructive" 
@@ -168,10 +238,21 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
       setEmail("");
       setPassword("");
     } catch (err: any) {
-      console.error('Unexpected signup error:', err);
+      console.error('Unexpected signup error:', {
+        message: err.message,
+        name: err.name,
+        stack: err.stack,
+        type: err.constructor.name
+      });
+      
+      let errorMessage = "An unexpected error occurred during signup.";
+      if (err.message === "Failed to fetch" || err.name === "TypeError") {
+        errorMessage = "Network error. Please check your internet connection and try again.";
+      }
+      
       toast({ 
-        title: "Unexpected Error", 
-        description: err.message || "An unexpected error occurred during signup.", 
+        title: "Signup Error", 
+        description: errorMessage, 
         variant: "destructive" 
       });
     } finally {
