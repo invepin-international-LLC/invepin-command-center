@@ -3,7 +3,7 @@
   "appName": "Invepin",
   "webDir": "dist",
   "ios": {
-    "scheme": "Invepin",
+    "scheme": "com.invepin.barmanagement",
     "contentInset": "automatic",
     "allowsLinkPreview": false,
     "scrollEnabled": true,

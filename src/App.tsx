@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { SecurityProvider } from "@/components/auth/SecurityProvider";
 import { OrganizationProvider } from "@/components/auth/OrganizationProvider";
+import { useEffect } from "react";
+import { supabase } from "@/lib/supabaseClient";
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import Hive from "./pages/Hive";
@@ -27,6 +29,64 @@ import InvepinSetup from "./pages/InvepinSetup";
 
 const queryClient = new QueryClient();
 
+const AppContent = () => {
+  useEffect(() => {
+    // Handle deep link authentication for mobile apps
+    const handleDeepLink = async () => {
+      const isNative = (window as any).Capacitor?.isNativePlatform?.() ?? false;
+      if (!isNative) return;
+
+      try {
+        const { App } = await import('@capacitor/app');
+        App.addListener('appUrlOpen', async (event: { url: string }) => {
+          console.log('Deep link received:', event.url);
+          
+          // Check if this is an auth callback
+          if (event.url.includes('#access_token=') || event.url.includes('?access_token=')) {
+            // Let Supabase handle the auth callback
+            const { error } = await supabase.auth.getSession();
+            if (error) {
+              console.error('Error handling auth callback:', error);
+            } else {
+              console.log('Auth callback handled successfully');
+            }
+          }
+        });
+      } catch (error) {
+        console.error('Error setting up deep link handler:', error);
+      }
+    };
+
+    handleDeepLink();
+  }, []);
+
+  return (
+    <Routes>
+      <Route path="/" element={<Navigate to="/home" replace />} />
+      <Route path="/home" element={<Home />} />
+      <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/hive" element={<Hive />} />
+      <Route path="/demo" element={<Demo />} />
+      <Route path="/pricing" element={<Pricing />} />
+      <Route path="/roi-calculator" element={<ROICalculator />} />
+      <Route path="/contact" element={<Contact />} />
+      <Route path="/mobile" element={<div className="min-h-screen"><Mobile /></div>} />
+      <Route path="/solutions/retail" element={<Retail />} />
+      <Route path="/solutions/enterprise" element={<Enterprise />} />
+      <Route path="/solutions/healthcare" element={<Healthcare />} />
+      <Route path="/products/micro-pins" element={<MicroPins />} />
+      <Route path="/products/facial-recognition" element={<FacialRecognition />} />
+      <Route path="/products/colony-hub" element={<ColonyHub />} />
+      <Route path="/case-studies" element={<CaseStudies />} />
+      <Route path="/docs" element={<Docs />} />
+      <Route path="/support" element={<Support />} />
+      <Route path="/invepin-setup" element={<InvepinSetup />} />
+      {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <OrganizationProvider>
@@ -35,29 +95,7 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <Routes>
-            <Route path="/" element={<Navigate to="/home" replace />} />
-            <Route path="/home" element={<Home />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/hive" element={<Hive />} />
-              <Route path="/demo" element={<Demo />} />
-              <Route path="/pricing" element={<Pricing />} />
-              <Route path="/roi-calculator" element={<ROICalculator />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/mobile" element={<div className="min-h-screen"><Mobile /></div>} />
-              <Route path="/solutions/retail" element={<Retail />} />
-              <Route path="/solutions/enterprise" element={<Enterprise />} />
-              <Route path="/solutions/healthcare" element={<Healthcare />} />
-              <Route path="/products/micro-pins" element={<MicroPins />} />
-              <Route path="/products/facial-recognition" element={<FacialRecognition />} />
-              <Route path="/products/colony-hub" element={<ColonyHub />} />
-              <Route path="/case-studies" element={<CaseStudies />} />
-              <Route path="/docs" element={<Docs />} />
-              <Route path="/support" element={<Support />} />
-              <Route path="/invepin-setup" element={<InvepinSetup />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <AppContent />
           </BrowserRouter>
         </TooltipProvider>
       </SecurityProvider>
