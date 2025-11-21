@@ -72,6 +72,9 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
   const handleLogin = async () => {
     setIsLoading(true);
     try {
+      console.log('Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
+      console.log('Supabase Key exists:', !!import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY);
+      
       if (demoMode) {
         // Demo flow
         await new Promise((resolve) => setTimeout(resolve, 600));
@@ -129,6 +132,9 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
   };
 
   const handleSignUp = async () => {
+    console.log('Starting signup - Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
+    console.log('Supabase Key exists:', !!import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY);
+    
     // Validate password length
     if (password.length < 6) {
       toast({ 
