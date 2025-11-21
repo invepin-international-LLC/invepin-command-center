@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { LoginScreen } from "@/components/auth/LoginScreen";
 import { MainDashboard } from "@/components/dashboard/MainDashboard";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabaseClient";
 
 interface User {
   id: string;
