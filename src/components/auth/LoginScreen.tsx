@@ -311,6 +311,80 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
     onLogin(user);
   };
 
+  const testNetworkConnectivity = async () => {
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    
+    if (!supabaseUrl) {
+      toast({
+        title: "❌ Config Missing",
+        description: "VITE_SUPABASE_URL not found",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    toast({
+      title: "🔍 Testing Network...",
+      description: "Checking connectivity to backend"
+    });
+
+    try {
+      console.log('=== NETWORK TEST START ===');
+      console.log('Testing URL:', supabaseUrl);
+      console.log('Browser:', navigator.userAgent);
+      console.log('Origin:', window.location.origin);
+      
+      // Test 1: Direct fetch to Supabase health endpoint
+      const response = await fetch(`${supabaseUrl}/rest/v1/`, {
+        method: 'GET',
+        headers: {
+          'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || '',
+        },
+      });
+      
+      console.log('Response status:', response.status);
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+      console.log('Response OK:', response.ok);
+      
+      if (response.ok || response.status === 404) {
+        // 404 is expected for root endpoint, means we reached the server
+        toast({
+          title: "✅ Network Connected",
+          description: `Backend reachable (status: ${response.status})`,
+          variant: "default"
+        });
+        console.log('=== NETWORK TEST: SUCCESS ===');
+      } else {
+        toast({
+          title: "⚠️ Unexpected Response",
+          description: `Status: ${response.status} - Check console`,
+          variant: "destructive"
+        });
+        console.log('=== NETWORK TEST: UNEXPECTED STATUS ===');
+      }
+    } catch (err: any) {
+      console.error('=== NETWORK TEST: FAILED ===');
+      console.error('Error type:', err.constructor.name);
+      console.error('Error message:', err.message);
+      console.error('Error stack:', err.stack);
+      
+      let diagnosis = "Unknown network error";
+      if (err.message.includes("Failed to fetch")) {
+        diagnosis = "Network blocked - Check firewall, VPN, or CORS";
+      } else if (err.message.includes("NetworkError")) {
+        diagnosis = "No internet or domain unreachable";
+      } else if (err.name === "TypeError") {
+        diagnosis = "Request failed - Possible CORS or DNS issue";
+      }
+      
+      toast({
+        title: "❌ Network Test Failed",
+        description: diagnosis,
+        variant: "destructive"
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
       {/* Background visual elements */}
@@ -440,6 +514,22 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
               <CardDescription>Enter your credentials to access the command center</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              {/* Network Diagnostic Test Button */}
+              <div className="pb-4 border-b border-border/30">
+                <Button
+                  onClick={testNetworkConnectivity}
+                  variant="outline"
+                  className="w-full"
+                  type="button"
+                >
+                  <Wifi className="h-4 w-4 mr-2" />
+                  Test Network Connection
+                </Button>
+                <p className="text-xs text-muted-foreground mt-2 text-center">
+                  Diagnose connectivity issues - check console for details
+                </p>
+              </div>
+
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
