@@ -72,9 +72,6 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
   const handleLogin = async () => {
     setIsLoading(true);
     try {
-      console.log('Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
-      console.log('Supabase Key exists:', !!import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY);
-      
       if (demoMode) {
         // Demo flow
         await new Promise((resolve) => setTimeout(resolve, 600));
@@ -132,9 +129,6 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
   };
 
   const handleSignUp = async () => {
-    console.log('Starting signup - Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
-    console.log('Supabase Key exists:', !!import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY);
-    
     // Validate password length
     if (password.length < 6) {
       toast({ 
@@ -147,18 +141,12 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
 
     setIsLoading(true);
     try {
-      console.log('Starting signup process for:', email);
-      
-      // Use custom URL scheme for mobile apps, web URL for browser
-      const isNative = (window as any).Capacitor?.isNativePlatform?.() ?? false;
-      const redirectUrl = isNative 
-        ? 'com.invepin.barmanagement://' 
-        : `${window.location.origin}/dashboard`;
-      
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
-        options: { emailRedirectTo: redirectUrl }
+        options: {
+          emailRedirectTo: `${window.location.origin}/dashboard`
+        }
       });
 
       if (error) {
