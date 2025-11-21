@@ -313,19 +313,6 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Debug Panel - Shows environment configuration */}
-      <div className="fixed top-2 right-2 z-50 bg-destructive text-destructive-foreground p-3 rounded-lg text-xs max-w-sm shadow-lg">
-        <details>
-          <summary className="cursor-pointer font-bold mb-1">⚠️ Debug Info</summary>
-          <div className="mt-2 space-y-1 font-mono">
-            <div>URL: {import.meta.env.VITE_SUPABASE_URL || 'MISSING'}</div>
-            <div>Key: {import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ? 'EXISTS' : 'MISSING'}</div>
-            <div>Origin: {window.location.origin}</div>
-            <div>Mode: {import.meta.env.MODE}</div>
-          </div>
-        </details>
-      </div>
-      
       {/* Background visual elements */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-20 left-10 w-32 h-32 border border-primary/20 rounded-full animate-pulse-glow" />
