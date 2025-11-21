@@ -41,15 +41,37 @@ const AppContent = () => {
         App.addListener('appUrlOpen', async (event: { url: string }) => {
           console.log('Deep link received:', event.url);
           
-          // Check if this is an auth callback
-          if (event.url.includes('#access_token=') || event.url.includes('?access_token=')) {
-            // Let Supabase handle the auth callback
-            const { error } = await supabase.auth.getSession();
-            if (error) {
-              console.error('Error handling auth callback:', error);
-            } else {
-              console.log('Auth callback handled successfully');
+          // Parse the URL to extract auth parameters
+          try {
+            const url = new URL(event.url);
+            const fragment = url.hash || url.search;
+            
+            if (fragment) {
+              // Extract tokens from the fragment
+              const params = new URLSearchParams(fragment.replace('#', '').replace('?', ''));
+              const accessToken = params.get('access_token');
+              const refreshToken = params.get('refresh_token');
+              
+              if (accessToken) {
+                console.log('Auth tokens found in deep link, setting session...');
+                
+                // Set the session with the tokens
+                const { error } = await supabase.auth.setSession({
+                  access_token: accessToken,
+                  refresh_token: refreshToken || '',
+                });
+                
+                if (error) {
+                  console.error('Error setting session:', error);
+                } else {
+                  console.log('Session set successfully, redirecting to dashboard...');
+                  // Navigate to dashboard after successful auth
+                  window.location.href = '/dashboard';
+                }
+              }
             }
+          } catch (parseError) {
+            console.error('Error parsing deep link:', parseError);
           }
         });
       } catch (error) {

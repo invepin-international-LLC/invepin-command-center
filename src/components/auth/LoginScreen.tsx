@@ -92,8 +92,11 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
         return;
       }
 
+      console.log('Attempting login for:', email);
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      
       if (error || !data.user) {
+        console.error('Login error:', error);
         toast({
           title: "Authentication Failed",
           description: error?.message ?? "Invalid credentials.",
@@ -102,6 +105,7 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
         return;
       }
 
+      console.log('Login successful:', data.user.id);
       const appUser: User = {
         id: data.user.id,
         email: data.user.email ?? email,
@@ -109,8 +113,16 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
         name: (data.user.user_metadata?.name as string) ?? (data.user.email?.split("@")[0] ?? "User"),
       };
 
-      toast({ title: "Welcome", description: `Hello, ${appUser.name}` });
-      onLogin(appUser);
+      // Check if running in native app
+      const isNative = (window as any).Capacitor?.isNativePlatform?.() ?? false;
+      if (isNative) {
+        console.log('Native app detected, navigating to dashboard');
+        // For native apps, navigate to dashboard after successful login
+        window.location.href = '/dashboard';
+      } else {
+        toast({ title: "Welcome", description: `Hello, ${appUser.name}` });
+        onLogin(appUser);
+      }
     } finally {
       setIsLoading(false);
     }
