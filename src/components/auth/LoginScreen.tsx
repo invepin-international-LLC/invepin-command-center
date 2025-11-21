@@ -130,7 +130,12 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
     setIsLoading(true);
     try {
       console.log('Starting signup process for:', email);
-      const redirectUrl = `${window.location.origin}/dashboard`;
+      
+      // Use custom URL scheme for mobile apps, web URL for browser
+      const isNative = (window as any).Capacitor?.isNativePlatform?.() ?? false;
+      const redirectUrl = isNative 
+        ? 'com.invepin.barmanagement://' 
+        : `${window.location.origin}/dashboard`;
       
       const { data, error } = await supabase.auth.signUp({
         email,
