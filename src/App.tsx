@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { SecurityProvider } from "@/components/auth/SecurityProvider";
 import { OrganizationProvider } from "@/components/auth/OrganizationProvider";
 import { useEffect } from "react";
-import { supabase } from "@/lib/supabaseClient";
+import { supabase } from "@/integrations/supabase/client";
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import Hive from "./pages/Hive";
