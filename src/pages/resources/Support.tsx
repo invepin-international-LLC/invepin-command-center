@@ -13,7 +13,7 @@ const Support = () => {
           <h1 className="text-4xl font-bold mb-8 text-center">Customer Support</h1>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             {[
-              { icon: Phone, title: "Phone Support", value: "1-800-INVEPIN", desc: "24/7 availability" },
+              { icon: Phone, title: "Phone Support", value: "302-343-5004", desc: "24/7 availability" },
               { icon: Mail, title: "Email", value: "support@invepin.com", desc: "Response within 2 hours" },
               { icon: MessageCircle, title: "Live Chat", value: "Start Chat", desc: "Instant assistance" },
               { icon: Clock, title: "Support Hours", value: "24/7/365", desc: "Always available" }

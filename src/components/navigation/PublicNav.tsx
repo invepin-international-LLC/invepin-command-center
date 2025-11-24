@@ -78,9 +78,6 @@ export function PublicNav() {
         </NavigationMenu>
 
         <div className="ml-auto flex items-center gap-2 flex-wrap">
-          <Button variant="ghost" asChild className="hidden md:inline-flex whitespace-nowrap">
-            <Link to="/pricing">Pricing</Link>
-          </Button>
           <Button variant="ghost" asChild className="whitespace-nowrap">
             <Link to="/hive">Hive</Link>
           </Button>
@@ -121,9 +118,6 @@ export function PublicNav() {
                   </div>
                 ))}
                 <div className="border-t pt-4 space-y-2">
-                  <Button variant="ghost" asChild className="w-full justify-start">
-                    <Link to="/pricing" onClick={() => setIsOpen(false)}>Pricing</Link>
-                  </Button>
                   <Button variant="ghost" asChild className="w-full justify-start">
                     <Link to="/hive" onClick={() => setIsOpen(false)}>Hive</Link>
                   </Button>
