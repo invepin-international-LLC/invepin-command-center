@@ -176,14 +176,14 @@ const Contact = () => {
                 <div className="flex items-center space-x-3">
                   <Phone className="h-4 w-4 text-muted-foreground" />
                   <div>
-                    <div className="font-medium">(555) INVEPIN</div>
+                    <div className="font-medium">302-343-5004</div>
                     <div className="text-sm text-muted-foreground">Sales & Support</div>
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
                   <Mail className="h-4 w-4 text-muted-foreground" />
                   <div>
-                    <div className="font-medium">sales@invepin.com</div>
+                    <div className="font-medium">support@invepin.com</div>
                     <div className="text-sm text-muted-foreground">Email us anytime</div>
                   </div>
                 </div>
@@ -246,7 +246,7 @@ const Contact = () => {
                   Our security experts are standing by to help you immediately.
                 </p>
                 <Button variant="outline" className="w-full">
-                  Call (555) INVEPIN
+                  Call 302-343-5004
                 </Button>
               </CardContent>
             </Card>

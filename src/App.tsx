@@ -11,7 +11,6 @@ import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import Hive from "./pages/Hive";
 import Demo from "./pages/Demo";
-import Pricing from "./pages/Pricing";
 import ROICalculator from "./pages/ROICalculator";
 import Contact from "./pages/Contact";
 import Mobile from "./pages/Mobile";
@@ -89,7 +88,6 @@ const AppContent = () => {
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/hive" element={<Hive />} />
       <Route path="/demo" element={<Demo />} />
-      <Route path="/pricing" element={<Pricing />} />
       <Route path="/roi-calculator" element={<ROICalculator />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/mobile" element={<div className="min-h-screen"><Mobile /></div>} />
