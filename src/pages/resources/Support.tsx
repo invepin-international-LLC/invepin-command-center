@@ -13,8 +13,8 @@ const Support = () => {
           <h1 className="text-4xl font-bold mb-8 text-center">Customer Support</h1>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             {[
-              { icon: Phone, title: "Phone Support", value: "302-343-5004", desc: "24/7 availability" },
-              { icon: Mail, title: "Email", value: "support@invepin.com", desc: "Response within 2 hours" },
+              { icon: Phone, title: "Phone Support", value: "302-343-5004", desc: "24/7 availability", href: "tel:+13023435004" },
+              { icon: Mail, title: "Email", value: "support@invepin.com", desc: "Response within 2 hours", href: "mailto:support@invepin.com" },
               { icon: MessageCircle, title: "Live Chat", value: "Start Chat", desc: "Instant assistance" },
               { icon: Clock, title: "Support Hours", value: "24/7/365", desc: "Always available" }
             ].map((item, i) => (
@@ -24,7 +24,13 @@ const Support = () => {
                   <CardTitle>{item.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-xl font-semibold mb-1">{item.value}</p>
+                  {item.href ? (
+                    <a href={item.href} className="text-xl font-semibold mb-1 hover:text-primary transition-colors block">
+                      {item.value}
+                    </a>
+                  ) : (
+                    <p className="text-xl font-semibold mb-1">{item.value}</p>
+                  )}
                   <p className="text-sm text-muted-foreground">{item.desc}</p>
                 </CardContent>
               </Card>
