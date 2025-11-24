@@ -222,7 +222,7 @@ const Contact = () => {
                 <div className="flex items-center space-x-3">
                   <MapPin className="h-4 w-4 text-muted-foreground" />
                   <div>
-                    <div className="font-medium">San Francisco, CA</div>
+                    <div className="font-medium">Dover, Delaware</div>
                     <div className="text-sm text-muted-foreground">Headquarters</div>
                   </div>
                 </div>
