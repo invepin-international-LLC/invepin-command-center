@@ -1,10 +1,13 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Building, Users, BarChart3, Shield, CheckCircle, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { PublicNav } from "@/components/navigation/PublicNav";
+import { EnterpriseConsultationForm } from "@/components/communication/EnterpriseConsultationForm";
 
 const Enterprise = () => {
+  const [consultationOpen, setConsultationOpen] = useState(false);
   return (
     <div className="min-h-screen bg-background">
       <PublicNav />
@@ -19,13 +22,11 @@ const Enterprise = () => {
               Centralized loss prevention across all your locations with unified analytics and control
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
-              <Button asChild size="lg">
-                <Link to="/demo">
-                  Request Enterprise Demo <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
+              <Button size="lg" onClick={() => setConsultationOpen(true)}>
+                Request Enterprise Demo <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
-              <Button variant="outline" asChild size="lg">
-                <Link to="/contact">Talk to Sales</Link>
+              <Button variant="outline" size="lg" onClick={() => setConsultationOpen(true)}>
+                Talk to Sales
               </Button>
             </div>
           </div>
@@ -148,12 +149,14 @@ const Enterprise = () => {
             <p className="mt-4 text-lg text-muted-foreground mb-8">
               Trusted by Fortune 500 retailers worldwide
             </p>
-            <Button asChild size="lg">
-              <Link to="/contact">Contact Enterprise Sales</Link>
+            <Button size="lg" onClick={() => setConsultationOpen(true)}>
+              Contact Enterprise Sales
             </Button>
           </div>
         </div>
       </section>
+
+      <EnterpriseConsultationForm open={consultationOpen} onOpenChange={setConsultationOpen} />
     </div>
   );
 };

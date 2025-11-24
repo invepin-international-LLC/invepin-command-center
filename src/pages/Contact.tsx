@@ -8,6 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { PublicNav } from "@/components/navigation/PublicNav";
 import { Phone, Mail, MapPin, Clock, Shield, Users, Building } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { EnterpriseConsultationForm } from "@/components/communication/EnterpriseConsultationForm";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -19,23 +21,53 @@ const Contact = () => {
     currentSecurity: "",
     message: ""
   });
+  const [isSending, setIsSending] = useState(false);
+  const [consultationOpen, setConsultationOpen] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Message Sent!",
-      description: "We'll contact you within 24 hours to schedule your consultation.",
-    });
-    // Reset form
-    setFormData({
-      name: "",
-      email: "",
-      company: "",
-      phone: "",
-      storeSize: "",
-      currentSecurity: "",
-      message: ""
-    });
+    
+    if (!formData.name.trim() || !formData.email.trim()) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSending(true);
+    try {
+      const { error } = await supabase.functions.invoke('send-contact-form', {
+        body: formData
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Message Sent!",
+        description: "We'll contact you within 24 hours to schedule your consultation.",
+      });
+
+      setFormData({
+        name: "",
+        email: "",
+        company: "",
+        phone: "",
+        storeSize: "",
+        currentSecurity: "",
+        message: ""
+      });
+    } catch (error) {
+      console.error('Error sending contact form:', error);
+      toast({
+        title: "Error",
+        description: "Failed to send message. Please try calling us at 302-343-5004 or email support@invepin.com",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSending(false);
+    }
   };
 
   return (
@@ -155,8 +187,8 @@ const Contact = () => {
                     />
                   </div>
 
-                  <Button type="submit" size="lg" className="w-full">
-                    Schedule Free Consultation
+                  <Button type="submit" size="lg" className="w-full" disabled={isSending}>
+                    {isSending ? "Sending..." : "Schedule Free Consultation"}
                   </Button>
                 </form>
               </CardContent>
@@ -262,13 +294,15 @@ const Contact = () => {
                 Large retailers and chains get dedicated account management, custom integrations, 
                 and volume pricing. Let's discuss your specific requirements.
               </p>
-              <Button size="lg" variant="outline">
+              <Button size="lg" variant="outline" onClick={() => setConsultationOpen(true)}>
                 Schedule Enterprise Consultation
               </Button>
             </CardContent>
           </Card>
         </div>
       </div>
+
+      <EnterpriseConsultationForm open={consultationOpen} onOpenChange={setConsultationOpen} />
     </div>
   );
 };
