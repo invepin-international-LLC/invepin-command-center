@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { SecurityProvider } from "@/components/auth/SecurityProvider";
 import { OrganizationProvider } from "@/components/auth/OrganizationProvider";
+import { SupportChat } from "@/components/communication/SupportChat";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import Home from "./pages/Home";
@@ -117,6 +118,7 @@ const App = () => (
           <BrowserRouter>
             <AppContent />
           </BrowserRouter>
+          <SupportChat />
         </TooltipProvider>
       </SecurityProvider>
     </OrganizationProvider>

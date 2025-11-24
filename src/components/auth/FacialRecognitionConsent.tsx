@@ -47,7 +47,7 @@ I, the undersigned employee, hereby acknowledge and consent to the following:
    - My biometric data will be retained during the term of my employment
    - Upon termination of employment, I may request deletion of my biometric data
    - Deletion requests will be processed within 30 days unless legal retention is required
-   - I can contact privacy@invepin.com to request data deletion
+   - I can contact support@invepin.com to request data deletion
 
 5. MY RIGHTS
    - I have the right to access my biometric data

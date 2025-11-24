@@ -215,7 +215,7 @@ export function SecuritySettings() {
                         />
                       </div>
                       <p className="text-sm text-muted-foreground">
-                        Need help? Contact support at support@invepin.com or call 302-343-5004
+                        Need help? Contact support at <a href="mailto:support@invepin.com" className="text-primary hover:underline">support@invepin.com</a> or call <a href="tel:+13023435004" className="text-primary hover:underline">302-343-5004</a>
                       </p>
                     </AlertDialogDescription>
                   </AlertDialogHeader>
