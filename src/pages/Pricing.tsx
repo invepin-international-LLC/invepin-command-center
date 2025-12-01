@@ -100,14 +100,32 @@ const Pricing = () => {
       <div className="container mx-auto px-4 py-24">
         <div className="text-center mb-16">
           <h1 className="text-4xl font-bold tracking-tight mb-4">
-            Simple, Transparent Pricing
+            Pricing Overview
           </h1>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-8">
-            Choose the perfect plan for your retail security needs. All plans include our core loss prevention technology with no hidden fees.
+            Explore our enterprise loss prevention solutions. Contact our sales team for a personalized quote and demo.
           </p>
           <Badge variant="outline" className="mb-4">
-            30-day free trial • No setup fees for annual plans
+            Custom pricing • Enterprise deployment • Professional installation
           </Badge>
+        </div>
+
+        {/* Pricing Cards */}
+        <div className="mb-8">
+          <div className="bg-muted/50 border border-border rounded-lg p-4 text-center">
+            <p className="text-sm text-muted-foreground">
+              <strong>Note:</strong> Pricing shown is for reference only. All purchases are made through direct sales contact. 
+              This app is for demonstration and informational purposes. Contact{" "}
+              <a href="mailto:support@invepin.com" className="text-primary hover:underline">
+                support@invepin.com
+              </a>{" "}
+              or call{" "}
+              <a href="tel:+13023435004" className="text-primary hover:underline">
+                302-343-5004
+              </a>{" "}
+              for actual purchasing.
+            </p>
+          </div>
         </div>
 
         {/* Pricing Cards */}
@@ -160,8 +178,8 @@ const Pricing = () => {
                   size="lg"
                   asChild
                 >
-                  <Link to={plan.name === "Enterprise" ? "/contact" : "/demo"}>
-                    {plan.name === "Enterprise" ? "Contact Sales" : "Start Free Trial"}
+                  <Link to="/contact">
+                    Request Quote & Demo
                   </Link>
                 </Button>
               </CardContent>
@@ -239,9 +257,9 @@ const Pricing = () => {
                 question: "Is installation included?",
                 answer: "Yes, professional installation and setup is included with all plans."
               },
-              {
-                question: "Can I try before committing?",
-                answer: "Absolutely! We offer a 30-day free trial with full access to all features."
+               {
+                question: "Can I see a demo?",
+                answer: "Absolutely! Contact our sales team for a personalized demo and trial deployment."
               }
             ].map((faq, index) => (
               <Card key={index}>
@@ -257,18 +275,18 @@ const Pricing = () => {
         {/* CTA */}
         <Card className="bg-primary/5 border-primary/20">
           <CardContent className="p-8 text-center">
-            <h3 className="text-2xl font-bold mb-4">Ready to Stop Theft Today?</h3>
+            <h3 className="text-2xl font-bold mb-4">Ready to Protect Your Business?</h3>
             <p className="text-muted-foreground mb-6">
-              Start your free trial and see immediate results with Invepin's loss prevention system.
+              Contact our sales team for a customized quote and personalized demo of Invepin's loss prevention system.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button size="lg" asChild>
-                <Link to="/demo">
-                  Start Free Trial <ArrowRight className="ml-2 h-4 w-4" />
+                <Link to="/contact">
+                  Request Quote & Demo <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
               <Button variant="outline" size="lg" asChild>
-                <Link to="/contact">Talk to Sales</Link>
+                <a href="tel:+13023435004">Call Sales: 302-343-5004</a>
               </Button>
             </div>
           </CardContent>
