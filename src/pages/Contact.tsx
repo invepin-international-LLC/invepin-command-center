@@ -188,7 +188,7 @@ const Contact = () => {
                   </div>
 
                   <Button type="submit" size="lg" className="w-full" disabled={isSending}>
-                    {isSending ? "Sending..." : "Schedule Free Consultation"}
+                    {isSending ? "Sending..." : "Schedule Consultation"}
                   </Button>
                 </form>
               </CardContent>
@@ -246,7 +246,7 @@ const Contact = () => {
                   <div>
                     <div className="font-medium">Security Assessment</div>
                     <div className="text-sm text-muted-foreground">
-                      Free evaluation of your current setup and vulnerabilities
+                      Comprehensive evaluation of your current setup and vulnerabilities
                     </div>
                   </div>
                 </div>
@@ -292,7 +292,7 @@ const Contact = () => {
               <h3 className="text-2xl font-bold mb-4">Enterprise & Multi-Location?</h3>
               <p className="text-muted-foreground mb-6">
                 Large retailers and chains get dedicated account management, custom integrations, 
-                and volume pricing. Let's discuss your specific requirements.
+                and tailored solutions. Let's discuss your specific requirements.
               </p>
               <Button size="lg" variant="outline" onClick={() => setConsultationOpen(true)}>
                 Schedule Enterprise Consultation
