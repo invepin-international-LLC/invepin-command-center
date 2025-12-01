@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Shield, Smartphone, Wifi, Cloud, Activity, Database, Zap, Eye, TrendingUp, BarChart3 } from "lucide-react";
+import { Shield, Smartphone, Wifi, Cloud, Activity, Database, Zap, Eye, EyeOff, TrendingUp, BarChart3 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from '@/integrations/supabase/client';
 import { Link } from "react-router-dom";
@@ -23,6 +23,7 @@ interface LoginScreenProps {
 export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
   const [connectedDevices, setConnectedDevices] = useState(18);
@@ -221,6 +222,18 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
           status: error.status,
           name: error.name
         });
+        
+        // Handle "User already registered" error
+        if (error.message?.includes('already registered') || error.status === 422) {
+          toast({
+            title: "Account exists", 
+            description: "This email is already registered. Please sign in instead.", 
+            variant: "destructive" 
+          });
+          setIsSignUp(false);
+          return;
+        }
+        
         toast({
           title: "Sign up failed", 
           description: error.message || "Unable to create account. Please try again.", 
@@ -230,13 +243,30 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
       }
 
       console.log('Signup successful:', data);
+      
+      // Check if user was auto-confirmed and logged in
+      if (data.session && data.user) {
+        const appUser: User = {
+          id: data.user.id,
+          email: data.user.email ?? email,
+          role: (data.user.user_metadata?.role as User['role']) ?? 'staff',
+          name: (data.user.user_metadata?.name as string) ?? (data.user.email?.split("@")[0] ?? "User"),
+        };
+        
+        toast({ 
+          title: "Account created!", 
+          description: `Welcome, ${appUser.name}! You're now logged in.` 
+        });
+        onLogin(appUser);
+        return;
+      }
+      
+      // If email confirmation is required
       toast({ 
         title: "Account created!", 
-        description: "You can now sign in with your credentials." 
+        description: "Please check your email to confirm your account." 
       });
       setIsSignUp(false);
-      setEmail("");
-      setPassword("");
     } catch (err: any) {
       console.error('Unexpected signup error:', {
         message: err.message,
@@ -547,14 +577,23 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
               
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Enter password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="bg-background/50 border-border/50 focus:border-primary"
-                />
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Enter password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="bg-background/50 border-border/50 focus:border-primary pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
               </div>
 
               <Button 
