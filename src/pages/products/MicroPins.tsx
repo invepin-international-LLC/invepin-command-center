@@ -27,7 +27,7 @@ const MicroPins = () => {
                 </Link>
               </Button>
               <Button variant="outline" asChild size="lg">
-                <Link to="/pricing">View Pricing</Link>
+                <Link to="/contact">Contact Sales</Link>
               </Button>
             </div>
           </div>
