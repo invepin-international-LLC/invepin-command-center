@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from "@/integrations/supabase/client";
 import { useOrganization } from '@/components/auth/OrganizationProvider';
 import { InventoryItem, StockMovement, InventoryAnalytics } from '@/types/inventory';
 import { toast } from '@/hooks/use-toast';
@@ -20,8 +20,8 @@ export function useOrganizationInventory() {
     try {
       setIsLoading(true);
 
-      // Load inventory items for the organization
-      const { data: inventoryData, error: inventoryError } = await supabase
+      // Load inventory items for the organization (cast to any for future table creation)
+      const { data: inventoryData, error: inventoryError } = await (supabase as any)
         .from('inventory_items')
         .select('*')
         .eq('organization_id', organization.id)
@@ -30,7 +30,7 @@ export function useOrganizationInventory() {
       if (inventoryError) throw inventoryError;
 
       // Load stock movements for the organization
-      const { data: movementsData, error: movementsError } = await supabase
+      const { data: movementsData, error: movementsError } = await (supabase as any)
         .from('stock_movements')
         .select(`
           *,
@@ -113,8 +113,8 @@ export function useOrganizationInventory() {
         ? Math.max(0, item.currentStock - quantity)
         : item.currentStock + quantity;
 
-      // Update inventory item (using database field names)
-      const { error: updateError } = await supabase
+      // Update inventory item (using database field names, cast for future table)
+      const { error: updateError } = await (supabase as any)
         .from('inventory_items')
         .update({ 
           current_stock: newStock,
@@ -126,7 +126,7 @@ export function useOrganizationInventory() {
       if (updateError) throw updateError;
 
       // Record stock movement
-      const { error: movementError } = await supabase
+      const { error: movementError } = await (supabase as any)
         .from('stock_movements')
         .insert({
           organization_id: organization.id,
