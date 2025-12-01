@@ -343,11 +343,17 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
 
   const testNetworkConnectivity = async () => {
     const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
     
-    if (!supabaseUrl) {
+    // Show what config we have
+    console.log('=== CONFIG CHECK ===');
+    console.log('VITE_SUPABASE_URL:', supabaseUrl || 'NOT SET');
+    console.log('VITE_SUPABASE_PUBLISHABLE_KEY:', supabaseKey ? 'SET (hidden)' : 'NOT SET');
+    
+    if (!supabaseUrl || !supabaseKey) {
       toast({
         title: "❌ Config Missing",
-        description: "VITE_SUPABASE_URL not found",
+        description: `URL: ${supabaseUrl ? '✓' : '✗'} | Key: ${supabaseKey ? '✓' : '✗'}`,
         variant: "destructive"
       });
       return;
@@ -355,7 +361,7 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
 
     toast({
       title: "🔍 Testing Network...",
-      description: "Checking connectivity to backend"
+      description: `Connecting to: ${supabaseUrl.substring(0, 30)}...`
     });
 
     try {
