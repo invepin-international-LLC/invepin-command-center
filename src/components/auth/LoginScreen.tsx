@@ -256,29 +256,13 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
 
       console.log('Signup successful:', data);
       
-      // Check if user was auto-confirmed and logged in
-      if (data.session && data.user) {
-        const appUser: User = {
-          id: data.user.id,
-          email: data.user.email ?? email,
-          role: (data.user.user_metadata?.role as User['role']) ?? 'staff',
-          name: (data.user.user_metadata?.name as string) ?? (data.user.email?.split("@")[0] ?? "User"),
-        };
-        
-        toast({ 
-          title: "Account created!", 
-          description: `Welcome, ${appUser.name}! You're now logged in.` 
-        });
-        onLogin(appUser);
-        return;
-      }
-      
-      // If email confirmation is required
+      // Account created successfully - show message and switch to login mode
+      // Don't auto-login, let user sign in manually
       toast({ 
-        title: "Account created!", 
-        description: "Please check your email to confirm your account." 
+        title: "Account Created!", 
+        description: "Your account has been created. Please sign in with your credentials." 
       });
-      setIsSignUp(false);
+      setIsSignUp(false); // Switch to login mode
     } catch (err: any) {
       console.error('Unexpected signup error:', {
         message: err.message,
