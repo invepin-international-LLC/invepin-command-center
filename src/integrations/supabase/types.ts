@@ -720,6 +720,47 @@ export type Database = {
           },
         ]
       }
+      onboarding_progress: {
+        Row: {
+          completed: boolean | null
+          completed_at: string | null
+          created_at: string | null
+          data: Json | null
+          id: string
+          organization_id: string
+          step_name: string
+          updated_at: string | null
+        }
+        Insert: {
+          completed?: boolean | null
+          completed_at?: string | null
+          created_at?: string | null
+          data?: Json | null
+          id?: string
+          organization_id: string
+          step_name: string
+          updated_at?: string | null
+        }
+        Update: {
+          completed?: boolean | null
+          completed_at?: string | null
+          created_at?: string | null
+          data?: Json | null
+          id?: string
+          organization_id?: string
+          step_name?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "onboarding_progress_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       organization_members: {
         Row: {
           created_at: string | null
@@ -757,45 +798,63 @@ export type Database = {
           company_code: string
           company_size: string
           created_at: string | null
+          customer_status: string | null
           id: string
           industry: string
           is_active: boolean | null
           location: string
           logo_url: string | null
           name: string
+          onboarding_completed: boolean | null
           primary_color: string | null
+          purchased_at: string | null
           settings: Json | null
+          setup_completed_at: string | null
           slug: string
+          subscription_tier: string | null
+          trial_ends_at: string | null
           updated_at: string | null
         }
         Insert: {
           company_code: string
           company_size: string
           created_at?: string | null
+          customer_status?: string | null
           id?: string
           industry: string
           is_active?: boolean | null
           location: string
           logo_url?: string | null
           name: string
+          onboarding_completed?: boolean | null
           primary_color?: string | null
+          purchased_at?: string | null
           settings?: Json | null
+          setup_completed_at?: string | null
           slug: string
+          subscription_tier?: string | null
+          trial_ends_at?: string | null
           updated_at?: string | null
         }
         Update: {
           company_code?: string
           company_size?: string
           created_at?: string | null
+          customer_status?: string | null
           id?: string
           industry?: string
           is_active?: boolean | null
           location?: string
           logo_url?: string | null
           name?: string
+          onboarding_completed?: boolean | null
           primary_color?: string | null
+          purchased_at?: string | null
           settings?: Json | null
+          setup_completed_at?: string | null
           slug?: string
+          subscription_tier?: string | null
+          trial_ends_at?: string | null
           updated_at?: string | null
         }
         Relationships: []
