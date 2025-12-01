@@ -27,23 +27,14 @@ const ROICalculator = () => {
 
   const [showResults, setShowResults] = useState(false);
 
-  // ROI Calculations
+  // Savings Calculations (without pricing)
   const currentMonthlyShrinkage = (inputs.monthlyRevenue * inputs.currentShrinkageRate) / 100;
   const projectedShrinkageReduction = 0.78; // 78% reduction based on Invepin data
   const newShrinkageRate = inputs.currentShrinkageRate * (1 - projectedShrinkageReduction);
   const newMonthlyShrinkage = (inputs.monthlyRevenue * newShrinkageRate) / 100;
   const monthlySavings = currentMonthlyShrinkage - newMonthlyShrinkage;
   
-  // Implementation costs (estimated)
-  const deviceCostPerSqFt = 12; // Cost per sq ft for micro-pins
-  const implementationCost = inputs.storeSize * deviceCostPerSqFt;
-  const monthlySubscription = Math.max(299, inputs.storeSize * 0.08); // Base + per sq ft
-  
   const annualSavings = monthlySavings * 12;
-  const annualCost = (monthlySubscription * 12) + implementationCost;
-  const netAnnualBenefit = annualSavings - annualCost;
-  const roi = (netAnnualBenefit / annualCost) * 100;
-  const paybackMonths = annualCost / monthlySavings;
 
   const handleCalculate = () => {
     setShowResults(true);
@@ -56,11 +47,11 @@ const ROICalculator = () => {
       <div className="container mx-auto px-4 py-24">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold tracking-tight mb-4">
-            ROI Calculator
+            Savings Calculator
           </h1>
           <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-            Calculate your potential savings and return on investment with Invepin's loss prevention system.
-            Get personalized projections based on your store's specific metrics.
+            Discover how much your business could save by reducing shrinkage with advanced loss prevention technology. 
+            Contact sales for detailed pricing and implementation plans.
           </p>
         </div>
 
@@ -164,11 +155,11 @@ const ROICalculator = () => {
 
                 <Card>
                   <CardHeader>
-                    <CardTitle>ROI Breakdown</CardTitle>
+                    <CardTitle>Savings Breakdown</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="flex justify-between">
-                      <span>Current Monthly Shrinkage</span>
+                      <span>Current Monthly Shrinkage Loss</span>
                       <span className="font-semibold text-destructive">
                         ${currentMonthlyShrinkage.toLocaleString()}
                       </span>
@@ -180,29 +171,10 @@ const ROICalculator = () => {
                       </span>
                     </div>
                     <Separator />
-                    <div className="flex justify-between">
-                      <span>Monthly Savings</span>
-                      <span className="font-semibold text-primary">
-                        ${monthlySavings.toLocaleString()}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Implementation Cost</span>
-                      <span className="font-semibold">
-                        ${implementationCost.toLocaleString()}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Monthly Subscription</span>
-                      <span className="font-semibold">
-                        ${monthlySubscription.toLocaleString()}
-                      </span>
-                    </div>
-                    <Separator />
                     <div className="flex justify-between text-lg">
-                      <span className="font-semibold">Net Annual Benefit</span>
+                      <span className="font-semibold">Monthly Savings Potential</span>
                       <span className="font-bold text-success">
-                        ${netAnnualBenefit.toLocaleString()}
+                        ${monthlySavings.toLocaleString()}
                       </span>
                     </div>
                   </CardContent>
@@ -210,18 +182,12 @@ const ROICalculator = () => {
 
                 <Card className="bg-primary/5">
                   <CardContent className="p-6">
-                    <div className="grid grid-cols-2 gap-4 text-center">
-                      <div>
-                        <div className="text-2xl font-bold text-primary">
-                          {roi.toFixed(0)}%
-                        </div>
-                        <div className="text-sm text-muted-foreground">Annual ROI</div>
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-primary mb-2">
+                        ${annualSavings.toLocaleString()}
                       </div>
-                      <div>
-                        <div className="text-2xl font-bold text-primary">
-                          {paybackMonths.toFixed(1)}
-                        </div>
-                        <div className="text-sm text-muted-foreground">Payback (Months)</div>
+                      <div className="text-sm text-muted-foreground">
+                        Potential Annual Savings from Reduced Shrinkage
                       </div>
                     </div>
                   </CardContent>
@@ -242,15 +208,15 @@ const ROICalculator = () => {
                 </Card>
               </>
             ) : (
-              <Card className="h-full flex items-center justify-center">
-                <CardContent className="text-center p-8">
-                  <DollarSign className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold mb-2">Calculate Your ROI</h3>
-                  <p className="text-muted-foreground">
-                    Enter your store information to see personalized savings projections and ROI calculations.
-                  </p>
-                </CardContent>
-              </Card>
+                <Card className="h-full flex items-center justify-center">
+                  <CardContent className="text-center p-8">
+                    <DollarSign className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold mb-2">Calculate Your Savings</h3>
+                    <p className="text-muted-foreground">
+                      Enter your store information to see how much you could save by reducing shrinkage losses.
+                    </p>
+                  </CardContent>
+                </Card>
             )}
           </div>
         </div>

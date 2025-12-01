@@ -132,13 +132,11 @@ export function SalesProvisioningPortal() {
                   <SelectItem value="starter">
                     <div className="flex items-center gap-2">
                       <Badge variant="outline">Starter</Badge>
-                      <span className="text-sm text-muted-foreground">$299/mo</span>
                     </div>
                   </SelectItem>
                   <SelectItem value="professional">
                     <div className="flex items-center gap-2">
                       <Badge>Professional</Badge>
-                      <span className="text-sm text-muted-foreground">$799/mo</span>
                     </div>
                   </SelectItem>
                   <SelectItem value="enterprise">

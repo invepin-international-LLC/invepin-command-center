@@ -21,7 +21,7 @@ const Retail = () => {
             <div className="mt-10 flex items-center justify-center gap-x-6">
               <Button asChild size="lg">
                 <Link to="/demo">
-                  Start Free Trial <ArrowRight className="ml-2 h-4 w-4" />
+                  Try Demo <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
               <Button variant="outline" asChild size="lg">
