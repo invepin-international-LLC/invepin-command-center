@@ -567,6 +567,16 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
                 <p className="text-xs text-muted-foreground mt-2 text-center">
                   Diagnose connectivity issues - check console for details
                 </p>
+                {/* Debug: Show env var status */}
+                <p className="text-xs text-center mt-1">
+                  <span className={import.meta.env.VITE_SUPABASE_URL ? "text-green-500" : "text-red-500"}>
+                    URL: {import.meta.env.VITE_SUPABASE_URL ? "✓" : "✗"}
+                  </span>
+                  {" | "}
+                  <span className={import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ? "text-green-500" : "text-red-500"}>
+                    Key: {import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ? "✓" : "✗"}
+                  </span>
+                </p>
               </div>
 
               <div className="space-y-2">
