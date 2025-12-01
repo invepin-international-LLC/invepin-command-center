@@ -18,6 +18,7 @@ import { WalkieTalkie } from "@/components/communication/WalkieTalkie";
 import TutorialSystem from "@/components/tutorial/TutorialSystem";
 import { InvepinTracker } from "@/components/tracking/InvepinTracker";
 import { PanicButton } from "@/components/security/PanicButton";
+import { AppStoreComplianceNotice } from "@/components/AppStoreCompliance";
 import { 
   Shield, 
   Smartphone, 
@@ -320,7 +321,10 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
                 <h1 className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
                   Invepin App
                 </h1>
-                <p className="text-sm lg:text-base text-muted-foreground">Store Operations Dashboard</p>
+          <p className="text-sm text-muted-foreground">Store Operations Dashboard</p>
+          <p className="text-xs text-muted-foreground mt-1">
+            Demo Mode - For information only. Contact sales for purchasing.
+          </p>
               </div>
             </div>
             
@@ -470,6 +474,11 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
               <p className="text-xs lg:text-sm text-success font-semibold">Operational</p>
             </CardContent>
           </Card>
+        </div>
+
+        {/* App Store Compliance Notice */}
+        <div className="container mx-auto">
+          <AppStoreComplianceNotice />
         </div>
 
       {/* Content based on active view */}
