@@ -7,8 +7,8 @@ export function AppStoreComplianceNotice() {
       <Info className="h-4 w-4" />
       <AlertTitle>Demo & Information App</AlertTitle>
       <AlertDescription>
-        This app is for demonstration and informational purposes only. All Invepin services and subscriptions 
-        are purchased through direct sales contact. For pricing and purchasing, contact{" "}
+        This app is for demonstration and informational purposes only. All Invepin products and services 
+        are purchased through direct sales. For information and purchasing, please contact{" "}
         <a href="mailto:support@invepin.com" className="text-primary hover:underline font-medium">
           support@invepin.com
         </a>{" "}
