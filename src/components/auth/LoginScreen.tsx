@@ -6,20 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Shield, Smartphone, Wifi, Cloud, Activity, Database, Zap, Eye, EyeOff, TrendingUp, BarChart3 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
-
-// Create supabase client with fallback values
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://dvqikpzjqycktlqwjkeq.supabase.co';
-const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2cWlrcHpqcXlja3RscXdqa2VxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwOTUwMzYsImV4cCI6MjA3NTY3MTAzNn0.ASFaYcXva1029tLkcsTVHM-5ulCI_oaxVzhpKh74wg0';
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
-  auth: {
-    storage: localStorage,
-    persistSession: true,
-    autoRefreshToken: true,
-  }
-});
 
 interface User {
   id: string;
@@ -344,10 +332,13 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
     });
 
     try {
-      const response = await fetch(`${SUPABASE_URL}/rest/v1/`, {
+      const url = import.meta.env.VITE_SUPABASE_URL;
+      const key = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+      
+      const response = await fetch(`${url}/rest/v1/`, {
         method: 'GET',
         headers: {
-          'apikey': SUPABASE_KEY,
+          'apikey': key,
         },
       });
       

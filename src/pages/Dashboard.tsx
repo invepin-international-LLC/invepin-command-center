@@ -2,19 +2,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { LoginScreen } from "@/components/auth/LoginScreen";
 import { MainDashboard } from "@/components/dashboard/MainDashboard";
-import { createClient } from '@supabase/supabase-js';
-
-// Create supabase client with fallback values
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://dvqikpzjqycktlqwjkeq.supabase.co';
-const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2cWlrcHpqcXlja3RscXdqa2VxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwOTUwMzYsImV4cCI6MjA3NTY3MTAzNn0.ASFaYcXva1029tLkcsTVHM-5ulCI_oaxVzhpKh74wg0';
-
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
-  auth: {
-    storage: localStorage,
-    persistSession: true,
-    autoRefreshToken: true,
-  }
-});
+import { supabase } from "@/integrations/supabase/client";
 
 interface User {
   id: string;

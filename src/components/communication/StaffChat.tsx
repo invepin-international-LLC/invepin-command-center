@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from "@/integrations/supabase/client";
 import { useSecurity } from '@/components/auth/SecurityProvider';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -80,7 +80,8 @@ export function StaffChat({ className }: StaffChatProps) {
 
   const fetchMessages = async () => {
     try {
-      const { data, error } = await supabase
+      // Cast to any to allow future table creation
+      const { data, error } = await (supabase as any)
         .from('staff_messages')
         .select('*')
         .order('created_at', { ascending: true })
@@ -102,7 +103,8 @@ export function StaffChat({ className }: StaffChatProps) {
     if (!newMessage.trim() || !user) return;
 
     try {
-      const { error } = await supabase
+      // Cast to any to allow future table creation
+      const { error } = await (supabase as any)
         .from('staff_messages')
         .insert({
           content: newMessage.trim(),
