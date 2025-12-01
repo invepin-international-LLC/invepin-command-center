@@ -3,6 +3,7 @@ import { AccessControl } from '@/components/auth/AccessControl';
 import { StaffChat } from '@/components/communication/StaffChat';
 import { ContactSettings } from '@/components/communication/ContactSettings';
 import { WalkieTalkie } from '@/components/communication/WalkieTalkie';
+import { SecuritySettings } from '@/components/security/SecuritySettings';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
@@ -17,7 +18,8 @@ import {
   AlertTriangle,
   Activity,
   Camera,
-  Database
+  Database,
+  UserCircle
 } from 'lucide-react';
 
 export function SecurityDashboard() {
@@ -97,7 +99,7 @@ export function SecurityDashboard() {
       </div>
 
       <Tabs defaultValue="communication" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="communication" className="flex items-center gap-2">
             <MessageSquare className="h-4 w-4" />
             <span className="hidden sm:inline">Communication</span>
@@ -109,6 +111,10 @@ export function SecurityDashboard() {
           <TabsTrigger value="settings" className="flex items-center gap-2">
             <Phone className="h-4 w-4" />
             <span className="hidden sm:inline">Contact Settings</span>
+          </TabsTrigger>
+          <TabsTrigger value="account" className="flex items-center gap-2">
+            <UserCircle className="h-4 w-4" />
+            <span className="hidden sm:inline">Account Settings</span>
           </TabsTrigger>
           <TabsTrigger value="monitoring" className="flex items-center gap-2">
             <Eye className="h-4 w-4" />
@@ -199,6 +205,10 @@ export function SecurityDashboard() {
 
         <TabsContent value="settings" className="space-y-4">
           <ContactSettings />
+        </TabsContent>
+
+        <TabsContent value="account" className="space-y-4">
+          <SecuritySettings />
         </TabsContent>
 
         <TabsContent value="monitoring" className="space-y-4">
