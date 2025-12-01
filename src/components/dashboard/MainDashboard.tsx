@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -19,6 +19,9 @@ import TutorialSystem from "@/components/tutorial/TutorialSystem";
 import { InvepinTracker } from "@/components/tracking/InvepinTracker";
 import { PanicButton } from "@/components/security/PanicButton";
 import { AppStoreComplianceNotice } from "@/components/AppStoreCompliance";
+import { CustomerOnboarding } from "@/components/onboarding/CustomerOnboarding";
+import { SalesProvisioningPortal } from "@/components/admin/SalesProvisioningPortal";
+import { useOrganization } from "@/components/auth/OrganizationProvider";
 import { 
   Shield, 
   Smartphone, 
@@ -43,7 +46,8 @@ import {
   ShieldAlert,
   Database,
   Crown,
-  Radio
+  Radio,
+  CreditCard
 } from "lucide-react";
 
 interface User {
@@ -60,8 +64,22 @@ interface MainDashboardProps {
 
 export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
   const [selectedIndustry, setSelectedIndustry] = useState<'casino' | 'grocery' | 'hospitality' | 'healthcare' | 'bar'>('grocery');
-  const [activeView, setActiveView] = useState<'overview' | 'devices' | 'floorplan' | 'scanner' | 'analytics' | 'notifications' | 'bar' | 'tutorial' | 'cameras' | 'security' | 'tracker' | 'panic' | 'manager' | 'communication'>('overview');
+  const [activeView, setActiveView] = useState<'overview' | 'devices' | 'floorplan' | 'scanner' | 'analytics' | 'notifications' | 'bar' | 'tutorial' | 'cameras' | 'security' | 'tracker' | 'panic' | 'manager' | 'communication' | 'sales-portal'>('overview');
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const navigate = useNavigate();
+  const { organization, isDemoMode, isPaidCustomer } = useOrganization();
+
+  // Check if customer needs onboarding
+  useEffect(() => {
+    if (isPaidCustomer && organization && !organization.onboarding_completed) {
+      setShowOnboarding(true);
+    }
+  }, [isPaidCustomer, organization]);
+
+  // Show onboarding wizard for new paid customers
+  if (showOnboarding && !organization?.onboarding_completed) {
+    return <CustomerOnboarding onComplete={() => setShowOnboarding(false)} />;
+  }
 
   // All industries available
   const industries = [
@@ -88,7 +106,8 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
         { id: 'security', label: 'Security Center', icon: Shield },
         { id: 'communication', label: 'Team Communication', icon: Radio },
         { id: 'manager', label: 'Manager Hub', icon: Crown },
-        { id: 'tutorial', label: 'Tutorial', icon: BookOpen }
+        { id: 'tutorial', label: 'Tutorial', icon: BookOpen },
+        ...(user.role === 'super_admin' ? [{ id: 'sales-portal', label: 'Sales Portal', icon: CreditCard }] : [])
       ],
       grocery: [
         { id: 'overview', label: 'Overview', icon: null },
@@ -103,7 +122,8 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
         { id: 'security', label: 'Security Center', icon: Shield },
         { id: 'communication', label: 'Team Communication', icon: Radio },
         { id: 'manager', label: 'Manager Hub', icon: Crown },
-        { id: 'tutorial', label: 'Tutorial', icon: BookOpen }
+        { id: 'tutorial', label: 'Tutorial', icon: BookOpen },
+        ...(user.role === 'super_admin' ? [{ id: 'sales-portal', label: 'Sales Portal', icon: CreditCard }] : [])
       ],
       hospitality: [
         { id: 'overview', label: 'Overview', icon: null },
@@ -118,7 +138,8 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
         { id: 'security', label: 'Security Center', icon: Shield },
         { id: 'communication', label: 'Team Communication', icon: Radio },
         { id: 'manager', label: 'Manager Hub', icon: Crown },
-        { id: 'tutorial', label: 'Tutorial', icon: BookOpen }
+        { id: 'tutorial', label: 'Tutorial', icon: BookOpen },
+        ...(user.role === 'super_admin' ? [{ id: 'sales-portal', label: 'Sales Portal', icon: CreditCard }] : [])
       ],
       healthcare: [
         { id: 'overview', label: 'Overview', icon: null },
@@ -133,7 +154,8 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
         { id: 'security', label: 'Security Center', icon: Shield },
         { id: 'communication', label: 'Team Communication', icon: Radio },
         { id: 'manager', label: 'Manager Hub', icon: Crown },
-        { id: 'tutorial', label: 'Tutorial', icon: BookOpen }
+        { id: 'tutorial', label: 'Tutorial', icon: BookOpen },
+        ...(user.role === 'super_admin' ? [{ id: 'sales-portal', label: 'Sales Portal', icon: CreditCard }] : [])
       ],
       bar: [
         { id: 'overview', label: 'Overview', icon: null },
@@ -148,7 +170,8 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
         { id: 'security', label: 'Security Center', icon: Shield },
         { id: 'communication', label: 'Team Communication', icon: Radio },
         { id: 'manager', label: 'Manager Hub', icon: Crown },
-        { id: 'tutorial', label: 'Tutorial', icon: BookOpen }
+        { id: 'tutorial', label: 'Tutorial', icon: BookOpen },
+        ...(user.role === 'super_admin' ? [{ id: 'sales-portal', label: 'Sales Portal', icon: CreditCard }] : [])
       ]
     };
     return industryTabs[industry as keyof typeof industryTabs];
@@ -322,9 +345,16 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
                   Invepin App
                 </h1>
           <p className="text-sm text-muted-foreground">Store Operations Dashboard</p>
-          <p className="text-xs text-muted-foreground mt-1">
-            Demo Mode - For information only. Contact sales for purchasing.
-          </p>
+          {isDemoMode && (
+            <p className="text-xs text-warning mt-1 font-medium">
+              Demo Mode - Contact sales to activate full features
+            </p>
+          )}
+          {isPaidCustomer && organization && (
+            <p className="text-xs text-success mt-1 font-medium">
+              {organization.subscription_tier.charAt(0).toUpperCase() + organization.subscription_tier.slice(1)} Plan Active
+            </p>
+          )}
               </div>
             </div>
             
@@ -476,10 +506,12 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
           </Card>
         </div>
 
-        {/* App Store Compliance Notice */}
-        <div className="container mx-auto">
-          <AppStoreComplianceNotice />
-        </div>
+        {/* App Store Compliance Notice - Only for Demo Users */}
+        {isDemoMode && (
+          <div className="container mx-auto">
+            <AppStoreComplianceNotice />
+          </div>
+        )}
 
       {/* Content based on active view */}
       {activeView === 'overview' ? (
@@ -730,6 +762,8 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
         <ManagerDashboard />
       ) : activeView === 'tutorial' ? (
         <TutorialSystem />
+      ) : activeView === 'sales-portal' ? (
+        <SalesProvisioningPortal />
       ) : (
         <Notifications industry={selectedIndustry} />
       )}

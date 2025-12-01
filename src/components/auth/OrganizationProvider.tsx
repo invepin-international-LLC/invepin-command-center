@@ -61,6 +61,11 @@ export function OrganizationProvider({ children }: { children: React.ReactNode }
     }
   };
 
+  // Computed properties for customer status
+  const isDemoMode = organization?.customer_status === 'demo' || !organization;
+  const isPaidCustomer = organization?.customer_status === 'active';
+  const isTrialCustomer = organization?.customer_status === 'trial';
+
   useEffect(() => {
     loadOrganizationData();
 
@@ -110,6 +115,9 @@ export function OrganizationProvider({ children }: { children: React.ReactNode }
       organization,
       memberRole,
       isLoading,
+      isDemoMode,
+      isPaidCustomer,
+      isTrialCustomer,
       switchOrganization,
       refreshOrganization,
     }}>

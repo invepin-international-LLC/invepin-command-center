@@ -512,6 +512,9 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
                 Secure Access
               </CardTitle>
               <CardDescription>Enter your credentials to access the command center</CardDescription>
+              <div className="mt-2 text-xs text-center text-muted-foreground">
+                Demo app only. <a href="mailto:support@invepin.com" className="text-primary hover:underline">Contact sales</a> to purchase.
+              </div>
             </CardHeader>
             <CardContent className="space-y-4">
               {/* Network Diagnostic Test Button */}
