@@ -6,8 +6,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Shield, Smartphone, Wifi, Cloud, Activity, Database, Zap, Eye, EyeOff, TrendingUp, BarChart3 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from '@/integrations/supabase/client';
+import { createClient } from '@supabase/supabase-js';
 import { Link } from "react-router-dom";
+
+// Create supabase client with fallback values
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || 'https://dvqikpzjqycktlqwjkeq.supabase.co';
+const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2cWlrcHpqcXlja3RscXdqa2VxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwOTUwMzYsImV4cCI6MjA3NTY3MTAzNn0.ASFaYcXva1029tLkcsTVHM-5ulCI_oaxVzhpKh74wg0';
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: {
+    storage: localStorage,
+    persistSession: true,
+    autoRefreshToken: true,
+  }
+});
 
 interface User {
   id: string;
@@ -342,77 +354,37 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
   };
 
   const testNetworkConnectivity = async () => {
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-    
-    // Show what config we have
-    console.log('=== CONFIG CHECK ===');
-    console.log('VITE_SUPABASE_URL:', supabaseUrl || 'NOT SET');
-    console.log('VITE_SUPABASE_PUBLISHABLE_KEY:', supabaseKey ? 'SET (hidden)' : 'NOT SET');
-    
-    if (!supabaseUrl || !supabaseKey) {
-      toast({
-        title: "❌ Config Missing",
-        description: `URL: ${supabaseUrl ? '✓' : '✗'} | Key: ${supabaseKey ? '✓' : '✗'}`,
-        variant: "destructive"
-      });
-      return;
-    }
-
     toast({
       title: "🔍 Testing Network...",
-      description: `Connecting to: ${supabaseUrl.substring(0, 30)}...`
+      description: `Connecting to backend...`
     });
 
     try {
-      console.log('=== NETWORK TEST START ===');
-      console.log('Testing URL:', supabaseUrl);
-      console.log('Browser:', navigator.userAgent);
-      console.log('Origin:', window.location.origin);
-      
-      // Test 1: Direct fetch to Supabase health endpoint
-      const response = await fetch(`${supabaseUrl}/rest/v1/`, {
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/`, {
         method: 'GET',
         headers: {
-          'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || '',
+          'apikey': SUPABASE_KEY,
         },
       });
       
-      console.log('Response status:', response.status);
-      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
-      console.log('Response OK:', response.ok);
-      
       if (response.ok || response.status === 404) {
-        // 404 is expected for root endpoint, means we reached the server
         toast({
           title: "✅ Network Connected",
-          description: `Backend reachable (status: ${response.status})`,
+          description: `Backend reachable`,
           variant: "default"
         });
-        console.log('=== NETWORK TEST: SUCCESS ===');
       } else {
         toast({
           title: "⚠️ Unexpected Response",
-          description: `Status: ${response.status} - Check console`,
+          description: `Status: ${response.status}`,
           variant: "destructive"
         });
-        console.log('=== NETWORK TEST: UNEXPECTED STATUS ===');
       }
     } catch (err: any) {
-      console.error('=== NETWORK TEST: FAILED ===');
-      console.error('Error type:', err.constructor.name);
-      console.error('Error message:', err.message);
-      console.error('Error stack:', err.stack);
-      
       let diagnosis = "Unknown network error";
       if (err.message.includes("Failed to fetch")) {
         diagnosis = "Network blocked - Check firewall, VPN, or CORS";
-      } else if (err.message.includes("NetworkError")) {
-        diagnosis = "No internet or domain unreachable";
-      } else if (err.name === "TypeError") {
-        diagnosis = "Request failed - Possible CORS or DNS issue";
       }
-      
       toast({
         title: "❌ Network Test Failed",
         description: diagnosis,
@@ -564,19 +536,6 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
                   <Wifi className="h-4 w-4 mr-2" />
                   Test Network Connection
                 </Button>
-                <p className="text-xs text-muted-foreground mt-2 text-center">
-                  Diagnose connectivity issues - check console for details
-                </p>
-                {/* Debug: Show env var status */}
-                <p className="text-xs text-center mt-1">
-                  <span className={import.meta.env.VITE_SUPABASE_URL ? "text-green-500" : "text-red-500"}>
-                    URL: {import.meta.env.VITE_SUPABASE_URL ? "✓" : "✗"}
-                  </span>
-                  {" | "}
-                  <span className={import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ? "text-green-500" : "text-red-500"}>
-                    Key: {import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY ? "✓" : "✗"}
-                  </span>
-                </p>
               </div>
 
               <div className="space-y-2">
