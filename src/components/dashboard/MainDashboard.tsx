@@ -47,8 +47,15 @@ import {
   Database,
   Crown,
   Radio,
-  CreditCard
+  CreditCard,
+  Trash2,
+  UserX
 } from "lucide-react";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface User {
   id: string;
@@ -66,8 +73,60 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
   const [selectedIndustry, setSelectedIndustry] = useState<'casino' | 'grocery' | 'hospitality' | 'healthcare' | 'bar'>('grocery');
   const [activeView, setActiveView] = useState<'overview' | 'devices' | 'floorplan' | 'scanner' | 'analytics' | 'notifications' | 'bar' | 'tutorial' | 'cameras' | 'security' | 'tracker' | 'panic' | 'manager' | 'communication' | 'sales-portal'>('overview');
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [deleteConfirmation, setDeleteConfirmation] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
   const navigate = useNavigate();
   const { organization, isDemoMode, isPaidCustomer } = useOrganization();
+  const { toast } = useToast();
+
+  // Handle account deletion
+  const handleDeleteAccount = async () => {
+    if (deleteConfirmation !== 'DELETE') {
+      toast({
+        title: "Confirmation Required",
+        description: "Please type DELETE to confirm account deletion",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      
+      if (!authUser) {
+        throw new Error('No user found');
+      }
+
+      // Delete user data from profiles table
+      await supabase.from('profiles').delete().eq('id', authUser.id);
+      
+      // Delete face embeddings
+      await supabase.from('face_embeddings').delete().eq('user_id', authUser.id);
+      
+      // Delete clock events
+      await supabase.from('clock_events').delete().eq('user_id', authUser.id);
+
+      toast({
+        title: "Account Deleted",
+        description: "Your account data has been permanently deleted"
+      });
+
+      // Sign out and redirect
+      await supabase.auth.signOut();
+      window.location.href = '/';
+    } catch (error: any) {
+      console.error('Error deleting account:', error);
+      toast({
+        title: "Deletion Failed",
+        description: error.message || "Unable to delete account. Please contact support@invepin.com",
+        variant: "destructive"
+      });
+    } finally {
+      setIsDeleting(false);
+      setDeleteConfirmation('');
+    }
+  };
 
   // Check if customer needs onboarding
   useEffect(() => {
@@ -384,6 +443,55 @@ export const MainDashboard = ({ user, onLogout }: MainDashboardProps) => {
                   Connect to HIVE
                 </Button>
               )}
+              
+              {/* Delete Account - Prominent for Apple compliance */}
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="outline" size="sm" className="border-destructive/50 text-destructive hover:bg-destructive/10 hover:shadow-card hover:scale-105 transition-all duration-200">
+                    <UserX className="h-3 w-3 mr-1" />
+                    Delete Account
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Delete Your Account?</AlertDialogTitle>
+                    <AlertDialogDescription className="space-y-4">
+                      <p>
+                        This will permanently delete your account and remove all your data from our servers.
+                        This action cannot be undone.
+                      </p>
+                      <div className="space-y-2">
+                        <Label htmlFor="delete-confirm-main">
+                          Type <span className="font-bold">DELETE</span> to confirm
+                        </Label>
+                        <Input
+                          id="delete-confirm-main"
+                          value={deleteConfirmation}
+                          onChange={(e) => setDeleteConfirmation(e.target.value)}
+                          placeholder="Type DELETE"
+                          className="font-mono"
+                        />
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        Need help? Contact <a href="mailto:support@invepin.com" className="text-primary hover:underline">support@invepin.com</a>
+                      </p>
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel onClick={() => setDeleteConfirmation('')}>
+                      Cancel
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleDeleteAccount}
+                      disabled={deleteConfirmation !== 'DELETE' || isDeleting}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
+                      {isDeleting ? 'Deleting...' : 'Delete Account'}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+              
               <Button variant="outline" size="sm" onClick={onLogout} className="hover:shadow-card hover:scale-105 transition-all duration-200">
                 Sign Out
               </Button>
