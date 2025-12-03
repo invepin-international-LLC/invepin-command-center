@@ -30,8 +30,8 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
   const [inventoryValue, setInventoryValue] = useState(847230);
   const [alertCount, setAlertCount] = useState(0);
   const { toast } = useToast();
-  // Demo mode for testing
-  const demoMode = new URLSearchParams(window.location.search).get('demo') === '1';
+  // Demo mode - always available for Apple review
+  const [demoMode, setDemoMode] = useState(false);
 
   // Simulate real-time data updates
   useEffect(() => {
@@ -309,20 +309,20 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
   };
 
   const handleDemoLogin = (role: 'super_admin' | 'company_admin' | 'manager' | 'bartender' | 'staff') => {
-    if (!demoMode) {
-      toast({
-        title: "Demo disabled",
-        description: "Enable demo by adding ?demo=1 to the URL.",
-        variant: "destructive",
-      });
-      return;
-    }
     const user = mockUsers.find(u => u.role === role)!;
     toast({
       title: "Demo Login",
-      description: `Logged in as ${role}`,
+      description: `Logged in as ${user.name} (${role})`,
     });
     onLogin(user);
+  };
+
+  const enableDemoMode = () => {
+    setDemoMode(true);
+    toast({
+      title: "Demo Mode Enabled",
+      description: "Select a role below to explore the app features.",
+    });
   };
 
   const testNetworkConnectivity = async () => {
@@ -566,12 +566,11 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
                   <button type="button" className="underline hover:text-foreground" onClick={() => setIsSignUp(v => !v)}>
                     {isSignUp ? 'Have an account? Sign in' : "New here? Create an account"}
                   </button>
-                  <button type="button" className="underline hover:text-foreground" onClick={() => {
-                    localStorage.setItem('invepin_demo_mode','1');
-                    window.location.search = '?demo=1';
-                  }}>
-                    Try demo
-                  </button>
+                  {!demoMode && (
+                    <button type="button" className="underline hover:text-foreground font-medium text-primary" onClick={enableDemoMode}>
+                      Try Demo Mode
+                    </button>
+                  )}
                 </div>
                 {!isSignUp && (
                   <div className="text-center">
