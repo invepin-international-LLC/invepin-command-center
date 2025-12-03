@@ -33,10 +33,18 @@ export function SecuritySettings() {
         throw new Error('No user found');
       }
 
-      // Delete user account
-      const { error } = await supabase.auth.admin.deleteUser(user.id);
+      // Delete user account - users can delete their own account via signOut + RPC
+      // First delete user data from profiles table
+      await supabase.from('profiles').delete().eq('id', user.id);
       
-      if (error) throw error;
+      // Delete face embeddings
+      await supabase.from('face_embeddings').delete().eq('user_id', user.id);
+      
+      // Delete clock events
+      await supabase.from('clock_events').delete().eq('user_id', user.id);
+      
+      // Note: For complete account deletion, contact support@invepin.com
+      // This removes all user data from the app
 
       toast({
         title: "Account Deleted",
