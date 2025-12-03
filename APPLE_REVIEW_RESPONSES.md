@@ -1,8 +1,26 @@
 # Apple App Store Review Responses
 
 **Submission ID:** e6e4b7aa-d938-4088-95c8-ff8f6e950159  
-**Version:** 1.0  
+**Version:** 1.1  
 **Date:** December 2024
+
+---
+
+## Response to Guideline 3.1.1 - Account Registration Removed
+
+We have removed all account registration features from the app per your feedback.
+
+**Changes Made:**
+- Removed the "Create Account" / "Sign Up" option from the login screen
+- Removed the company registration flow entirely
+- The app now only allows existing customers (who purchased externally) to sign in
+- New users see "Existing customers only. Contact sales for access." message
+
+**How It Works Now:**
+1. Users can only sign in with existing credentials (provisioned by our sales team)
+2. Users can explore full app functionality via Demo Mode (no account required)
+3. To become a customer, users must contact sales externally (email/phone)
+4. There is no self-service account creation in the app
 
 ---
 

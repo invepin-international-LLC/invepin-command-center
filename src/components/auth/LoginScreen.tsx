@@ -25,7 +25,6 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
   const [connectedDevices, setConnectedDevices] = useState(18);
   const [inventoryValue, setInventoryValue] = useState(847230);
   const [alertCount, setAlertCount] = useState(0);
@@ -168,111 +167,6 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
     }
   };
 
-  const handleSignUp = async () => {
-    // Validate environment variables first
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-    const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-    
-    if (!supabaseUrl || !supabaseKey) {
-      toast({
-        title: "Configuration Error",
-        description: "Backend configuration is missing. Please refresh the page and try again.",
-        variant: "destructive"
-      });
-      return;
-    }
-    
-    console.log('Signup environment check:', {
-      url: supabaseUrl,
-      keyExists: !!supabaseKey,
-      origin: window.location.origin
-    });
-    
-    // Validate password length
-    if (password.length < 6) {
-      toast({ 
-        title: "Invalid Password", 
-        description: "Password must be at least 6 characters long.", 
-        variant: "destructive" 
-      });
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      console.log('Attempting signup for:', email);
-      
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/dashboard`
-        }
-      });
-
-      console.log('Signup response:', { 
-        hasData: !!data, 
-        hasError: !!error,
-        errorDetails: error 
-      });
-
-      if (error) {
-        console.error('Signup error details:', {
-          message: error.message,
-          status: error.status,
-          name: error.name
-        });
-        
-        // Handle "User already registered" error
-        if (error.message?.includes('already registered') || error.status === 422) {
-          toast({
-            title: "Account exists", 
-            description: "This email is already registered. Please sign in instead.", 
-            variant: "destructive" 
-          });
-          setIsSignUp(false);
-          return;
-        }
-        
-        toast({
-          title: "Sign up failed", 
-          description: error.message || "Unable to create account. Please try again.", 
-          variant: "destructive" 
-        });
-        return;
-      }
-
-      console.log('Signup successful:', data);
-      
-      // Account created successfully - show message and switch to login mode
-      // Don't auto-login, let user sign in manually
-      toast({ 
-        title: "Account Created!", 
-        description: "Your account has been created. Please sign in with your credentials." 
-      });
-      setIsSignUp(false); // Switch to login mode
-    } catch (err: any) {
-      console.error('Unexpected signup error:', {
-        message: err.message,
-        name: err.name,
-        stack: err.stack,
-        type: err.constructor.name
-      });
-      
-      let errorMessage = "An unexpected error occurred during signup.";
-      if (err.message === "Failed to fetch" || err.name === "TypeError") {
-        errorMessage = "Network error. Please check your internet connection and try again.";
-      }
-      
-      toast({ 
-        title: "Signup Error", 
-        description: errorMessage, 
-        variant: "destructive" 
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handlePasswordReset = async () => {
     if (!email) {
@@ -547,43 +441,41 @@ export const LoginScreen = ({ onLogin }: LoginScreenProps) => {
               </div>
 
               <Button 
-                onClick={isSignUp ? handleSignUp : handleLogin}
+                onClick={handleLogin}
                 disabled={isLoading || !email || !password}
                 className="w-full bg-gradient-primary hover:shadow-glow transition-all duration-300 font-semibold"
               >
                 {isLoading ? (
                   <div className="flex items-center gap-2">
                     <Activity className="h-4 w-4 animate-spin" />
-                    {isSignUp ? 'Creating account...' : 'Authenticating...'}
+                    Authenticating...
                   </div>
                 ) : (
-                  isSignUp ? 'Create Account' : 'Access Command Center'
+                  'Access Command Center'
                 )}
               </Button>
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <button type="button" className="underline hover:text-foreground" onClick={() => setIsSignUp(v => !v)}>
-                    {isSignUp ? 'Have an account? Sign in' : "New here? Create an account"}
-                  </button>
+                  <span className="text-muted-foreground">
+                    Existing customers only. <a href="mailto:support@invepin.com" className="text-primary hover:underline">Contact sales</a> for access.
+                  </span>
                   {!demoMode && (
                     <button type="button" className="underline hover:text-foreground font-medium text-primary" onClick={enableDemoMode}>
                       Try Demo Mode
                     </button>
                   )}
                 </div>
-                {!isSignUp && (
-                  <div className="text-center">
-                    <button 
-                      type="button" 
-                      className="text-xs underline hover:text-foreground text-muted-foreground"
-                      onClick={handlePasswordReset}
-                      disabled={isLoading}
-                    >
-                      Forgot password?
-                    </button>
-                  </div>
-                )}
+                <div className="text-center">
+                  <button 
+                    type="button" 
+                    className="text-xs underline hover:text-foreground text-muted-foreground"
+                    onClick={handlePasswordReset}
+                    disabled={isLoading}
+                  >
+                    Forgot password?
+                  </button>
+                </div>
               </div>
 
               {/* Demo Login Options */}
