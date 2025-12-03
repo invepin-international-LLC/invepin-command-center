@@ -32,7 +32,7 @@ export function PublicNav() {
       title: "Resources",
       items: [
         { title: "Case Studies", href: "/case-studies" },
-        { title: "ROI Calculator", href: "/roi-calculator", icon: Calculator },
+        { title: "Savings Calculator", href: "/roi-calculator", icon: Calculator },
         { title: "Documentation", href: "/docs", icon: FileText },
         { title: "Support", href: "/support" }
       ]

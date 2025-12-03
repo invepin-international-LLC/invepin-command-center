@@ -196,14 +196,14 @@ const TutorialSystem: React.FC = () => {
         {
           id: 'product-management',
           title: 'Product & Inventory Management',
-          description: 'Manage products, pricing, and stock levels',
+          description: 'Manage products and stock levels',
           icon: <Package className="h-5 w-5" />,
           difficulty: 'Intermediate',
           steps: [
             {
               id: 'product-catalog',
               title: 'Product Catalog Setup',
-              description: 'Add products, SKUs, and pricing information',
+              description: 'Add products and SKU information',
               icon: <Package className="h-4 w-4" />,
               duration: '15 min'
             },
