@@ -127,7 +127,7 @@ const ROICalculator = () => {
               </div>
               
               <Button onClick={handleCalculate} className="w-full" size="lg">
-                Calculate ROI
+                Calculate Savings
               </Button>
             </CardContent>
           </Card>
