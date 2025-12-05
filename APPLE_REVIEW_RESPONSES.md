@@ -103,9 +103,9 @@ The app authenticates existing enterprise customers and provides them access to 
 
 ### 5. Do users have to pay a fee to create an account?
 
-No. Account creation is free. Anyone can create an account and explore the app in Demo Mode.
+This app does not support self-service account creation. Accounts are provisioned by our sales team for customers who have purchased enterprise subscriptions externally. Anyone can explore the app using Demo Mode without any account.
 
-Paid features require a separate B2B enterprise agreement purchased outside the app through our sales team. The app itself does not collect any payments or require payment to create an account.
+The app does not collect any payments. Enterprise subscriptions are purchased through B2B sales channels outside the app.
 
 ### 6. Are the enterprise services in your app sold to single users, consumers, or for family use?
 
@@ -125,8 +125,9 @@ Invepin is a B2B enterprise inventory management application that:
 1. ✅ Provides Demo Mode for app review (no credentials needed)
 2. ✅ Includes full account deletion within the app
 3. ✅ Does not offer any in-app purchases
-4. ✅ Serves as an operational tool for businesses with external subscriptions
-5. ✅ Is not sold to consumers or for personal/family use
+4. ✅ Does NOT allow public account registration (accounts are provisioned by sales team)
+5. ✅ Serves as an operational tool for businesses with external subscriptions
+6. ✅ Is not sold to consumers or for personal/family use
 
 **Contact Information:**
 - Email: support@invepin.com

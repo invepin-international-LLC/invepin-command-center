@@ -91,7 +91,7 @@ export function SalesProvisioningPortal() {
       <div className="mb-6">
         <h1 className="text-3xl font-bold tracking-tight">Sales Provisioning Portal</h1>
         <p className="text-muted-foreground">
-          Convert registered organizations into paying customers
+          Activate customer accounts after purchase completion
         </p>
       </div>
 
@@ -118,7 +118,7 @@ export function SalesProvisioningPortal() {
                 className="font-mono"
               />
               <p className="text-xs text-muted-foreground">
-                The unique code assigned during company registration
+                The unique code assigned to the company during sales setup
               </p>
             </div>
 
@@ -192,15 +192,15 @@ export function SalesProvisioningPortal() {
             <ol className="space-y-2 text-sm text-muted-foreground">
               <li className="flex items-start gap-2">
                 <span className="font-semibold">1.</span>
-                <span>Customer registers their company in the app (creates demo account)</span>
+                <span>Customer contacts sales team via email or phone</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="font-semibold">2.</span>
-                <span>Sales team closes the deal via phone/email (outside the app)</span>
+                <span>Sales team closes the deal and creates company account externally</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="font-semibold">3.</span>
-                <span>Customer receives company code from registration email</span>
+                <span>Sales team assigns company code and sends credentials to customer</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="font-semibold">4.</span>
@@ -208,7 +208,7 @@ export function SalesProvisioningPortal() {
               </li>
               <li className="flex items-start gap-2">
                 <span className="font-semibold">5.</span>
-                <span>Customer's app immediately updates to show full features</span>
+                <span>Customer signs in with provided credentials to access full features</span>
               </li>
             </ol>
           </CardContent>
